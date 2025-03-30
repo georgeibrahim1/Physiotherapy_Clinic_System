@@ -129,6 +129,16 @@
   <ItemGroup>
     <ClCompile Include="Physiotherapy_Clinic_System.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ArrayStack.h" />
+    <ClInclude Include="LinkedQueue.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="priNode.h" />
+    <ClInclude Include="priQueue.h" />
+    <ClInclude Include="PriQueue_Reschedulling.h" />
+    <ClInclude Include="QueueADT.h" />
+    <ClInclude Include="StackADT.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

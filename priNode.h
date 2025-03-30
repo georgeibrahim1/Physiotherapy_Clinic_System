@@ -1,8 +1,8 @@
 #pragma once
-template < typename T>
+template <typename T>
 class priNode
 {
-private :
+protected :
 	T item;		// A data item
 	int pri;	//priority of the item
 	priNode<T>* next; // Pointer to next node
