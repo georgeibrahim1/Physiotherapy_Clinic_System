@@ -40,5 +40,14 @@
     <ClInclude Include="PriQueue_Reschedulling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EU_WaitList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Treatment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Patient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
