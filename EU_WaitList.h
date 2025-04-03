@@ -6,19 +6,21 @@ class EU_WaitList : public LinkedQueue <T>
 protected:
 	int TreatmentLatency;
 public:
+	EU_WaitList() {}
+	~EU_WaitList() {}
 	bool enqueue(const T& newEntry)
 	{
-		bool r = LinkedQueue:enqueue(T);
+		bool r = LinkedQueue <T>::enqueue(newEntry);
 		if(r)
-			TreatmentLatency = TreatmentLatency + T->GetCurrTreatment()->GetDuration; 
+			TreatmentLatency = TreatmentLatency + T->GetCurrTreatment()->GetDuration(); 
 		return r;
 	}
 
 	bool dequeue(T& frntEntry)
 	{
-		bool r = LinkedQueue:dequeue(T);
+		bool r = LinkedQueue <T>::dequeue(frntEntry);
 		if(r)
-			TreatmentLatency = TreatmentLatency - T->GetCurrTreatment()->GetDuration; 
+			TreatmentLatency = TreatmentLatency - T->GetCurrTreatment()->GetDuration(); 
 		return r;
 	}
 

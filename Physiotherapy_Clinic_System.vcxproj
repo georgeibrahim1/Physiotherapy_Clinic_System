@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClInclude Include="ArrayStack.h" />
     <ClInclude Include="EU_WaitList.h" />
+    <ClInclude Include="X_WaitList.h" />
     <ClInclude Include="LinkedQueue.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Patient.h" />

@@ -48,7 +48,7 @@ public:
 			temp->pri = newPriority;
 			enqueue(temp->getItem(), temp->getPri());
 			delete temp; //Memory save :)
-			return true
+			return true;
 		}
 		else
 		{
