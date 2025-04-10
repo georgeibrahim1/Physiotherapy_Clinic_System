@@ -1,4 +1,6 @@
 #pragma once
+#include "Resource.h"
+
 class Treatment
 {
 protected:
@@ -6,8 +8,15 @@ protected:
 	int AssignmentTime; //the time at which this treatment was assigned to a resource
 	Resource* AssignedResource;
 public:
-	virtual bool CanAssign()
-	{ }
+	Treatment()
+	{
+
+	}
+
+	virtual bool CanAssign() {};
+
+	virtual bool MoveToWait() {};
+
 	int GetDuration()
 	{
 		return Duration;
