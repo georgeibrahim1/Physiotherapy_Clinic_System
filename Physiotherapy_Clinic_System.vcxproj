@@ -127,18 +127,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Physiotherapy_Clinic_System.cpp" />
+    <ClCompile Include="Simulate.cpp" />
+    <ClCompile Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArrayStack.h" />
     <ClInclude Include="EU_WaitList.h" />
+    <ClInclude Include="E_Treatment.h" />
+    <ClInclude Include="Schedular.h" />
+    <ClInclude Include="U_Treatment.h" />
+    <ClInclude Include="X_Treatment.h" />
     <ClInclude Include="X_WaitList.h" />
     <ClInclude Include="LinkedQueue.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Patient.h" />
     <ClInclude Include="priNode.h" />
     <ClInclude Include="priQueue.h" />
-    <ClInclude Include="PriQueue_Reschedulling.h" />
+    <ClInclude Include="EarlyPList.h" />
     <ClInclude Include="QueueADT.h" />
     <ClInclude Include="StackADT.h" />
     <ClInclude Include="Treatment.h" />

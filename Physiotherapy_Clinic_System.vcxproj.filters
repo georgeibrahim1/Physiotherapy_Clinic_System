@@ -9,44 +9,65 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Header Files\Classes">
+      <UniqueIdentifier>{d6f86844-565e-4f5d-9921-b61f07f46357}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Physiotherapy_Clinic_System.cpp">
+    <ClCompile Include="Simulate.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.h">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StackADT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ArrayStack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LinkedQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="priNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="priQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QueueADT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PriQueue_Reschedulling.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EU_WaitList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Treatment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="X_Treatment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E_Treatment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="U_Treatment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrayStack.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedQueue.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
     <ClInclude Include="Patient.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="priNode.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="priQueue.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="EarlyPList.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="QueueADT.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="StackADT.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="X_WaitList.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="EU_WaitList.h">
+      <Filter>Header Files\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Schedular.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
