@@ -3,27 +3,27 @@
 #include "QueueADT.h"
 #include "EU_WaitList.h"
 #include "LinkedQueue.h"
-template <typename T>
-class X_WaitList : public EU_WaitList <T>
+
+class X_WaitList : public EU_WaitList <Patient*>
 {
 public:
 	X_WaitList() {}
 
-	bool cancel(const T& to_delete);
+	bool cancel(const Patient* to_delete);
 
 	~X_WaitList() {}
 };
-template <typename T>
-bool X_WaitList<T>::cancel(const T& to_delete)
+
+bool X_WaitList ::cancel(const Patient* to_delete)
 {
 	//test
 	//loop to search for the patient to remove
 	//delete this node then connect previous node to next
 	//make a temp pointer to that node and enqueue it to finish list
-	Node<T>* curr = this->frontPtr;
-	Node<T>* prev = this->frontPtr;
-	Node<T>* chosen = nullptr;
-	if (LinkedQueue <T> ::isEmpty())
+	Node<Patient*>* curr = this->frontPtr;
+	Node<Patient*>* prev = this->frontPtr;
+	Node<Patient*>* chosen = nullptr;
+	if (LinkedQueue <Patient*> ::isEmpty())
 		return false;
 	// corner case : first node is the one to cancel
 	if (curr->getItem() == to_delete)

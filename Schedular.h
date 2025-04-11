@@ -15,11 +15,11 @@ class Schedular
 protected:
 
 	LinkedQueue<Patient*> All_Patients;
-	EarlyPList<Patient*> Early_Patients;
+	EarlyPList Early_Patients;
 	priQueue<Patient*> Late_Patients;
 	EU_WaitList<Patient*> U_Waiting_Patients;
 	EU_WaitList<Patient*> E_Waiting_Patients;
-	X_WaitList<Patient*> X_Waiting_Patients;
+	X_WaitList X_Waiting_Patients;
 	LinkedQueue<Resource*> E_Devices;
 	LinkedQueue<Resource*> U_Devices;
 	LinkedQueue<Resource*> X_Devices;
@@ -46,7 +46,10 @@ public:
         if (MyFile.is_open())
         {
             MyFile >> Num_E_Devices >> Num_U_Devices >> Num_X_Devices;
-
+            //for (int i = 0; i < Num_E_Devices; i++)
+            //{
+            //    E_Devices.enqueue();
+            //}
 
 
 
