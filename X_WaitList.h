@@ -16,6 +16,7 @@ public:
 template <typename T>
 bool X_WaitList<T>::cancel(const T& to_delete)
 {
+	//test
 	//loop to search for the patient to remove
 	//delete this node then connect previous node to next
 	//make a temp pointer to that node and enqueue it to finish list
