@@ -1,36 +1,40 @@
 #pragma once
 #include "LinkedQueue.h"
-template <typename T>
-class EU_WaitList : public LinkedQueue <T>
+class EU_WaitList : public LinkedQueue <Patient*>
 {
 protected:
 	int TreatmentLatency;
 public:
 	EU_WaitList() {}
 	~EU_WaitList() {}
-	bool enqueue(const T& newEntry)
+	bool enqueue(Patient*& newEntry)
 	{
-		bool r = LinkedQueue <T>::enqueue(newEntry);
+		bool r = LinkedQueue <Patient*>::enqueue(newEntry);
 		if(r)
-			TreatmentLatency = TreatmentLatency + T->GetCurrTreatment()->GetDuration(); 
+			TreatmentLatency = TreatmentLatency + newEntry->GetCurrTreatment()->GetDuration(); 
 		return r;
 	}
 
-	bool dequeue(T& frntEntry)
+	bool dequeue(Patient*& frntEntry)
 	{
-		bool r = LinkedQueue <T>::dequeue(frntEntry);
+		bool r = LinkedQueue <Patient*>::dequeue(frntEntry);
 		if(r)
-			TreatmentLatency = TreatmentLatency - T->GetCurrTreatment()->GetDuration(); 
+			TreatmentLatency = TreatmentLatency - frntEntry->GetCurrTreatment()->GetDuration(); 
 		return r;
 	}
 
-	bool InsertSorted(const T& newEntry, int SortingValue)
+	bool InsertSorted(Patient*& newEntry, int SortingValue)
 	{
 		bool r;
+		/*
 		Node<T*> newnodePtr = new Node<T>(newEntry);
 		Node<T*> curr;
 		Node<T*> currnext;
+		*/
 
+		Node<Patient*>* newnodePtr = new Node<Patient*>(newEntry);
+		Node<Patient*>* curr;
+		Node<Patient*>* currnext;
 
 
 
@@ -40,7 +44,7 @@ public:
 			backPtr =  newnodePtr;
 			r = true;
 		}
-		else if (SortingValue < frontPtr->getItem()->GetPT())
+		else if (SortingValue < frontPtr->getItem()->getPT())
 		{
 			newnodePtr->setNext(frontPtr);
 			frontPtr = newnodePtr;
@@ -62,7 +66,7 @@ public:
 			
 		}
 		if (r)
-			TreatmentLatency = TreatmentLatency + T->GetCurrTreatment()->GetDuration;
+			TreatmentLatency = TreatmentLatency + newEntry->GetCurrTreatment()->GetDuration();
 		return true;
 
 	}
