@@ -17,8 +17,8 @@ protected:
 	LinkedQueue<Patient*> All_Patients;
 	EarlyPList Early_Patients;
 	priQueue<Patient*> Late_Patients;
-	EU_WaitList<Patient*> U_Waiting_Patients;
-	EU_WaitList<Patient*> E_Waiting_Patients;
+	EU_WaitList U_Waiting_Patients;
+	EU_WaitList E_Waiting_Patients;
 	X_WaitList X_Waiting_Patients;
 	LinkedQueue<Resource*> E_Devices;
 	LinkedQueue<Resource*> U_Devices;

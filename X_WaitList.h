@@ -4,7 +4,7 @@
 #include "EU_WaitList.h"
 #include "LinkedQueue.h"
 
-class X_WaitList : public EU_WaitList <Patient*>
+class X_WaitList : public EU_WaitList
 {
 public:
 	X_WaitList() {}

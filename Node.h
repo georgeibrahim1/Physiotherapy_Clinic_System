@@ -16,7 +16,6 @@ public :
 	T getItem() const ;
 	Node<T>* getNext() const ;
 }; // end Node
-#endif
 
 template < typename T>
 Node<T>::Node() 
@@ -60,3 +59,4 @@ Node<T>* Node<T>::getNext() const
 {
 	return next;
 } 
+#endif
