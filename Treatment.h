@@ -15,9 +15,9 @@ public:
 		AssignedResource = nullptr;
 	}
 
-	virtual bool CanAssign() {};
+	virtual bool CanAssign() { return 0; };// to be edited
 
-	virtual bool MoveToWait() {};
+	virtual bool MoveToWait() { return 0; }; // to be edited
 
 	int GetDuration()
 	{

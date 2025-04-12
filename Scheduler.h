@@ -33,8 +33,6 @@ public:
         int Num_E_Devices;
         int Num_U_Devices;
         int Num_X_Rooms;
-        int* Capacities = new int[Num_X_Rooms];
-
         int Pcancel;
         int Presc;
 
@@ -45,6 +43,7 @@ public:
         if (MyFile.is_open())
         {
             MyFile >> Num_E_Devices >> Num_U_Devices >> Num_X_Rooms;
+            int* Capacities = new int[Num_X_Rooms];
 
             for (int i = 0 ; i < Num_X_Rooms ; i++)
             {
@@ -160,7 +159,7 @@ public:
 
     void Simulate()
     {
-        Patient* temp;
+        Patient* temp = NULL;
         int priority; // Dummy Variable
         File_Loading_Function();
         if (Check_All_List())

@@ -1,10 +1,12 @@
 #include <iostream>
-#include "Schedular.h"
+#include "Scheduler.h"
 
 
 
 
 int main()
 {
+    Scheduler Maestro;
+    Maestro.Simulate();
     return 0;
 }
