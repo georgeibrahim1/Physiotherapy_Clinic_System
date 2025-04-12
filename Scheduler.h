@@ -132,25 +132,142 @@ public:
     {
         Patient* temp;
 
-        if(!All_Patients.peek(temp))
+        if (!All_Patients.peek(temp))
         {
             return false;
         }
-
-        if(temp->getPT() > temp->getVT()) //early
+        if (temp->getPT() > temp->getVT()) //early
         {
             All_Patients.dequeue(temp);
-            //TODO : to EarlyPList after merging the branches
+            Early_Patients.enqueue(temp, temp->getPT());// Sorted by PT
+            return true;
+            //Done : to EarlyPList after merging the branches
         }
-        //else if () //late
-        //{
+        else if (temp->getPT() < temp->getVT()) //late
+        {
+            All_Patients.dequeue(temp);
+            Late_Patients.enqueue(temp, temp->getVT() + Late_Penalty(temp)); // Sorted by VT+Penalty
+            return true;
+        }
+        else // Move to Waiting List 
+        {
+            All_Patients.dequeue(temp);
+            Random_Waiting_List(temp, 0, 1);
+            return true;
+        }
+        return false;
+    }
 
-        //}
-        //else if () //wait
-        //{
-
-        //}
+    void Simulate()
+    {
+        Patient* temp;
+        int priority; // Dummy Variable
+        File_Loading_Function();
+        if (Check_All_List())
+        {
+            srand(time(0));
+            int Random_Assign = rand() % 101;    // Random no. from [0,100]
+            if (Random_Assign < 10)
+            {
+                Early_Patients.dequeue(temp,priority);
+                Random_Waiting_List(temp, 0, 1);
+            }
+            else if (Random_Assign >= 10 && Random_Assign < 20)
+            {
+                Late_Patients.dequeue(temp, priority);
+                Random_Waiting_List(temp, temp->getPT() + Late_Penalty(temp), 1); // Sorted by PT+Penalty
+            }
+            else if (Random_Assign >= 20 && Random_Assign < 40)
+            {
+                Dequeue_Twice(temp);
+            }
+            else if (Random_Assign >= 40 && Random_Assign < 50)
+            {
+                In_Treatment_List.dequeue(temp, priority);
+                Random_Waiting_List(temp, temp->getPT(), 1); // Sorted by PT 
+            }
+            else if (Random_Assign >= 50 && Random_Assign < 60)
+            {
+                In_Treatment_List.dequeue(temp,priority);
+                Finished_Patients.push(temp);
+            }
+        }
     }
 
 
+    double Late_Penalty(Patient* Late_Patient)
+    {
+        return (Late_Patient->getPT() + Late_Patient->getVT()) / 2;
+    }
+
+   
+    void Random_Waiting_List(Patient* temp,int priority,bool enqueue_or_dequeue)  // Priority matters when assigning a late patient otherwise "priority = 0" 
+    {                                                                             // Enqueue=1 & Dequeue=0 
+        srand(time(0));
+        int Random_Waiting = rand() % 101;    // Random no. from [0,100]
+        if (Random_Waiting < 33)              // Assign to E Waiting List
+        {
+            if (enqueue_or_dequeue)
+            {
+                if (!priority)                // Checks if late patient 
+                    E_Waiting_Patients.enqueue(temp);
+                else
+                    E_Waiting_Patients.InsertSorted(temp, priority);
+            }
+            else
+                    E_Waiting_Patients.dequeue(temp); 
+        }
+        else if (Random_Waiting < 66)         // Assign to U Waiting List
+        {
+            if (enqueue_or_dequeue)
+            {
+                if (!priority)                 // Checks if late patient 
+                    U_Waiting_Patients.enqueue(temp);
+                else
+                    U_Waiting_Patients.InsertSorted(temp, priority);
+            }
+            else
+                U_Waiting_Patients.dequeue(temp);
+        }
+        else                                  // Assign to X Waiting List
+        {
+            if (enqueue_or_dequeue)
+            {
+                if (!priority)                 // Checks if late patient 
+                    X_Waiting_Patients.enqueue(temp);
+                else
+                    X_Waiting_Patients.InsertSorted(temp, priority);
+            }
+            else
+                X_Waiting_Patients.dequeue(temp);
+        }
+    }
+
+    void Dequeue_Twice(Patient* temp)
+    {
+        srand(time(0));
+        int Random_Waiting = rand() % 101;    // Random no. from [0,100]
+        if (Random_Waiting < 33)              // Assign to E Waiting List
+        {
+            E_Waiting_Patients.dequeue(temp);
+            In_Treatment_List.enqueue(temp, temp->GetCurrTreatment()->GetDuration());
+            E_Waiting_Patients.dequeue(temp);
+            In_Treatment_List.enqueue(temp, temp->GetCurrTreatment()->GetDuration());
+        }
+        else if (Random_Waiting < 66)         // Assign to U Waiting List
+        {
+            U_Waiting_Patients.dequeue(temp);
+            In_Treatment_List.enqueue(temp, temp->GetCurrTreatment()->GetDuration());
+            U_Waiting_Patients.dequeue(temp);
+            In_Treatment_List.enqueue(temp, temp->GetCurrTreatment()->GetDuration());
+        }
+        else                                  // Assign to X Waiting List
+        {
+            X_Waiting_Patients.dequeue(temp);
+            In_Treatment_List.enqueue(temp, temp->GetCurrTreatment()->GetDuration());
+            X_Waiting_Patients.dequeue(temp);
+            In_Treatment_List.enqueue(temp, temp->GetCurrTreatment()->GetDuration());
+
+        }
+    }
 };
