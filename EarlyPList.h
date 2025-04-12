@@ -4,17 +4,17 @@
 
 //TODO : Delete the template shit -> replace by patient
 //Don't forget to edit them in Schedular.h
-template <typename T>
-class EarlyPList : public priQueue<T>
+
+class EarlyPList : public priQueue<Patient*>
 {
 public:
 	EarlyPList() {}
 
 	~EarlyPList() {}
 
-	bool reschedule(const T& data, int newPriority)
+	bool reschedule(const Patient* data, int newPriority)//const Patient& data changed
 	{
-		priNode<T>* Phead = head;
+		priNode<Patient*>* Phead = head;
 		if (isEmpty()) // No Nodes
 		{
 			return false;
@@ -22,20 +22,21 @@ public:
 
 		// If the Phead is the node to be rescheduled (Suitable also if there is only one node in the priqueue) 
 		//REMEMBER: the new priority should be higher and this must be checked in the Scheduler Class 
-		if (Phead->getItem() == data)
+		int x;
+		if (Phead->getItem(x) == data)
 		{
-			Phead->Pri = newPriority;
+			Phead->setItem(Phead->getItem(x), newPriority);
 			return true;
 		}
 
 		// remove this node from the priority queue and store it in a temporary node
-		priNode<T>* current = this->Phead->getNext();
-		priNode<T>* prev = this->Phead;
-		priNode<T>* temp = nullptr;
+		priNode<Patient*>* current = Phead->getNext();
+		priNode<Patient*>* prev = Phead;
+		priNode<Patient*>* temp = nullptr;
 
 		while (current)
 		{
-			if (current->getItem() == data)
+			if (current->getItem(x) == data)
 			{
 				prev->setNext(current->getNext());
 				temp = current;
@@ -49,8 +50,8 @@ public:
 
 		if (temp)
 		{
-			temp->pri = newPriority;
-			enqueue(temp->getItem(), temp->getPri());
+			temp->setItem(temp->getItem(x), newPriority);
+			enqueue(temp->getItem(x), temp->getPri());
 			delete temp; //Memory save :)
 			return true;
 		}
