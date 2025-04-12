@@ -67,7 +67,7 @@
     <ClInclude Include="EU_WaitList.h">
       <Filter>Header Files\Classes</Filter>
     </ClInclude>
-    <ClInclude Include="Schedular.h">
+    <ClInclude Include="Scheduler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

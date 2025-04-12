@@ -13,13 +13,16 @@ protected:
 	Resource_Type Type;
 	const int Id;
 	bool Availability;
+	//int capacity;
 
 public:
+	//Resource()
+	//{
+
+	//}
+
 	Resource(Resource_Type RT , int ID ) : Type(RT), Id(ID), Availability(1)
-	{
-		//Initializing Id here is random ? Only God Knows and Mo3eda (Maybe)
-		// No Need for setters for Type & ID
-	}
+	{}
 
 	Resource_Type Get_Type()
 	{
