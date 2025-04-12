@@ -10,7 +10,9 @@ protected:
 public:
 	Treatment()
 	{
-
+		Duration = 0;
+		AssignmentTime = 0;
+		AssignedResource = nullptr;
 	}
 
 	virtual bool CanAssign() {};
@@ -20,6 +22,11 @@ public:
 	int GetDuration()
 	{
 		return Duration;
+	}
+
+	void Set_Duration(int t)
+	{
+		Duration = t;
 	}
 };
 

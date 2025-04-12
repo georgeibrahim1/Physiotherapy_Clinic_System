@@ -134,7 +134,7 @@
     <ClInclude Include="ArrayStack.h" />
     <ClInclude Include="EU_WaitList.h" />
     <ClInclude Include="E_Treatment.h" />
-    <ClInclude Include="Schedular.h" />
+    <ClInclude Include="Scheduler.h" />
     <ClInclude Include="U_Treatment.h" />
     <ClInclude Include="X_Treatment.h" />
     <ClInclude Include="X_WaitList.h" />
