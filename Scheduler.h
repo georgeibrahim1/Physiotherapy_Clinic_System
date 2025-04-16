@@ -8,6 +8,7 @@
 #include "X_WaitList.h"
 #include "Resource.h"
 #include "ArrayStack.h"
+#include "X_Resource.h"
 #include <fstream>
 
 class Scheduler
@@ -70,14 +71,11 @@ public:
 
             for (int i = 0; i < Num_X_Rooms; i++)
             {
-                ResX[i] = new Resource(Ultrasound_Device, i);
-                //TODO : set the capacity for each room
+                ResX[i] = new X_Resource(Ultrasound_Device, i,Capacities[i]);
                 X_Rooms.enqueue(ResX[i]);
             }
 
             MyFile >> Pcancel >> Presc;
-
-            //TODO : PCANCEL , Presc 
 
             MyFile >> Num_Patients;
 

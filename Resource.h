@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+using namespace std;
 
 enum Resource_Type
 {
@@ -13,13 +15,8 @@ protected:
 	Resource_Type Type;
 	const int Id;
 	bool Availability;
-	//int capacity;
 
 public:
-	//Resource()
-	//{
-
-	//}
 
 	Resource(Resource_Type RT , int ID ) : Type(RT), Id(ID), Availability(1)
 	{}
@@ -44,5 +41,15 @@ public:
 		return Availability;
 	}
 
-
+	void Print()
+	{
+		if (Type == Electro_Device)
+		{
+			cout << Id;
+		}
+		else if (Type == Ultrasound_Device)
+		{
+			cout << Id;
+		}
+	}
 };
