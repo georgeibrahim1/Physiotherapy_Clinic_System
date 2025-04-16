@@ -63,6 +63,11 @@ public:
 		return VT;
 	}
 
+	int getID()
+	{
+		return ID;
+	}
+
 	P_Status getStatue()
 	{
 		return Status;
@@ -93,6 +98,12 @@ public:
 	{
 		return CurrTreatment;
 	}
+
+	LinkedQueue<Treatment*> Get_reqtreatmentlist()
+	{
+		return ReqTreatmentList;
+	}
+
 
 	void Print()
 	{

@@ -188,6 +188,26 @@ public:
                 In_Treatment_List.dequeue(temp,priority);
                 Finished_Patients.push(temp);
             }
+            else if (Random_Assign >= 60 && Random_Assign < 70)
+            {
+                bool canceled = false;
+                canceled = X_Waiting_Patients.cancel(temp);
+                if (canceled)
+                {
+                    Finished_Patients.push(temp);
+                    cout << "Cancel Operation Succesful for Patient " << temp->getID() << endl;
+                }
+            }
+            else if (Random_Assign >= 70 && Random_Assign < 80)
+            {
+                bool reschedule = false;
+                reschedule = Early_Patients.reschedule(temp, priority);
+                if (reschedule)
+                {
+                    Early_Patients.enqueue(temp, priority);
+                    cout << "Cancel Operation Succesful for Patient " << temp->getID() << endl;
+                }
+            }
         }
     }
 

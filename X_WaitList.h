@@ -9,59 +9,55 @@ class X_WaitList : public EU_WaitList
 public:
 	X_WaitList() {}
 
-	bool cancel(const Patient* to_delete);
+	bool cancel(Patient*& to_delete);
 
 	~X_WaitList() {}
 };
 
-bool X_WaitList ::cancel(const Patient* to_delete)
+bool X_WaitList::cancel(Patient*& to_delete)
 {
-	//test
-	//loop to search for the patient to remove
-	//delete this node then connect previous node to next
-	//make a temp pointer to that node and enqueue it to finish list
-	Node<Patient*>* curr = this->frontPtr;
-	Node<Patient*>* prev = this->frontPtr;
-	Node<Patient*>* chosen = nullptr;
-	if (LinkedQueue <Patient*> ::isEmpty())
-		return false;
-	// corner case : first node is the one to cancel
-	if (curr->getItem() == to_delete)
+
+	////for (int i = 0; i < (this->getCount() * 3); i++) // loop multiple times with different index
 	{
-		if (!(curr->getNext()))
+		srand(time(0));
+		////int to_cancel = rand() % this->getCount();
+
+		//loop to search for the patient to remove
+		//delete this node then connect previous node to next
+		//make a temp pointer to that node and enqueue it to finish list
+
+
+		Node<Patient*>* curr = this->frontPtr;
+		Node<Patient*>* prev = this->frontPtr;
+
+		if (LinkedQueue <Patient*> ::isEmpty())
+			return false;
+
+		////for (int j = 0; j < to_cancel; j++)
 		{
-			chosen = curr;
-			curr = nullptr;
-			prev = nullptr;
-			this->frontPtr = nullptr;
-			return true;
-		}
-		else
-		{
-			chosen = curr;
 			curr = curr->getNext();
-			this->frontPtr = curr;
-			prev = curr;
-			return true;
 		}
-	}
-	// move current pointer forward
-	curr = curr->getNext();
-	while (curr)
-	{
-		if (curr->getItem() == to_delete)
-		{
-			chosen = curr;
-			curr = curr->getNext();
-			prev->setNext(curr);
-			chosen->setNext(nullptr);
-			return true;
-		}
-		else
+		////for (int j = 0; j < to_cancel - 1; j++)
 		{
 			prev = prev->getNext();
-			curr = curr->getNext();
+		}
+
+
+		////if (curr->getItem()->Get_reqtreatmentlist().getCount() == 1) // If the count of remaining treatments is one, then X_exercise is the last treatment for sure.
+		{
+			if (!(prev == this->frontPtr))
+				prev->setNext(curr->getNext());
+			else
+				this->frontPtr = curr->getNext();
+			to_delete = curr->getItem();
+		////	Count--;
+			delete curr;
+			return true;
 		}
 	}
+	return false;
 	//After deleting the patient, he should be moved to the finish list(push(dataentry))
+	// after deleting, you should decrment count
+
+
 }
