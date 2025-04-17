@@ -83,9 +83,10 @@ public:
 		Type = T;
 	}
 
-	void Enqueue_ReqTreatment(Treatment* treatment , int d )
+	void Enqueue_ReqTreatment(Treatment* treatment , int d,char type )
 	{
 		treatment->Set_Duration(d);
+		treatment->set_type(type);
 		ReqTreatmentList.enqueue(treatment);
 	}
 
@@ -104,6 +105,10 @@ public:
 		return ReqTreatmentList;
 	}
 
+	int Get_reqtreatmentlistcount()
+	{
+		return ReqTreatmentList.getcount();
+	}
 
 	void Print()
 	{

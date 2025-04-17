@@ -65,7 +65,7 @@ public :
 	bool enqueue(const T& newEntry);
 	bool dequeue(T& frntEntry);  
 	bool peek(T& frntEntry)  const;
-	int getcount() const;
+	int getcount();
 	void setcount(int c);
 	void PrintAllList();
 	void Print_Avail_EU_Resources();
@@ -97,7 +97,7 @@ void LinkedQueue<T>::setcount(int c)
 }
 
 template <typename T>
-int LinkedQueue<T>::getcount()const
+int LinkedQueue<T>::getcount()
 {
 	return count;
 }

@@ -26,7 +26,7 @@ bool X_WaitList::cancel(Patient*& to_delete)
 		//delete this node then connect previous node to next
 		//make a temp pointer to that node and enqueue it to finish list
 
-
+		             
 		Node<Patient*>* curr = this->frontPtr;
 		Node<Patient*>* prev = this->frontPtr;
 
@@ -42,8 +42,9 @@ bool X_WaitList::cancel(Patient*& to_delete)
 			prev = prev->getNext();
 		}
 
-
-		if (curr->getItem()->Get_reqtreatmentlist().getcount() == 1) // If the count of remaining treatments is one, then X_exercise is the last treatment for sure.
+		Treatment* x;
+		curr->getItem()->Get_reqtreatmentlist().peek(x);
+		if (curr->getItem()->Get_reqtreatmentlistcount() == 1 && x->get_type() == 'X')   // If the count of remaining treatments is one, then X_exercise is the last treatment for sure.
 		{
 			if (!(prev == this->frontPtr))
 				prev->setNext(curr->getNext());
@@ -61,4 +62,4 @@ bool X_WaitList::cancel(Patient*& to_delete)
 	// after deleting, you should decrment count
 
 
-}
+}              

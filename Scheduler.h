@@ -123,17 +123,17 @@ public:
                     if(R == 'E')
                     {
                         Treatment* P_Treatment = new Treatment();
-                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment , Time);
+                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment , Time,'E');
                     }
                     else if(R == 'U')
                     {
                         Treatment* P_Treatment = new Treatment();
-                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time);
+                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time,'U');
                     }
                     else if(R == 'X')
                     {
                         Treatment* P_Treatment = new Treatment();
-                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time);
+                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time,'X');
                     }
                 }
 
@@ -198,7 +198,7 @@ public:
 
                 //if (Check_All_List())
                 Check_All_List();
-                
+                       
                     srand(time(0));
                     int Random_Assign = generateRandomNumber(0,100,rand());    // Random no. from [0,100]
                     if (Random_Assign < 10)
