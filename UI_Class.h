@@ -27,13 +27,19 @@ public:
         cout << "E-therapy Patients: ";
         E_Waiting_Patients.PrintAllList();
 
+        cout << endl;
+
         cout << U_Waiting_Patients.getcount() << " ";
         cout << "U-therapy Patients: ";
         U_Waiting_Patients.PrintAllList();
 
+        cout << endl;
+
         cout << X_Waiting_Patients.getcount() << " ";
         cout << "X-therapy Patients: ";
         X_Waiting_Patients.PrintAllList();
+
+        cout << endl;
 
         cout << "=============== Early List ===============\n";
         cout << Early_Patients.getcount() << " ";
@@ -45,7 +51,7 @@ public:
         cout << "Patients: ";
         Late_Patients.Print();
 
-        cout << "=============== Avail E-Devices ===============\n";
+        cout << "\n=============== Avail E-Devices ===============\n";
         cout << E_Devices.getcount() << " ";
         cout << "Electro Devices: ";
         E_Devices.Print_Avail_EU_Resources();
@@ -68,7 +74,7 @@ public:
         E_Devices.peek(x);
         cout << x->Get_Id();
 
-        cout << "======================================\n";
+        cout << "\n======================================\n";
         cout << Finished_Patients.getCount() << " ";
         cout << "Finished Patients: ";
         Finished_Patients.Print();

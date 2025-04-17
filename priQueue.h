@@ -74,11 +74,12 @@ public:
     {
         if (isEmpty()) return;
 
-        priNode<Patient*>* current = head;
+        priNode<T>* current = head;
 
         while (current)
         {
-            Patient* patient = current->getItem();
+            int x;
+            T patient = current->getItem(x);
 
             if (patient)
             {

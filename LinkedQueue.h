@@ -1,4 +1,4 @@
-
+#pragma once
 /*
 This is a program that implements the queue abstract data type using a linked list.
 The queue is implemented as a chain of linked nodes that has two pointers, 
@@ -102,12 +102,11 @@ LinkedQueue<T>::LinkedQueue()
 
 }
 
-template <>
-inline void LinkedQueue<Patient*>::PrintAllList()
+template <typename T>
+void LinkedQueue<T>::PrintAllList()
 {
 	if (isEmpty()) return;
-
-	Node<Patient*>* current = frontPtr;
+	Node<T>* current = frontPtr;
 	int printed = 0;
 
 	if (count > 10)
@@ -115,7 +114,7 @@ inline void LinkedQueue<Patient*>::PrintAllList()
 		// Print only the first 10 patients
 		while (current && printed < 10)
 		{
-			Patient* patient;
+			T patient;
 			patient = current->getItem();
 
 			if (patient)
@@ -135,7 +134,7 @@ inline void LinkedQueue<Patient*>::PrintAllList()
 		// Print all patients
 		while (current)
 		{
-			Patient* patient;
+			T patient;
 			patient = current->getItem();
 
 			if (patient)
@@ -150,16 +149,16 @@ inline void LinkedQueue<Patient*>::PrintAllList()
 	}
 }
 
-template <>
-inline void LinkedQueue<Resource*>::Print_Avail_EU_Resources()
+template <typename T>
+void LinkedQueue<T>::Print_Avail_EU_Resources()
 {
 	if (isEmpty()) return;
 
-	Node<Resource*>* current = frontPtr;
+	Node<T>* current = frontPtr;
 
 	while (current)
 	{
-		Resource* resource;
+		T resource;
 		resource = current->getItem();
 
 		if (resource)
@@ -176,16 +175,16 @@ inline void LinkedQueue<Resource*>::Print_Avail_EU_Resources()
 	cout << "\n";
 }
 
-template <>
-inline void LinkedQueue<X_Resource*>::Print_Avail_X_Resources()
+template <typename T>
+void LinkedQueue<T>::Print_Avail_X_Resources()
 {
 	if (isEmpty()) return;
 
-	Node<X_Resource*>* current = frontPtr;
+	Node<T>* current = frontPtr;
 
 	while (current)
 	{
-		X_Resource* resource;
+		T resource;
 		resource = current->getItem();
 
 		if (resource)

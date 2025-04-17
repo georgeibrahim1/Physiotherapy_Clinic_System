@@ -11,7 +11,7 @@ int main()
 
     while (true)
     {
-        cout << "\n===== Timestep " << timestep << " =====" << endl;
+        cout << "\nTimestep :" << timestep << endl;
 
         Maestro.Simulate();
 
