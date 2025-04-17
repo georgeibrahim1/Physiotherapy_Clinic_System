@@ -65,7 +65,7 @@ public:
         return head == nullptr;
     }
 
-    int getcount()
+    int getcount() const
     {
         return count;
     }

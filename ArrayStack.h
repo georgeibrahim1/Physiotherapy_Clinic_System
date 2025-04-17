@@ -19,14 +19,13 @@ protected:
 
 	T items[MAX_SIZE];		// Array of stack items
 	int top;                   // Index to top of stack
-	int count;
+	                           // count = top + 1  ya george
 	
 public:
 
 	ArrayStack()
 	{
 		top = -1;
-		count = 0;
 	}  // end default constructor
 
 	bool isEmpty() const
@@ -39,7 +38,6 @@ public:
 		if( top == MAX_SIZE-1 ) return false;	//Stack is FULL
 
 		top++;
-		count++;
 		items[top] = newEntry;   
 		return true;
 	}  // end push
@@ -50,7 +48,6 @@ public:
 		
 		TopEntry = items[top];		 
 		top--;
-		count--;
 		return true;
 	}  // end pop
 	
@@ -64,7 +61,7 @@ public:
 
 	int getCount()
 	{
-		return count;
+		return top + 1;
 	}
 
 	void Print();

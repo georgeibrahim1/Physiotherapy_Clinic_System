@@ -11,10 +11,7 @@ public:
 	{
 		bool r = LinkedQueue <Patient*>::enqueue(newEntry);
 		if (r)
-		{
 			TreatmentLatency = TreatmentLatency + newEntry->GetCurrTreatment()->GetDuration();
-			count++;
-		}
 		return r;
 	}
 
@@ -22,16 +19,13 @@ public:
 	{
 		bool r = LinkedQueue <Patient*>::dequeue(frntEntry);
 		if (r)
-		{
 			TreatmentLatency = TreatmentLatency - frntEntry->GetCurrTreatment()->GetDuration();
-			count--;
-		}
 		return r;
 	}
 
 	bool InsertSorted(Patient*& newEntry, int SortingValue)
 	{
-		bool r;
+		bool r = false;
 		/*
 		Node<T*> newnodePtr = new Node<T>(newEntry);
 		Node<T*> curr;
@@ -69,11 +63,15 @@ public:
 			curr->setNext(newnodePtr);
 			if (currnext == nullptr)
 				backPtr = newnodePtr;
+			r = true;
 			
 		}
 		if (r)
+		{
 			TreatmentLatency = TreatmentLatency + newEntry->GetCurrTreatment()->GetDuration();
-		return true;
+			count++;
+		}
+		return r;
 
 	}
 

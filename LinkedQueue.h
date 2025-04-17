@@ -53,10 +53,11 @@ using namespace std;
 template <typename T>
 class LinkedQueue:public QueueADT<T>
 {
-protected :
-	int count;
+protected :	
 	Node<T>* backPtr;
 	Node<T>* frontPtr;
+	int count;
+
 public :
 	LinkedQueue();	
 	bool isEmpty() const ;
@@ -80,6 +81,13 @@ Function: Queue()
 The constructor of the Queue class.
 
 */
+template <typename T>
+LinkedQueue<T>::LinkedQueue()
+{
+	backPtr = nullptr;
+	frontPtr = nullptr;
+	count = 0;
+}
 
 template <typename T>
 void LinkedQueue<T>::setcount(int c)
