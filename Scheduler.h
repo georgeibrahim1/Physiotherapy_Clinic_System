@@ -54,7 +54,7 @@ public:
         return dist(engine);
     }
 
-    void File_Loading_Function()
+    void File_Loading_Function(string s)
     {
         int Num_E_Devices;
         int Num_U_Devices;
@@ -63,7 +63,7 @@ public:
         int Presc;
         int Num_Patients;
 
-        ifstream MyFile("pierre2.txt");//we can add the text name as a parameter in the function
+        ifstream MyFile(s);//we can add the text name as a parameter in the function
 
         if (MyFile.is_open())
         {
@@ -189,7 +189,8 @@ public:
             Patient* temp = nullptr;
             int priority; // Dummy Variable
             bool check=false;
-            File_Loading_Function();
+            string inputfile = UI_Class::ReadInput();
+            File_Loading_Function(inputfile);
             timestep = 0;
             int NumAllPatients = All_Patients.getcount();
             while(Finished_Patients.getCount() != NumAllPatients)
@@ -241,7 +242,7 @@ public:
                     else if (Random_Assign >= 70 && Random_Assign < 80)
                     {
                         srand(time(0));
-                        int newPriority = generateRandomNumber(0, 1000, rand());
+                        int newPriority = -(timestep + generateRandomNumber(1, 100, rand()));
                         check = Early_Patients.reschedule(newPriority);
                         if (check)
                         {

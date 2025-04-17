@@ -28,7 +28,7 @@ bool X_WaitList::cancel(Patient*& to_delete)
 
 		             
 		Node<Patient*>* curr = this->frontPtr;
-		Node<Patient*>* prev = this->frontPtr;
+		Node<Patient*>* prev = this->frontPtr;   
 
 		if (LinkedQueue <Patient*> ::isEmpty())
 			return false;
@@ -46,12 +46,12 @@ bool X_WaitList::cancel(Patient*& to_delete)
 		curr->getItem()->Get_reqtreatmentlist().peek(x);
 		if (curr->getItem()->Get_reqtreatmentlistcount() == 1 && x->get_type() == 'X')   // If the count of remaining treatments is one, then X_exercise is the last treatment for sure.
 		{
-			if (!(prev == this->frontPtr))
+			if (!(curr == this->frontPtr))
 				prev->setNext(curr->getNext());
 			else
 				this->frontPtr = curr->getNext();
 			to_delete = curr->getItem();
-			this->setcount(-1);
+			count--;
 			delete curr;
 			
 			return true;

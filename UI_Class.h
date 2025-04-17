@@ -3,9 +3,10 @@
 class UI_Class
 {
 public:
-    string ReadInput()
+    static string ReadInput()
     {
         string s;
+        cout << "Type in File Name : ";   
         cin >> s;
         return s;
     }
