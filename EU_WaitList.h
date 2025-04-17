@@ -5,7 +5,10 @@ class EU_WaitList : public LinkedQueue <Patient*>
 protected:
 	int TreatmentLatency;
 public:
-	EU_WaitList() {}
+	EU_WaitList() 
+	{
+		TreatmentLatency = 0;
+	}
 	~EU_WaitList() {}
 	bool enqueue(Patient*& newEntry)
 	{

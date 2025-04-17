@@ -27,6 +27,7 @@ public:
             
             newNode->setNext(head);
             head = newNode;
+            count++;
             return;
         }
        

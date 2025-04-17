@@ -76,7 +76,7 @@ public:
 
             for (int i = 0; i < Num_X_Rooms; i++)
             {
-                ResX[i] = new X_Resource(Ultrasound_Device, i,Capacities[i]);
+                ResX[i] = new X_Resource(Room, i,Capacities[i]);
                 X_Rooms.enqueue(ResX[i]);
             }
 
@@ -204,7 +204,7 @@ public:
                     if (check)
                     {
                         Finished_Patients.push(temp);
-                        cout << "Cancel Operation Succesful for Patient " << temp->getID() << endl;
+                        cout << "Cancel Operation Succesful for Patient " << endl;
                     }
                 }
                 else if (Random_Assign >= 70 && Random_Assign < 80)

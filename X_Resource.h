@@ -28,8 +28,9 @@ public:
 		}
 	}
 
-	void Print()
+	virtual void Print() const
 	{
+		
 		cout << "R" << Id << "[" << Num_Of_Patients << "," << Capacity << "]";
 	}
 

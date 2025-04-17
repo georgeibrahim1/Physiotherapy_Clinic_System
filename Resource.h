@@ -41,15 +41,15 @@ public:
 		return Availability;
 	}
 
-	void Print()
+	virtual void Print() const
 	{
-		if (Type == Electro_Device)
-		{
+		//if (Type == Electro_Device)
+		//{
 			cout << Id;
-		}
-		else if (Type == Ultrasound_Device)
-		{
-			cout << Id;
-		}
+		//}
+	//	else if (Type == Ultrasound_Device)
+		//{
+			//cout << Id;
+		//}
 	}
 };

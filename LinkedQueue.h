@@ -1,4 +1,5 @@
 #pragma once
+//#include <typeinfo> used this to debug
 /*
 This is a program that implements the queue abstract data type using a linked list.
 The queue is implemented as a chain of linked nodes that has two pointers, 
@@ -184,11 +185,14 @@ void LinkedQueue<T>::Print_Avail_X_Resources()
 
 	while (current)
 	{
+		/*T resource;
+		resource = current->getItem();*/
 		T resource;
 		resource = current->getItem();
 
 		if (resource)
 		{
+			//cout << "TYPE: " << typeid(*resource).name() << endl; we used this to debug
 			resource->Print();
 
 			if (current->getNext())
