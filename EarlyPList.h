@@ -32,7 +32,7 @@ public:
 			int oldPriority;
 			Patient* patient = current->getItem(oldPriority);
 
-			if (newPriority > oldPriority)
+			if (newPriority < oldPriority)
 			{
 				if (prev)
 					prev->setNext(current->getNext());

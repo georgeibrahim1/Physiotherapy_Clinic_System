@@ -242,7 +242,7 @@ public:
                     else if (Random_Assign >= 70 && Random_Assign < 80)
                     {
                         srand(time(0));
-                        int newPriority = -(timestep + generateRandomNumber(1, 100, rand()));
+                        int newPriority = -(generateRandomNumber(1, 100, rand()));
                         check = Early_Patients.reschedule(newPriority);
                         if (check)
                         {
