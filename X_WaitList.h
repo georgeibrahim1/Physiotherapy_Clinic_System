@@ -20,8 +20,8 @@ bool X_WaitList::cancel(Patient*& to_delete)
 	for (int i = 0; i < (this->getcount() * 3); i++) // loop multiple times with different index
 	{
 		srand(time(0));
-		int to_cancel = rand() % this->getcount();
 
+		int to_cancel = rand() % this->getcount();
 		//loop to search for the patient to remove
 		//delete this node then connect previous node to next
 		//make a temp pointer to that node and enqueue it to finish list
@@ -52,6 +52,7 @@ bool X_WaitList::cancel(Patient*& to_delete)
 			to_delete = curr->getItem();
 			this->setcount(-1);
 			delete curr;
+			
 			return true;
 		}
 	}

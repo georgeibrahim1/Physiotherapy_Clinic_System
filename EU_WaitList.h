@@ -14,7 +14,11 @@ public:
 	{
 		bool r = LinkedQueue <Patient*>::enqueue(newEntry);
 		if (r)
-			TreatmentLatency = TreatmentLatency + newEntry->GetCurrTreatment()->GetDuration();
+		{
+			Treatment* curr;
+			newEntry->Get_reqtreatmentlist().peek(curr);
+			TreatmentLatency = TreatmentLatency + curr->GetDuration();
+		}
 		return r;
 	}
 
@@ -22,7 +26,11 @@ public:
 	{
 		bool r = LinkedQueue <Patient*>::dequeue(frntEntry);
 		if (r)
-			TreatmentLatency = TreatmentLatency - frntEntry->GetCurrTreatment()->GetDuration();
+		{
+			Treatment* curr;
+			frntEntry->Get_reqtreatmentlist().peek(curr);
+			TreatmentLatency = TreatmentLatency - curr->GetDuration();
+		}
 		return r;
 	}
 
@@ -71,7 +79,9 @@ public:
 		}
 		if (r)
 		{
-			TreatmentLatency = TreatmentLatency + newEntry->GetCurrTreatment()->GetDuration();
+			Treatment* curr;
+			newEntry->Get_reqtreatmentlist().peek(curr);
+			TreatmentLatency = TreatmentLatency + curr->GetDuration();
 			count++;
 		}
 		return r;

@@ -11,6 +11,9 @@
 #include "X_Resource.h"
 #include "UI_Class.h" 
 #include <fstream>
+#include <conio.h>
+#include <random>
+
 
 class Scheduler
 {
@@ -27,12 +30,28 @@ protected:
     LinkedQueue<Resource*> X_Rooms;
     priQueue<Patient*> In_Treatment_List;
     ArrayStack<Patient*> Finished_Patients;
+    int timestep;
 
 public:
 
     Scheduler()
     {
-        srand(time(0));
+        //srand(time(0));
+    }
+    int getRandomNumber(int min = 0, int max = 100)
+    {
+        static std::mt19937 rng(42); // Fixed seed for reproducibility
+        std::uniform_int_distribution<int> dist(min, max);
+        return dist(rng);
+    }
+
+
+ 
+    int generateRandomNumber(int min, int max, unsigned int seed = 42)
+    {
+        static std::mt19937 engine(seed); // Mersenne Twister engine with fixed seed
+        std::uniform_int_distribution<int> dist(min, max);
+        return dist(engine);
     }
 
     void File_Loading_Function()
@@ -44,7 +63,7 @@ public:
         int Presc;
         int Num_Patients;
 
-        ifstream MyFile("test.txt");//we can add the text name as a parameter in the function
+        ifstream MyFile("pierre2.txt");//we can add the text name as a parameter in the function
 
         if (MyFile.is_open())
         {
@@ -133,31 +152,36 @@ public:
         bool Check_All_List()
         {
             Patient* temp;
-
+            bool r = false;
             if (!All_Patients.peek(temp))
             {
                 return false;
             }
-            if (temp->getPT() > temp->getVT()) //early
+            while (All_Patients.peek(temp) && timestep == temp->getVT())
             {
-                All_Patients.dequeue(temp);
-                Early_Patients.enqueue(temp, - temp->getPT());// Sorted by PT
-                return true;
-                //Done : to EarlyPList after merging the branches
+                
+                if (temp->getPT() > temp->getVT()) //early
+                {
+                    All_Patients.dequeue(temp);
+                    Early_Patients.enqueue(temp, -temp->getPT());// Sorted by PT
+                    r = true;
+                    //Done : to EarlyPList after merging the branches
+                }
+                else if (temp->getPT() < temp->getVT()) //late
+                {
+                    All_Patients.dequeue(temp);
+                    Late_Patients.enqueue(temp, -(temp->getVT() + Late_Penalty(temp))); // Sorted by VT+Penalty
+                    r = true;
+                }
+                else // Move to Waiting List 
+                {
+                    All_Patients.dequeue(temp);
+                    Random_Waiting_List_Enqueue(temp, 0);
+                    r = true;
+                }
+               // All_Patients.peek(temp);
             }
-            else if (temp->getPT() < temp->getVT()) //late
-            {
-                All_Patients.dequeue(temp);
-                Late_Patients.enqueue(temp, -(temp->getVT() + Late_Penalty(temp))); // Sorted by VT+Penalty
-                return true;
-            }
-            else // Move to Waiting List 
-            {
-                All_Patients.dequeue(temp);
-                Random_Waiting_List_Enqueue(temp, 0);
-                return true;
-            }
-            return false;
+            return r;
         }
 
         void Simulate()
@@ -166,60 +190,85 @@ public:
             int priority; // Dummy Variable
             bool check=false;
             File_Loading_Function();
-            if (Check_All_List())
+            timestep = 0;
+            int NumAllPatients = All_Patients.getcount();
+            while(Finished_Patients.getCount() != NumAllPatients)
             {
+                cout << "\nTimestep :" << timestep << endl;
+
+                //if (Check_All_List())
+                Check_All_List();
                 
-                int Random_Assign = rand() % 101;    // Random no. from [0,100]
-                if (Random_Assign < 10)
-                {
-                    check = Early_Patients.dequeue(temp,priority);
-                    if(check)
-                        Random_Waiting_List_Enqueue(temp, 0);
-                }
-                else if (Random_Assign >= 10 && Random_Assign < 20)
-                {
-                    check = Late_Patients.dequeue(temp, priority);
-                    if(check)
-                        Random_Waiting_List_Enqueue(temp, temp->getPT() + Late_Penalty(temp)); // Sorted by PT+Penalty
-                }
-                else if (Random_Assign >= 20 && Random_Assign < 40)
-                {
-                    Dequeue_Twice(temp);
-                }
-                else if (Random_Assign >= 40 && Random_Assign < 50)
-                {
-                    check = In_Treatment_List.dequeue(temp, priority);
-                    if(check)
-                        Random_Waiting_List_Enqueue(temp, temp->getPT()); // Sorted by PT 
-                }
-                else if (Random_Assign >= 50 && Random_Assign < 60)
-                {
-                    check = In_Treatment_List.dequeue(temp,priority);
-                    if(check)
-                        Finished_Patients.push(temp);
-                }
-                else if (Random_Assign >= 60 && Random_Assign < 70)
-                {
-                    check = X_Waiting_Patients.cancel(temp);
-                    if (check)
+                    srand(time(0));
+                    int Random_Assign = generateRandomNumber(0,100,rand());    // Random no. from [0,100]
+                    if (Random_Assign < 10)
                     {
-                        Finished_Patients.push(temp);
-                        cout << "Cancel Operation Succesful for Patient " << endl;
+                        check = Early_Patients.dequeue(temp, priority);
+                        if (check)
+                            Random_Waiting_List_Enqueue(temp, 0);
                     }
-                }
-                else if (Random_Assign >= 70 && Random_Assign < 80)
-                {  
-                    int newPriority = rand() % 1000 ;
-                    check = Early_Patients.reschedule(newPriority);
-                    if (check)
+                    else if (Random_Assign >= 10 && Random_Assign < 20)
                     {
-                       // Early_Patients.enqueue(temp, priority);
-                        cout << "Reschedule Operation Succesful for Patient " << temp->getID() << endl;
+                        check = Late_Patients.dequeue(temp, priority);
+                        if (check)
+                            Random_Waiting_List_Enqueue(temp, temp->getPT() + Late_Penalty(temp)); // Sorted by PT+Penalty
                     }
-                }
+                    else if (Random_Assign >= 20 && Random_Assign < 40)
+                    {
+                        Dequeue_Twice(temp);
+                    }
+                    else if (Random_Assign >= 40 && Random_Assign < 50)
+                    {
+                        check = In_Treatment_List.dequeue(temp, priority);
+                        if (check)
+                            Random_Waiting_List_Enqueue(temp, temp->getPT()); // Sorted by PT 
+                    }
+                    else if (Random_Assign >= 50 && Random_Assign < 60)
+                    {
+                        check = In_Treatment_List.dequeue(temp, priority);
+                        if (check)
+                            Finished_Patients.push(temp);
+                    }
+                    else if (Random_Assign >= 60 && Random_Assign < 70)
+                    {
+                        check = X_Waiting_Patients.cancel(temp);
+                        if (check)
+                        {
+                            Finished_Patients.push(temp);
+                            cout << "Cancel Operation Succesful for Patient " << endl;
+                        }
+                    }
+                    else if (Random_Assign >= 70 && Random_Assign < 80)
+                    {
+                        srand(time(0));
+                        int newPriority = generateRandomNumber(0, 1000, rand());
+                        check = Early_Patients.reschedule(newPriority);
+                        if (check)
+                        {
+                            // Early_Patients.enqueue(temp, priority);
+                            cout << "Reschedule Operation Succesful for Patient " << endl;
+                        }
+                    }
+                
+                UI_Class::PrintOutputScreen(
+                    All_Patients,
+                    Early_Patients,
+                    Late_Patients,
+                    U_Waiting_Patients,
+                    E_Waiting_Patients,
+                    X_Waiting_Patients,
+                    E_Devices,
+                    U_Devices,
+                    X_Rooms,
+                    In_Treatment_List,
+                    Finished_Patients
+                );
+                cout << "\nPress any key to proceed to the next timestep..." << endl;
+                _getch();  // Waits for a keypress
+                    timestep++;
             }
 
-            UI_Class::PrintOutputScreen(
+           /* UI_Class::PrintOutputScreen(
                 All_Patients,
                 Early_Patients,
                 Late_Patients,
@@ -231,7 +280,7 @@ public:
                 X_Rooms,
                 In_Treatment_List,
                 Finished_Patients
-            );
+            );*/
         
         }
 
@@ -244,8 +293,8 @@ public:
    
         void Random_Waiting_List_Enqueue(Patient* temp,int priority_of_LatePatient)  // Priority matters when assigning a late patient otherwise "priority = 0" 
         {                                                                             
-            
-            int Random_Waiting = rand() % 101;    // Random no. from [0,100]
+            //srand(time(0));
+            int Random_Waiting = generateRandomNumber(0, 100, rand());    // Random no. from [0,100]
             if (Random_Waiting < 33)              // Assign to E Waiting List
             {
                 if (!priority_of_LatePatient)                // Checks if late patient 
@@ -274,14 +323,19 @@ public:
         void Dequeue_Twice(Patient* temp)
         {
             bool check = false;
-            int Random_Waiting = rand() % 101;    // Random no. from [0,100]
+            srand(time(0));
+            int Random_Waiting = generateRandomNumber(0, 100, rand());    // Random no. from [0,100]
             if (Random_Waiting < 33)              // Assign to E Waiting List
             {
                 for (int i = 0; i < 2; i++)
                 {
                     check = E_Waiting_Patients.dequeue(temp);
                     if (check)
-                        In_Treatment_List.enqueue(temp, -temp->GetCurrTreatment()->GetDuration());
+                    {
+                        Treatment* x;
+                        temp->Get_reqtreatmentlist().peek(x);
+                        In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
+                    }
                 }
             }
             else if (Random_Waiting < 66)         // Assign to U Waiting List
@@ -290,7 +344,11 @@ public:
                 {
                     check = U_Waiting_Patients.dequeue(temp);
                     if (check)
-                        In_Treatment_List.enqueue(temp, -temp->GetCurrTreatment()->GetDuration());
+                    {
+                        Treatment* x;
+                        temp->Get_reqtreatmentlist().peek(x);
+                        In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
+                    }
                 }
             }
             else                                  // Assign to X Waiting List
@@ -299,7 +357,11 @@ public:
                 {
                     check = X_Waiting_Patients.dequeue(temp);
                     if (check)
-                        In_Treatment_List.enqueue(temp, -temp->GetCurrTreatment()->GetDuration());
+                    {
+                        Treatment* x;
+                        temp->Get_reqtreatmentlist().peek(x);
+                        In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
+                    }
                 }
             }
         }

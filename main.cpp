@@ -7,19 +7,17 @@
 int main()
 {
     Scheduler Maestro;
-    int timestep = 0;
 
-    while (true)
-    {
-        cout << "\nTimestep :" << timestep << endl;
+    /*while (true)
+    {*/
+        //cout << "\nTimestep :" << timestep << endl;
 
         Maestro.Simulate();
 
-        cout << "\nPress any key to proceed to the next timestep..." << endl;
-        _getch();  // Waits for a keypress
+       // cout << "\nPress any key to proceed to the next timestep..." << endl;
+       // _getch();  // Waits for a keypress
 
-        timestep++;
-    }
-
+        //timestep++;
+    
     return 0;
 }

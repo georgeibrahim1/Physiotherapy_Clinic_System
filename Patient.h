@@ -22,7 +22,7 @@ protected:
 	char Type; // N or R
 	LinkedQueue<Treatment*> ReqTreatmentList;
 	P_Status Status;
-	Treatment* CurrTreatment;// wasn't mentioned by TAs
+	//Treatment* CurrTreatment;// wasn't mentioned by TAs
 
 public:
 
@@ -89,7 +89,7 @@ public:
 		ReqTreatmentList.enqueue(treatment);
 	}
 
-	void SetCurrTreatment(Treatment* c)
+	/*void SetCurrTreatment(Treatment* c)
 	{
 		CurrTreatment = c;
 	}
@@ -97,7 +97,7 @@ public:
 	Treatment* GetCurrTreatment()
 	{
 		return CurrTreatment;
-	}
+	}*/
 
 	LinkedQueue<Treatment*> Get_reqtreatmentlist()
 	{

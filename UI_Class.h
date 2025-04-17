@@ -1,8 +1,14 @@
 #pragma once
-
+#include<string>
 class UI_Class
 {
 public:
+    string ReadInput()
+    {
+        string s;
+        cin >> s;
+        return s;
+    }
 
     static void PrintOutputScreen(
         LinkedQueue<Patient*>& All_Patients,
