@@ -125,7 +125,7 @@ public:
 		}
 		else if (Status == SERV)
 		{
-			cout << "P" << ID << "_" << "T#";
+			cout << "P" << ID << "_";
 		}
 		else if (Status == FNSH)
 		{

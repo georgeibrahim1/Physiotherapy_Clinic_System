@@ -17,10 +17,10 @@ public:
 bool X_WaitList::cancel(Patient*& to_delete)
 {
 
-	////for (int i = 0; i < (this->getCount() * 3); i++) // loop multiple times with different index
+	for (int i = 0; i < (this->getcount() * 3); i++) // loop multiple times with different index
 	{
 		srand(time(0));
-		////int to_cancel = rand() % this->getCount();
+		int to_cancel = rand() % this->getcount();
 
 		//loop to search for the patient to remove
 		//delete this node then connect previous node to next
@@ -33,24 +33,24 @@ bool X_WaitList::cancel(Patient*& to_delete)
 		if (LinkedQueue <Patient*> ::isEmpty())
 			return false;
 
-		////for (int j = 0; j < to_cancel; j++)
+		for (int j = 0; j < to_cancel; j++)
 		{
 			curr = curr->getNext();
 		}
-		////for (int j = 0; j < to_cancel - 1; j++)
+		for (int j = 0; j < to_cancel - 1; j++)
 		{
 			prev = prev->getNext();
 		}
 
 
-		////if (curr->getItem()->Get_reqtreatmentlist().getCount() == 1) // If the count of remaining treatments is one, then X_exercise is the last treatment for sure.
+		if (curr->getItem()->Get_reqtreatmentlist().getcount() == 1) // If the count of remaining treatments is one, then X_exercise is the last treatment for sure.
 		{
 			if (!(prev == this->frontPtr))
 				prev->setNext(curr->getNext());
 			else
 				this->frontPtr = curr->getNext();
 			to_delete = curr->getItem();
-		////	Count--;
+			this->setcount(-1);
 			delete curr;
 			return true;
 		}

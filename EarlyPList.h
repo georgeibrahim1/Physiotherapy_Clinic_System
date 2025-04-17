@@ -12,53 +12,47 @@ public:
 
 	~EarlyPList() {}
 
-	bool reschedule(const Patient* data, int newPriority)//const Patient& data changed
+	bool reschedule(int newPriority)
 	{
-		priNode<Patient*>* Phead = head;
-		if (isEmpty()) // No Nodes
-		{
-			return false;
-		}
+		if (isEmpty()) return false;
 
-		// If the Phead is the node to be rescheduled (Suitable also if there is only one node in the priqueue) 
-		//REMEMBER: the new priority should be higher and this must be checked in the Scheduler Class 
-		int x;
-		if (Phead->getItem(x) == data)
-		{
-			Phead->setItem(Phead->getItem(x), newPriority);
-			return true;
-		}
+		std::srand(std::time(nullptr));
 
-		// remove this node from the priority queue and store it in a temporary node
-		priNode<Patient*>* current = Phead->getNext();
-		priNode<Patient*>* prev = Phead;
-		priNode<Patient*>* temp = nullptr;
+		int randomIndex = std::rand() % count;
 
-		while (current)
-		{
-			if (current->getItem(x) == data)
-			{
-				prev->setNext(current->getNext());
-				temp = current;
-				temp->setNext(nullptr);
-				break;
-			}
-
+		priNode<Patient*>* current = head;
+		priNode<Patient*>* prev = nullptr;
+		for (int i = 0; i < randomIndex; ++i) {
 			prev = current;
 			current = current->getNext();
 		}
 
-		if (temp)
+		int oldPriority;
+		Patient* patient = current->getItem(oldPriority);
+
+		if (newPriority > oldPriority)
 		{
-			temp->setItem(temp->getItem(x), newPriority);
-			enqueue(temp->getItem(x), temp->getPri());
-			delete temp; //Memory save :)
+			if (prev)
+				prev->setNext(current->getNext());
+			else
+				head = current->getNext(); // it was head
+
+			current->setNext(nullptr);
+			count--;
+
+
+			current->setItem(patient, newPriority);
+			enqueue(patient, newPriority);
+
+			delete current;
+
 			return true;
 		}
 		else
 		{
 			return false;
 		}
+		
 	}
 };
 

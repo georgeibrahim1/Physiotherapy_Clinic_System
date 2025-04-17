@@ -43,7 +43,9 @@ Single Node Case:
 
 #include "Node.h"
 #include "QueueADT.h"
-
+#include "Patient.h"
+#include "Resource.h"
+#include "X_Resource.h"
 #include <iostream>
 using namespace std;
 
@@ -52,7 +54,7 @@ template <typename T>
 class LinkedQueue:public QueueADT<T>
 {
 protected :
-	
+	int count;
 	Node<T>* backPtr;
 	Node<T>* frontPtr;
 public :
@@ -60,7 +62,12 @@ public :
 	bool isEmpty() const ;
 	bool enqueue(const T& newEntry);
 	bool dequeue(T& frntEntry);  
-	bool peek(T& frntEntry)  const;	
+	bool peek(T& frntEntry)  const;
+	int getcount() const;
+	void setcount(int c);
+	void PrintAllList();
+	void Print_Avail_EU_Resources();
+	void Print_Avail_X_Resources();
 	~LinkedQueue();
 
 	//copy constructor
@@ -75,12 +82,126 @@ The constructor of the Queue class.
 */
 
 template <typename T>
+void LinkedQueue<T>::setcount(int c)
+{
+	count += c;
+}
+
+template <typename T>
+int LinkedQueue<T>::getcount()const
+{
+	return count;
+}
+
+template <typename T>
 LinkedQueue<T>::LinkedQueue()
 {
+	count = 0;
 	backPtr=nullptr;
 	frontPtr=nullptr;
 
 }
+
+template <>
+inline void LinkedQueue<Patient*>::PrintAllList()
+{
+	if (isEmpty()) return;
+
+	Node<Patient*>* current = frontPtr;
+	int printed = 0;
+
+	if (count > 10)
+	{
+		// Print only the first 10 patients
+		while (current && printed < 10)
+		{
+			Patient* patient;
+			patient = current->getItem();
+
+			if (patient)
+			{
+				patient->Print();
+				if (printed < 9) cout << ", ";
+			}
+
+			current = current->getNext();
+			printed++;
+		}
+
+		cout << ", ....." << endl;
+	}
+	else
+	{
+		// Print all patients
+		while (current)
+		{
+			Patient* patient;
+			patient = current->getItem();
+
+			if (patient)
+			{
+				patient->Print();
+				if (current->getNext()) cout << ", ";
+			}
+
+			current = current->getNext();
+		}
+		cout << "\n";
+	}
+}
+
+template <>
+inline void LinkedQueue<Resource*>::Print_Avail_EU_Resources()
+{
+	if (isEmpty()) return;
+
+	Node<Resource*>* current = frontPtr;
+
+	while (current)
+	{
+		Resource* resource;
+		resource = current->getItem();
+
+		if (resource)
+		{
+			resource->Print();
+
+			if (current->getNext())
+				cout << ", ";
+		}
+
+		current = current->getNext();
+	}
+
+	cout << "\n";
+}
+
+template <>
+inline void LinkedQueue<X_Resource*>::Print_Avail_X_Resources()
+{
+	if (isEmpty()) return;
+
+	Node<X_Resource*>* current = frontPtr;
+
+	while (current)
+	{
+		X_Resource* resource;
+		resource = current->getItem();
+
+		if (resource)
+		{
+			resource->Print();
+
+			if (current->getNext())
+				cout << ", ";
+		}
+
+		current = current->getNext();
+	}
+
+	cout << "\n";
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /*
@@ -116,6 +237,7 @@ bool LinkedQueue<T>::enqueue( const T& newEntry)
 		backPtr->setNext(newNodePtr); // The queue was not empty
 
 	backPtr = newNodePtr; // New node is the last node now
+	count++;
 	return true ;
 } // end enqueue
 
@@ -145,7 +267,7 @@ bool LinkedQueue<T>:: dequeue(T& frntEntry)
 		
 	// Free memory reserved for the dequeued node
 	delete nodeToDeletePtr;
-
+	count--;
 	return true;
 
 }

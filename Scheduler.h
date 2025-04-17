@@ -9,6 +9,7 @@
 #include "Resource.h"
 #include "ArrayStack.h"
 #include "X_Resource.h"
+#include "UI_Class.h" 
 #include <fstream>
 
 class Scheduler
@@ -39,7 +40,7 @@ public:
 
         int Num_Patients;
 
-        ifstream MyFile("filename.txt");//we can add the text name as a parameter in the function
+        ifstream MyFile("test.txt");//we can add the text name as a parameter in the function
 
         if (MyFile.is_open())
         {
@@ -136,7 +137,7 @@ public:
         if (temp->getPT() > temp->getVT()) //early
         {
             All_Patients.dequeue(temp);
-            Early_Patients.enqueue(temp, temp->getPT());// Sorted by PT
+            Early_Patients.enqueue(temp, - temp->getPT());// Sorted by PT
             return true;
             //Done : to EarlyPList after merging the branches
         }
@@ -201,14 +202,34 @@ public:
             else if (Random_Assign >= 70 && Random_Assign < 80)
             {
                 bool reschedule = false;
-                reschedule = Early_Patients.reschedule(temp, priority);
+                srand(time(0));
+                int newPriority = rand() % 1000 ;
+                reschedule = Early_Patients.reschedule(newPriority);
                 if (reschedule)
                 {
                     Early_Patients.enqueue(temp, priority);
-                    cout << "Cancel Operation Succesful for Patient " << temp->getID() << endl;
+                    cout << "Reschedule Operation Succesful for Patient " << temp->getID() << endl;
                 }
             }
         }
+
+        //call input function
+        // perform operations
+
+        UI_Class::PrintOutputScreen(
+            All_Patients,
+            Early_Patients,
+            Late_Patients,
+            U_Waiting_Patients,
+            E_Waiting_Patients,
+            X_Waiting_Patients,
+            E_Devices,
+            U_Devices,
+            X_Rooms,
+            In_Treatment_List,
+            Finished_Patients
+        );
+        
     }
 
 

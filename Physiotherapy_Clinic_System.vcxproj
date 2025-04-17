@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Simulate.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +135,7 @@
     <ClInclude Include="EU_WaitList.h" />
     <ClInclude Include="E_Treatment.h" />
     <ClInclude Include="Scheduler.h" />
+    <ClInclude Include="UI_Class.h" />
     <ClInclude Include="U_Treatment.h" />
     <ClInclude Include="X_Resource.h" />
     <ClInclude Include="X_Treatment.h" />

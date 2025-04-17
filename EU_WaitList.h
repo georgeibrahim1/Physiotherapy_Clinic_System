@@ -10,16 +10,22 @@ public:
 	bool enqueue(Patient*& newEntry)
 	{
 		bool r = LinkedQueue <Patient*>::enqueue(newEntry);
-		if(r)
-			TreatmentLatency = TreatmentLatency + newEntry->GetCurrTreatment()->GetDuration(); 
+		if (r)
+		{
+			TreatmentLatency = TreatmentLatency + newEntry->GetCurrTreatment()->GetDuration();
+			count++;
+		}
 		return r;
 	}
 
 	bool dequeue(Patient*& frntEntry)
 	{
 		bool r = LinkedQueue <Patient*>::dequeue(frntEntry);
-		if(r)
-			TreatmentLatency = TreatmentLatency - frntEntry->GetCurrTreatment()->GetDuration(); 
+		if (r)
+		{
+			TreatmentLatency = TreatmentLatency - frntEntry->GetCurrTreatment()->GetDuration();
+			count--;
+		}
 		return r;
 	}
 
