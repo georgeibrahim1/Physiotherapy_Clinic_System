@@ -101,14 +101,6 @@ int LinkedQueue<T>::getcount()const
 	return count;
 }
 
-template <typename T>
-LinkedQueue<T>::LinkedQueue()
-{
-	count = 0;
-	backPtr=nullptr;
-	frontPtr=nullptr;
-
-}
 
 template <typename T>
 void LinkedQueue<T>::PrintAllList()
