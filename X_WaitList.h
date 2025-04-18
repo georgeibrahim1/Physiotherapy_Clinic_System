@@ -36,6 +36,8 @@ bool X_WaitList::cancel(Patient*& to_delete)
 		for (int j = 0; j < to_cancel; j++)
 		{
 			curr = curr->getNext();
+			if (!curr)
+				return false;
 		}
 		for (int j = 0; j < to_cancel - 1; j++)
 		{
