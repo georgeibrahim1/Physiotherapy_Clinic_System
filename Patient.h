@@ -22,6 +22,9 @@ protected:
 	char Type; // N or R
 	LinkedQueue<Treatment*> ReqTreatmentList;
 	P_Status Status;
+	static int N_Patitents, R_Patients, R_Waiting_Time, N_Waiting_Time,
+		R_Treatment_Time, N_Treatment_Time, Total_Early, Total_Late,Total_Presc,Total_Pcancel,Avg_Late_Penalty;
+
 	//Treatment* CurrTreatment;// wasn't mentioned by TAs
 
 public:
@@ -90,6 +93,10 @@ public:
 		ReqTreatmentList.enqueue(treatment);
 	}
 
+	void Dequeue_ReqTreatment(Treatment*& temp)
+	{
+		 ReqTreatmentList.dequeue(temp);
+	}
 	/*void SetCurrTreatment(Treatment* c)
 	{
 		CurrTreatment = c;
@@ -130,7 +137,7 @@ public:
 		}
 		else if (Status == SERV)
 		{
-			cout << "P" << ID << "_";
+			cout << "P" << ID << "_" << "R0";
 		}
 		else if (Status == FNSH)
 		{

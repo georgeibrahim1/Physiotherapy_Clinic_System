@@ -27,24 +27,24 @@ public:
         cout << "=============== All List ===============\n";
         cout << All_Patients.getcount() << " ";
         cout << "Patients remaining: ";
-        All_Patients.PrintAllList();
+        All_Patients.PrintAllList(0);
 
-        cout << "=============== Waiting List ===============\n";
+        cout << "\n=============== Waiting List ===============\n";
         cout << E_Waiting_Patients.getcount() << " ";
         cout << "E-therapy Patients: ";
-        E_Waiting_Patients.PrintAllList();
+        E_Waiting_Patients.PrintAllList(1);
 
         cout << endl;
 
         cout << U_Waiting_Patients.getcount() << " ";
         cout << "U-therapy Patients: ";
-        U_Waiting_Patients.PrintAllList();
+        U_Waiting_Patients.PrintAllList(1);
 
         cout << endl;
 
         cout << X_Waiting_Patients.getcount() << " ";
         cout << "X-therapy Patients: ";
-        X_Waiting_Patients.PrintAllList();
+        X_Waiting_Patients.PrintAllList(1);
 
         cout << endl;
 
@@ -52,12 +52,12 @@ public:
         cout << Early_Patients.getcount() << " ";
         cout << "Patients: ";
         Early_Patients.Print();
-
-        cout << "=============== Late List ===============\n";
+        
+        cout << "\n=============== Late List ===============\n";
         cout << Late_Patients.getcount() << " ";
-        cout << "Patients: ";
+        cout << "Patients: \n";
         Late_Patients.Print();
-
+        
         cout << "\n=============== Avail E-Devices ===============\n";
         cout << E_Devices.getcount() << " ";
         cout << "Electro Devices: ";
@@ -77,9 +77,7 @@ public:
         cout << In_Treatment_List.getcount() << " ";
         cout << "==>";
         In_Treatment_List.Print();
-        Resource* x;
-        E_Devices.peek(x);
-        cout << x->Get_Id();
+      
 
         cout << "\n======================================\n";
         cout << Finished_Patients.getCount() << " ";

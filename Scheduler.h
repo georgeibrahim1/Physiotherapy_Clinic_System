@@ -136,7 +136,7 @@ public:
                         Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time,'X');
                     }
                 }
-
+                Input_P[i]->setStaute(IDLE);
                 All_Patients.enqueue(Input_P[i]);
             }
 
@@ -163,6 +163,7 @@ public:
                 if (temp->getPT() > temp->getVT()) //early
                 {
                     All_Patients.dequeue(temp);
+                    temp->setStaute(ERLY);
                     Early_Patients.enqueue(temp, -temp->getPT());// Sorted by PT
                     r = true;
                     //Done : to EarlyPList after merging the branches
@@ -170,12 +171,14 @@ public:
                 else if (temp->getPT() < temp->getVT()) //late
                 {
                     All_Patients.dequeue(temp);
+                    temp->setStaute(LATE);
                     Late_Patients.enqueue(temp, -(temp->getVT() + Late_Penalty(temp))); // Sorted by VT+Penalty
                     r = true;
                 }
                 else // Move to Waiting List 
                 {
                     All_Patients.dequeue(temp);
+                    temp->setStaute(WAIT);
                     Random_Waiting_List_Enqueue(temp, 0);
                     r = true;
                 }
@@ -206,13 +209,19 @@ public:
                     {
                         check = Early_Patients.dequeue(temp, priority);
                         if (check)
+                        {
+                            temp->setStaute(WAIT);
                             Random_Waiting_List_Enqueue(temp, 0);
+                        }
                     }
                     else if (Random_Assign >= 10 && Random_Assign < 20)
                     {
                         check = Late_Patients.dequeue(temp, priority);
                         if (check)
+                        {
+                            temp->setStaute(WAIT);
                             Random_Waiting_List_Enqueue(temp, temp->getPT() + Late_Penalty(temp)); // Sorted by PT+Penalty
+                        }
                     }
                     else if (Random_Assign >= 20 && Random_Assign < 40)
                     {
@@ -222,19 +231,26 @@ public:
                     {
                         check = In_Treatment_List.dequeue(temp, priority);
                         if (check)
+                        {
+                            temp->setStaute(WAIT);
                             Random_Waiting_List_Enqueue(temp, temp->getPT()); // Sorted by PT 
+                        }
                     }
                     else if (Random_Assign >= 50 && Random_Assign < 60)
                     {
                         check = In_Treatment_List.dequeue(temp, priority);
                         if (check)
+                        {
+                            temp->setStaute(FNSH);
                             Finished_Patients.push(temp);
+                        }
                     }
                     else if (Random_Assign >= 60 && Random_Assign < 70)
                     {
                         check = X_Waiting_Patients.cancel(temp);
                         if (check)
                         {
+                            temp->setStaute(FNSH);
                             Finished_Patients.push(temp);
                             cout << "Cancel Operation Succesful for Patient " << endl;
                         }
@@ -301,7 +317,7 @@ public:
                 if (!priority_of_LatePatient)                // Checks if late patient 
                     E_Waiting_Patients.enqueue(temp);
                 else
-                    E_Waiting_Patients.InsertSorted(temp, -priority_of_LatePatient);
+                    E_Waiting_Patients.InsertSorted(temp, priority_of_LatePatient);
             }
             else if (Random_Waiting < 66)         // Assign to U Waiting List
             {
@@ -309,7 +325,7 @@ public:
                 if (!priority_of_LatePatient)                 // Checks if late patient 
                     U_Waiting_Patients.enqueue(temp);
                 else
-                    U_Waiting_Patients.InsertSorted(temp, -priority_of_LatePatient);
+                    U_Waiting_Patients.InsertSorted(temp, priority_of_LatePatient);
             }
             else                                  // Assign to X Waiting List
             {
@@ -317,7 +333,7 @@ public:
                 if (!priority_of_LatePatient)                 // Checks if late patient 
                     X_Waiting_Patients.enqueue(temp);
                 else
-                    X_Waiting_Patients.InsertSorted(temp, -priority_of_LatePatient);
+                    X_Waiting_Patients.InsertSorted(temp, priority_of_LatePatient);
             }
         }
 
@@ -335,6 +351,7 @@ public:
                     {
                         Treatment* x;
                         temp->Get_reqtreatmentlist().peek(x);
+                        temp->setStaute(SERV);
                         In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
                     }
                 }
@@ -348,6 +365,7 @@ public:
                     {
                         Treatment* x;
                         temp->Get_reqtreatmentlist().peek(x);
+                        temp->setStaute(SERV);
                         In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
                     }
                 }
@@ -361,6 +379,7 @@ public:
                     {
                         Treatment* x;
                         temp->Get_reqtreatmentlist().peek(x);
+                        temp->setStaute(SERV);
                         In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
                     }
                 }

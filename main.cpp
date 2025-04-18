@@ -8,5 +8,7 @@ int main()
 {
     Scheduler Maestro;
        Maestro.Simulate();
+       int x;
+       cin >> x;
     return 0;
 }

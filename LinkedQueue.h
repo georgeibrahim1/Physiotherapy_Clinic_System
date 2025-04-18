@@ -67,7 +67,7 @@ public :
 	bool peek(T& frntEntry)  const;
 	int getcount() const;
 	void setcount(int c);
-	void PrintAllList();
+	void PrintAllList(int);
 	void Print_Avail_EU_Resources();
 	void Print_Avail_X_Resources();
 	~LinkedQueue();
@@ -104,35 +104,55 @@ int LinkedQueue<T>::getcount() const
 
 
 template <typename T>
-void LinkedQueue<T>::PrintAllList()
+void LinkedQueue<T>::PrintAllList(int i)
 {
-	if (isEmpty()) return;
-	Node<T>* current = frontPtr;
-	int printed = 0;
-
-	if (count > 10)
+	if (i == 0)
 	{
-		// Print only the first 10 patients
-		while (current && printed < 10)
-		{
-			T patient;
-			patient = current->getItem();
+		if (isEmpty()) return;
+		Node<T>* current = frontPtr;
+		int printed = 0;
 
-			if (patient)
+		if (count > 10)
+		{
+			// Print only the first 10 patients
+			while (current && printed < 10)
 			{
-				patient->Print();
-				if (printed < 9) cout << ", ";
+				T patient;
+				patient = current->getItem();
+
+				if (patient)
+				{
+					patient->Print();
+					if (printed < 9) cout << ", ";
+				}
+
+				current = current->getNext();
+				printed++;
 			}
 
-			current = current->getNext();
-			printed++;
+			cout << ", ....." << endl;
 		}
+		else
+		{
+			// Print all patients
+			while (current)
+			{
+				T patient;
+				patient = current->getItem();
 
-		cout << ", ....." << endl;
+				if (patient)
+				{
+					patient->Print();
+					if (current->getNext()) cout << ", ";
+				}
+
+				current = current->getNext();
+			}
+			cout << "\n";
+		}
 	}
 	else
 	{
-		// Print all patients
 		while (current)
 		{
 			T patient;
