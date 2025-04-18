@@ -106,10 +106,10 @@ int LinkedQueue<T>::getcount() const
 template <typename T>
 void LinkedQueue<T>::PrintAllList(int i)
 {
+	if (isEmpty()) return;
+	Node<T>* current = frontPtr;
 	if (i == 0)
 	{
-		if (isEmpty()) return;
-		Node<T>* current = frontPtr;
 		int printed = 0;
 
 		if (count > 10)
