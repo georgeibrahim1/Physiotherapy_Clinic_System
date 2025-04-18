@@ -55,7 +55,7 @@ public:
         
         cout << "\n=============== Late List ===============\n";
         cout << Late_Patients.getcount() << " ";
-        cout << "Patients: \n";
+        cout << "Patients: ";
         Late_Patients.Print();
         
         cout << "\n=============== Avail E-Devices ===============\n";

@@ -36,7 +36,7 @@ public:
 
     Scheduler()
     {
-        //srand(time(0));
+      
     }
     int getRandomNumber(int min = 0, int max = 100)
     {
@@ -78,8 +78,8 @@ public:
 
 
             Resource** ResE = new Resource * [Num_E_Devices];
-            Resource** ResU = new Resource * [Num_E_Devices];
-            Resource** ResX = new Resource * [Num_E_Devices];
+            Resource** ResU = new Resource * [Num_U_Devices];
+            X_Resource** ResX = new X_Resource * [Num_X_Rooms];
 
             for (int i = 0; i < Num_E_Devices; i++)
             {
@@ -200,7 +200,6 @@ public:
             {
                 cout << "\nTimestep :" << timestep << endl;
 
-                //if (Check_All_List())
                 Check_All_List();
                        
                     srand(time(0));
@@ -261,6 +260,7 @@ public:
                         int newPriority = -(generateRandomNumber(1, 100, rand()));
                         check = Early_Patients.reschedule(newPriority);
                         if (check)
+
                         {
                             // Early_Patients.enqueue(temp, priority);
                             cout << "Reschedule Operation Succesful for Patient " << endl;
@@ -284,21 +284,6 @@ public:
                 _getch();  // Waits for a keypress
                     timestep++;
             }
-
-           /* UI_Class::PrintOutputScreen(
-                All_Patients,
-                Early_Patients,
-                Late_Patients,
-                U_Waiting_Patients,
-                E_Waiting_Patients,
-                X_Waiting_Patients,
-                E_Devices,
-                U_Devices,
-                X_Rooms,
-                In_Treatment_List,
-                Finished_Patients
-            );*/
-        
         }
 
 

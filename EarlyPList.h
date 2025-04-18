@@ -14,8 +14,6 @@ public:
 
 	bool reschedule(int newPriority)
 	{
-		for (int i = 0; i < (this->getcount() * 3); i++) // loop multiple times with different index
-		{
 			if (isEmpty()) return false;
 
 			std::srand(std::time(nullptr));
@@ -46,16 +44,12 @@ public:
 				current->setItem(patient, newPriority);
 				enqueue(patient, newPriority);
 
-				delete current;
-
 				return true;
 			}
 			else
 			{
 				return false;
 			}
-
-		}
    	}
 };
 
