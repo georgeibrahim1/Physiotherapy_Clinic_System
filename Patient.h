@@ -1,6 +1,9 @@
 #pragma once
 #include"LinkedQueue.h"
 #include"Treatment.h"
+#include"X_Treatment.h"
+#include"U_Treatment.h"
+#include"E_Treatment.h"
 
 enum P_Status
 {
@@ -86,16 +89,24 @@ public:
 		Type = T;
 	}
 
-	void Enqueue_ReqTreatment(Treatment* treatment , int d,char type )
+	bool Enqueue_ReqTreatment(Treatment* treatment , int d,char type )
 	{
 		treatment->Set_Duration(d);
 		treatment->set_type(type);
-		ReqTreatmentList.enqueue(treatment);
+		bool check = ReqTreatmentList.enqueue(treatment);
+		return check;
 	}
 
-	void Dequeue_ReqTreatment(Treatment*& temp)
+	bool Dequeue_ReqTreatment(Treatment*& temp)
 	{
-		 ReqTreatmentList.dequeue(temp);
+		 bool check = ReqTreatmentList.dequeue(temp);
+		 return check;
+	}
+
+	bool Peek_ReqTreatment(Treatment* temp)
+	{
+		bool check = ReqTreatmentList.peek(temp);
+		return check;
 	}
 	/*void SetCurrTreatment(Treatment* c)
 	{

@@ -122,17 +122,17 @@ public:
 
                     if(R == 'E')
                     {
-                        Treatment* P_Treatment = new Treatment();
+                        E_Treatment* P_Treatment = new E_Treatment();
                         Input_P[i]->Enqueue_ReqTreatment(P_Treatment , Time,'E');
                     }
                     else if(R == 'U')
                     {
-                        Treatment* P_Treatment = new Treatment();
+                        U_Treatment* P_Treatment = new U_Treatment();
                         Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time,'U');
                     }
                     else if(R == 'X')
                     {
-                        Treatment* P_Treatment = new Treatment();
+                        X_Treatment* P_Treatment = new X_Treatment();
                         Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time,'X');
                     }
                 }
@@ -149,43 +149,182 @@ public:
     }
 
 
-        bool Check_All_List()
+    bool Check_All_List()
+    {
+        Patient* temp;
+        bool r = false;
+        if (!All_Patients.peek(temp))
+        {
+            return false;
+        }
+        while (All_Patients.peek(temp) && timestep == temp->getVT())
+        {
+                
+            if (temp->getPT() > temp->getVT()) //early
+            {
+                All_Patients.dequeue(temp);
+                temp->setStaute(ERLY);
+                Early_Patients.enqueue(temp, -temp->getPT());// Sorted by PT
+                r = true;
+                //Done : to EarlyPList after merging the branches
+            }
+            else if (temp->getPT() < temp->getVT()) //late
+            {
+                All_Patients.dequeue(temp);
+                temp->setStaute(LATE);
+                Late_Patients.enqueue(temp, -(temp->getVT() + Late_Penalty(temp))); // Sorted by VT+Penalty
+                r = true;
+            }
+            else // Move to Waiting List 
+            {
+                All_Patients.dequeue(temp);
+                Treatment* reqTreatment;
+                    
+                if (temp->Peek_ReqTreatment(reqTreatment))
+                {
+                    if (dynamic_cast<X_Treatment*>(reqTreatment))
+                    {
+                        MoveToWait_X(temp);
+                        r = true;
+                    }
+                    else if (dynamic_cast<U_Treatment*>(reqTreatment))
+                    {
+                        MoveToWait_U(temp);
+                        r = true;
+                    }
+                    else if (dynamic_cast<E_Treatment*>(reqTreatment))
+                    {
+                        MoveToWait_E(temp);
+                        r = true;
+                    }
+                }
+            }
+            // All_Patients.peek(temp);
+        }
+        return r;
+    }
+
+        bool MoveToWait_U(Patient* currPatient)
+        {
+            bool check = U_Waiting_Patients.enqueue(currPatient);
+            if (check)
+            {
+                currPatient->setStaute(WAIT);
+            }
+            return check;
+        }
+
+        bool MoveToWait_E(Patient* currPatient)
+        {
+            bool check = E_Waiting_Patients.enqueue(currPatient);
+            if (check)
+            {
+                currPatient->setStaute(WAIT);
+            }
+            return check;
+        }
+
+        bool MoveToWait_X(Patient* currPatient)
+        {
+            bool check = X_Waiting_Patients.enqueue(currPatient);
+            if (check)
+            {
+                currPatient->setStaute(WAIT);
+            }
+            return check;
+        }
+
+        bool From_Early_To_Wait()
         {
             Patient* temp;
+            Treatment* reqTreatment;
+            int priority;
             bool r = false;
-            if (!All_Patients.peek(temp))
+
+            while (Early_Patients.peek(temp,priority) && timestep == -priority)
             {
-                return false;
+                if (temp->Peek_ReqTreatment(reqTreatment))
+                {
+                    if (dynamic_cast<X_Treatment*>(reqTreatment))
+                    {
+                        bool check = Early_Patients.dequeue(temp,priority);
+                        if (check)
+                        {
+                            MoveToWait_X(temp);
+                            r = true;
+                        }
+                    }
+                    else if (dynamic_cast<U_Treatment*>(reqTreatment))
+                    {
+                        bool check = Early_Patients.dequeue(temp, priority);
+                        if (check)
+                        {
+                            MoveToWait_U(temp);
+                            r = true;
+                        }
+                    }
+                    else if (dynamic_cast<E_Treatment*>(reqTreatment))
+                    {
+                        bool check = Early_Patients.dequeue(temp, priority);
+                        if (check)
+                        {
+                            MoveToWait_E(temp);
+                            r = true;
+                        }
+                    }
+                }
             }
-            while (All_Patients.peek(temp) && timestep == temp->getVT())
-            {
-                
-                if (temp->getPT() > temp->getVT()) //early
-                {
-                    All_Patients.dequeue(temp);
-                    temp->setStaute(ERLY);
-                    Early_Patients.enqueue(temp, -temp->getPT());// Sorted by PT
-                    r = true;
-                    //Done : to EarlyPList after merging the branches
-                }
-                else if (temp->getPT() < temp->getVT()) //late
-                {
-                    All_Patients.dequeue(temp);
-                    temp->setStaute(LATE);
-                    Late_Patients.enqueue(temp, -(temp->getVT() + Late_Penalty(temp))); // Sorted by VT+Penalty
-                    r = true;
-                }
-                else // Move to Waiting List 
-                {
-                    All_Patients.dequeue(temp);
-                    temp->setStaute(WAIT);
-                    Random_Waiting_List_Enqueue(temp, 0);
-                    r = true;
-                }
-               // All_Patients.peek(temp);
-            }
+
             return r;
         }
+
+        bool From_Late_To_Wait()
+        {
+            Patient* temp;
+            Treatment* reqTreatment;
+            int priority;
+            bool r = false;
+
+            while (Late_Patients.peek(temp, priority) && timestep == -priority)
+            {
+                if (temp->Peek_ReqTreatment(reqTreatment))
+                {
+                    if (dynamic_cast<X_Treatment*>(reqTreatment))
+                    {
+                        bool check = Late_Patients.dequeue(temp, priority);
+                        if (check)
+                        {
+                            MoveToWait_X(temp);
+                            r = true;
+                        }
+                    }
+                    else if (dynamic_cast<U_Treatment*>(reqTreatment))
+                    {
+                        bool check = Late_Patients.dequeue(temp, priority);
+                        if (check)
+                        {
+                            MoveToWait_U(temp);
+                            r = true;
+                        }
+                    }
+                    else if (dynamic_cast<E_Treatment*>(reqTreatment))
+                    {
+                        bool check = Late_Patients.dequeue(temp, priority);
+                        if (check)
+                        {
+                            MoveToWait_E(temp);
+                            r = true;
+                        }
+                    }
+                }
+            }
+
+            return r;
+        }
+
+        
+
+        
 
         void Simulate()
         {
@@ -201,6 +340,8 @@ public:
                 cout << "\nTimestep :" << timestep << endl;
 
                 Check_All_List();
+                From_Early_To_Wait();
+                From_Late_To_Wait();
                        
                     srand(time(0));
                     int Random_Assign = generateRandomNumber(0,100,rand());    // Random no. from [0,100]
