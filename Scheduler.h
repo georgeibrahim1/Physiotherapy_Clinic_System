@@ -178,7 +178,7 @@ public:
             else // Move to Waiting List 
             {
                 All_Patients.dequeue(temp);
-                Treatment* reqTreatment;
+                Treatment* reqTreatment = nullptr;
                     
                 if (temp->Peek_ReqTreatment(reqTreatment))
                 {
@@ -237,7 +237,7 @@ public:
         bool From_Early_To_Wait()
         {
             Patient* temp;
-            Treatment* reqTreatment;
+            Treatment* reqTreatment = nullptr;
             int priority;
             bool r = false;
 
@@ -281,7 +281,7 @@ public:
         bool From_Late_To_Wait()
         {
             Patient* temp;
-            Treatment* reqTreatment;
+            Treatment* reqTreatment = nullptr;
             int priority;
             bool r = false;
 
@@ -342,72 +342,7 @@ public:
                 Check_All_List();
                 From_Early_To_Wait();
                 From_Late_To_Wait();
-                       
-                    srand(time(0));
-                    int Random_Assign = generateRandomNumber(0,100,rand());    // Random no. from [0,100]
-                    if (Random_Assign < 10)
-                    {
-                        check = Early_Patients.dequeue(temp, priority);
-                        if (check)
-                        {
-                            temp->setStaute(WAIT);
-                            Random_Waiting_List_Enqueue(temp, 0);
-                        }
-                    }
-                    else if (Random_Assign >= 10 && Random_Assign < 20)
-                    {
-                        check = Late_Patients.dequeue(temp, priority);
-                        if (check)
-                        {
-                            temp->setStaute(WAIT);
-                            Random_Waiting_List_Enqueue(temp, temp->getPT() + Late_Penalty(temp)); // Sorted by PT+Penalty
-                        }
-                    }
-                    else if (Random_Assign >= 20 && Random_Assign < 40)
-                    {
-                        Dequeue_Twice(temp);
-                    }
-                    else if (Random_Assign >= 40 && Random_Assign < 50)
-                    {
-                        check = In_Treatment_List.dequeue(temp, priority);
-                        if (check)
-                        {
-                            temp->setStaute(WAIT);
-                            Random_Waiting_List_Enqueue(temp, temp->getPT()); // Sorted by PT 
-                        }
-                    }
-                    else if (Random_Assign >= 50 && Random_Assign < 60)
-                    {
-                        check = In_Treatment_List.dequeue(temp, priority);
-                        if (check)
-                        {
-                            temp->setStaute(FNSH);
-                            Finished_Patients.push(temp);
-                        }
-                    }
-                    else if (Random_Assign >= 60 && Random_Assign < 70)
-                    {
-                        check = X_Waiting_Patients.cancel(temp);
-                        if (check)
-                        {
-                            temp->setStaute(FNSH);
-                            Finished_Patients.push(temp);
-                            cout << "Cancel Operation Succesful for Patient " << endl;
-                        }
-                    }
-                    else if (Random_Assign >= 70 && Random_Assign < 80)
-                    {
-                        srand(time(0));
-                        int newPriority = -(generateRandomNumber(1, 100, rand()));
-                        check = Early_Patients.reschedule(newPriority);
-                        if (check)
 
-                        {
-                            // Early_Patients.enqueue(temp, priority);
-                            cout << "Reschedule Operation Succesful for Patient " << endl;
-                        }
-                    }
-                
                 UI_Class::PrintOutputScreen(
                     All_Patients,
                     Early_Patients,
@@ -433,82 +368,4 @@ public:
             return (Late_Patient->getPT() + Late_Patient->getVT()) / 2.0;
         }
 
-   
-        void Random_Waiting_List_Enqueue(Patient* temp,int priority_of_LatePatient)  // Priority matters when assigning a late patient otherwise "priority = 0" 
-        {                                                                             
-            //srand(time(0));
-            int Random_Waiting = generateRandomNumber(0, 100, rand());    // Random no. from [0,100]
-            if (Random_Waiting < 33)              // Assign to E Waiting List
-            {
-                if (!priority_of_LatePatient)                // Checks if late patient 
-                    E_Waiting_Patients.enqueue(temp);
-                else
-                    E_Waiting_Patients.InsertSorted(temp, priority_of_LatePatient);
-            }
-            else if (Random_Waiting < 66)         // Assign to U Waiting List
-            {
-
-                if (!priority_of_LatePatient)                 // Checks if late patient 
-                    U_Waiting_Patients.enqueue(temp);
-                else
-                    U_Waiting_Patients.InsertSorted(temp, priority_of_LatePatient);
-            }
-            else                                  // Assign to X Waiting List
-            {
-
-                if (!priority_of_LatePatient)                 // Checks if late patient 
-                    X_Waiting_Patients.enqueue(temp);
-                else
-                    X_Waiting_Patients.InsertSorted(temp, priority_of_LatePatient);
-            }
-        }
-
-        void Dequeue_Twice(Patient* temp)
-        {
-            bool check = false;
-            srand(time(0));
-            int Random_Waiting = generateRandomNumber(0, 100, rand());    // Random no. from [0,100]
-            if (Random_Waiting < 33)              // Assign to E Waiting List
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    check = E_Waiting_Patients.dequeue(temp);
-                    if (check)
-                    {
-                        Treatment* x;
-                        temp->Get_reqtreatmentlist().peek(x);
-                        temp->setStaute(SERV);
-                        In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
-                    }
-                }
-            }
-            else if (Random_Waiting < 66)         // Assign to U Waiting List
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    check = U_Waiting_Patients.dequeue(temp);
-                    if (check)
-                    {
-                        Treatment* x;
-                        temp->Get_reqtreatmentlist().peek(x);
-                        temp->setStaute(SERV);
-                        In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
-                    }
-                }
-            }
-            else                                  // Assign to X Waiting List
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    check = X_Waiting_Patients.dequeue(temp);
-                    if (check)
-                    {
-                        Treatment* x;
-                        temp->Get_reqtreatmentlist().peek(x);
-                        temp->setStaute(SERV);
-                        In_Treatment_List.enqueue(temp, -(x->GetDuration() + timestep));
-                    }
-                }
-            }
-        }
 };
