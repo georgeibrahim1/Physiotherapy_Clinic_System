@@ -140,6 +140,14 @@ public:
                 All_Patients.enqueue(Input_P[i]);
             }
 
+           delete []Capacities;
+
+
+            delete []ResE;
+            delete []ResU;
+            delete []ResX;
+            delete []Input_P;
+
             MyFile.close();
         }
         else
