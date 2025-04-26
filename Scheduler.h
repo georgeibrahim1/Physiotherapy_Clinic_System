@@ -13,6 +13,8 @@
 #include <fstream>
 #include <conio.h>
 #include <random>
+#include <climits>
+
 
 
 class Scheduler
@@ -168,7 +170,7 @@ public:
         while (All_Patients.peek(temp) && timestep == temp->getVT())
         {
                 
-            if (temp->getPT() > temp->getVT()) //early
+            if (temp->getPT() > temp->getVT()) //early 
             {
                 All_Patients.dequeue(temp);
                 temp->setStaute(ERLY);
@@ -184,7 +186,7 @@ public:
                 r = true;
             }
             else // Move to Waiting List 
-            {
+            { // this should probably be deleted, what the hell is it doing here? it doesn't belong here.
                 All_Patients.dequeue(temp);
                 Treatment* reqTreatment = nullptr;
                     
@@ -211,16 +213,120 @@ public:
         }
         return r;
     }
+    bool Check_Early_List() 
+    {
+        Patient* temp;
+        bool r = false;
+        int priority = 0; // Early patient list is a priority queue, so it needs priority as a parameter 
+        Treatment* reqTreatment = nullptr;
+
+
+        if (!Early_Patients.peek(temp,priority))
+        {
+            return false;
+        }
+        while (Early_Patients.peek(temp,priority) && timestep == temp->getPT()) // checks if the appointment time  
+        {                                                                       // of the front patient matches the timestep
+            Early_Patients.dequeue(temp, priority);
+
+            if (temp->get_Type() == 'R') // logic of recovering patients, we have to check treatment latencies
+            {
+                LinkedQueue<Treatment*> TempReqTreatmentList;
+                Treatment* TreatmentOfList = nullptr; // this will have the treatment of the list with the least Latency
+
+                int LeastLatency = INT_MAX; // we will use this variable to get the min latency
+
+
+                while (temp->Dequeue_ReqTreatment(reqTreatment))
+                {
+
+                    if (GetTreatmentLatency(reqTreatment) < LeastLatency)
+                    {
+                        LeastLatency = GetTreatmentLatency(reqTreatment);
+                        TreatmentOfList = reqTreatment;
+                    }
+
+                   /* if (dynamic_cast<X_Treatment*>(reqTreatment))
+                    {*/
+
+                      /*  if (X_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
+                        {
+                            LeastLatency = X_Waiting_Patients.GetTreatmentLatency();
+                            TreatmentOfList = reqTreatment;
+                        }
+
+
+                    }
+                    else if (dynamic_cast<U_Treatment*>(reqTreatment))
+                    {
+
+                        if (U_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
+                        {
+                            LeastLatency = U_Waiting_Patients.GetTreatmentLatency();
+                            TreatmentOfList = reqTreatment;
+                        }
+                    }
+                    else if (dynamic_cast<E_Treatment*>(reqTreatment))
+                    {
+
+                        if (E_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
+                        {
+                            LeastLatency = E_Waiting_Patients.GetTreatmentLatency();
+                            TreatmentOfList = reqTreatment;
+                        }
+                    }*/
+                    TempReqTreatmentList.enqueue(reqTreatment);
+                }
+                if (TreatmentOfList)
+                {
+                    r = EnqueueToAppropriateWaitList(temp, TreatmentOfList);
+                }
+                //if (dynamic_cast<X_Treatment*>(TreatmentOfList))
+                //{
+                //    MoveToWait_X(temp);//this should be a Treatment function, scheduler should have AddToWait, check doc 2, appendix A
+                //    r = true;
+                //}
+                //else if (dynamic_cast<U_Treatment*>(TreatmentOfList))
+                //{
+                //    MoveToWait_U(temp);
+                //    r = true;
+                //}
+                //else if (dynamic_cast<E_Treatment*>(TreatmentOfList))
+                //{
+                //    MoveToWait_E(temp);
+                //    r = true;              
+                //}
+
+                while (TempReqTreatmentList.dequeue(reqTreatment))
+                {
+                    if (reqTreatment != TreatmentOfList) 
+                    {
+                        temp->Dequeue_ReqTreatment(reqTreatment);
+                    }
+                
+                }
+                
+            }
+            else // logic of normal patients
+            {
+                if (temp->Peek_ReqTreatment(reqTreatment))
+                {
+                   r = EnqueueToAppropriateWaitList(temp, reqTreatment);
+                }            
+            }
+        }
+        return r;
+    }
 
         bool MoveToWait_U(Patient* currPatient)
         {
-            bool check = U_Waiting_Patients.enqueue(currPatient);
-            if (check)
-            {
-                currPatient->setStaute(WAIT);
+                bool check = U_Waiting_Patients.enqueue(currPatient);
+                if (check)
+                {
+                    currPatient->setStaute(WAIT);
+                }
+                return check;
             }
-            return check;
-        }
 
         bool MoveToWait_E(Patient* currPatient)
         {
@@ -329,8 +435,38 @@ public:
 
             return r;
         }
+        bool EnqueueToAppropriateWaitList(Patient* patient, Treatment* treatment)
+        {
+            bool r = false;
+            if (dynamic_cast<X_Treatment*>(treatment))
+            {             
+                r = MoveToWait_X(patient);    
+                    
+            }
+            else if (dynamic_cast<U_Treatment*>(treatment))
+            {
+                r = MoveToWait_U(patient);
+                     
+            }
+            else if (dynamic_cast<E_Treatment*>(treatment))
+            {
+                r = MoveToWait_E(patient);
+                    
+            }
+            return r;
+        }
 
-        
+
+        int GetTreatmentLatency(Treatment* treatment)
+        {
+            if (dynamic_cast<X_Treatment*>(treatment))
+                return X_Waiting_Patients.GetTreatmentLatency();
+            else if (dynamic_cast<U_Treatment*>(treatment))
+                return U_Waiting_Patients.GetTreatmentLatency();
+            else if (dynamic_cast<E_Treatment*>(treatment))
+                return E_Waiting_Patients.GetTreatmentLatency();
+            return INT_MAX;
+        }
 
         
 
@@ -369,7 +505,7 @@ public:
                     timestep++;
             }
         }
-
+        
 
         double Late_Penalty(Patient* Late_Patient)
         {

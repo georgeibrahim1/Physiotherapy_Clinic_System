@@ -88,6 +88,10 @@ public:
 	{
 		Type = T;
 	}
+	char get_Type()
+	{
+		return Type;
+	}
 
 	bool Enqueue_ReqTreatment(Treatment* treatment , int d,char type )
 	{
