@@ -1,9 +1,8 @@
 #pragma once
 #include "priQueue.h"
-
-
-//TODO : Delete the template shit -> replace by patient
-//Don't forget to edit them in Schedular.h
+#include <fstream>
+#include <conio.h>
+#include <random>
 
 class EarlyPList : public priQueue<Patient*>
 {
@@ -16,12 +15,11 @@ public:
 	{
 			if (isEmpty()) return false;
 
-			std::srand(std::time(nullptr));
-
-			int randomIndex = std::rand() % count;
+			int randomIndex = generateRandomNumber(0, this->getcount());
 
 			priNode<Patient*>* current = head;
 			priNode<Patient*>* prev = nullptr;
+
 			for (int i = 0; i < randomIndex; ++i) {
 				prev = current;
 				current = current->getNext();
@@ -51,5 +49,13 @@ public:
 				return false;
 			}
    	}
+
+	int generateRandomNumber(int min, int max, unsigned int seed = 42)
+	{
+		static std::mt19937 engine(seed); // Mersenne Twister engine with fixed seed
+		std::uniform_int_distribution<int> dist(min, max);
+		return dist(engine);
+	}
+
 };
 

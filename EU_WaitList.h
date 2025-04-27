@@ -1,6 +1,7 @@
 #pragma once
 #include "LinkedQueue.h"
-class EU_WaitList : public LinkedQueue <Patient*>
+#include "Patient.h"
+class EU_WaitList : public LinkedQueue<Patient*>
 {
 protected:
 	int TreatmentLatency;

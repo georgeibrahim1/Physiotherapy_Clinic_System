@@ -32,23 +32,10 @@ protected:
     LinkedQueue<Resource*> X_Rooms;
     priQueue<Patient*> In_Treatment_List;
     ArrayStack<Patient*> Finished_Patients;
-    int timestep;
+    int timestep, Pcancel, Presc;
 
 public:
 
-    Scheduler()
-    {
-      
-    }
-    int getRandomNumber(int min = 0, int max = 100)
-    {
-        static std::mt19937 rng(42); // Fixed seed for reproducibility
-        std::uniform_int_distribution<int> dist(min, max);
-        return dist(rng);
-    }
-
-
- 
     int generateRandomNumber(int min, int max, unsigned int seed = 42)
     {
         static std::mt19937 engine(seed); // Mersenne Twister engine with fixed seed
@@ -56,23 +43,59 @@ public:
         return dist(engine);
     }
 
+    void Simulate()
+    {
+        Patient* temp = nullptr;
+        int priority; // Dummy Variable
+        bool check = false;
+        string inputfile = UI_Class::ReadInput();
+        File_Loading_Function(inputfile);
+        timestep = 0;
+        int NumAllPatients = All_Patients.getcount();
+        while (Finished_Patients.getCount() != NumAllPatients)
+        {
+            cout << "\nTimestep :" << timestep << endl;
+
+            Check_All_List();
+            From_Early_To_Wait();
+            From_Late_To_Wait();
+            Cancel_Treatment();
+            Reschedule_Treatment();
+
+            UI_Class::PrintOutputScreen(
+                All_Patients,
+                Early_Patients,
+                Late_Patients,
+                U_Waiting_Patients,
+                E_Waiting_Patients,
+                X_Waiting_Patients,
+                E_Devices,
+                U_Devices,
+                X_Rooms,
+                In_Treatment_List,
+                Finished_Patients
+            );
+            cout << "\nPress any key to proceed to the next timestep..." << endl;
+            _getch();  // Waits for a keypress
+            timestep++;
+        }
+    }
+
     void File_Loading_Function(string s)
     {
         int Num_E_Devices;
         int Num_U_Devices;
         int Num_X_Rooms;
-        int Pcancel;
-        int Presc;
         int Num_Patients;
 
-        ifstream MyFile(s);//we can add the text name as a parameter in the function
+        ifstream MyFile(s);
 
         if (MyFile.is_open())
         {
             MyFile >> Num_E_Devices >> Num_U_Devices >> Num_X_Rooms;
             int* Capacities = new int[Num_X_Rooms];
 
-            for (int i = 0 ; i < Num_X_Rooms ; i++)
+            for (int i = 0; i < Num_X_Rooms; i++)
             {
 
                 MyFile >> Capacities[i];
@@ -97,11 +120,12 @@ public:
 
             for (int i = 0; i < Num_X_Rooms; i++)
             {
-                ResX[i] = new X_Resource(Room, i,Capacities[i]);
+                ResX[i] = new X_Resource(Room, i, Capacities[i]);
                 X_Rooms.enqueue(ResX[i]);
             }
 
             MyFile >> Pcancel >> Presc;
+
 
             MyFile >> Num_Patients;
 
@@ -115,40 +139,40 @@ public:
                 int Time;
 
                 MyFile >> type >> PT >> VT >> NUM_R;
-                
+
                 Input_P[i] = new Patient(i, PT, VT, type);
 
-                for (int j = 0 ; j < NUM_R ; j++)
+                for (int j = 0; j < NUM_R; j++)
                 {
                     MyFile >> R >> Time;
 
-                    if(R == 'E')
+                    if (R == 'E')
                     {
                         E_Treatment* P_Treatment = new E_Treatment();
-                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment , Time,'E');
+                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time, 'E');
                     }
-                    else if(R == 'U')
+                    else if (R == 'U')
                     {
                         U_Treatment* P_Treatment = new U_Treatment();
-                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time,'U');
+                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time, 'U');
                     }
-                    else if(R == 'X')
+                    else if (R == 'X')
                     {
                         X_Treatment* P_Treatment = new X_Treatment();
-                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time,'X');
+                        Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time, 'X');
                     }
                 }
                 Input_P[i]->setStaute(IDLE);
                 All_Patients.enqueue(Input_P[i]);
             }
 
-           delete []Capacities;
+            delete[]Capacities;
 
 
-            delete []ResE;
-            delete []ResU;
-            delete []ResX;
-            delete []Input_P;
+            delete[]ResE;
+            delete[]ResU;
+            delete[]ResX;
+            delete[]Input_P;
 
             MyFile.close();
         }
@@ -169,7 +193,6 @@ public:
         }
         while (All_Patients.peek(temp) && timestep == temp->getVT())
         {
-                
             if (temp->getPT() > temp->getVT()) //early 
             {
                 All_Patients.dequeue(temp);
@@ -189,7 +212,7 @@ public:
             { // this should probably be deleted, what the hell is it doing here? it doesn't belong here.
                 All_Patients.dequeue(temp);
                 Treatment* reqTreatment = nullptr;
-                    
+
                 if (temp->Peek_ReqTreatment(reqTreatment))
                 {
                     if (dynamic_cast<X_Treatment*>(reqTreatment))
@@ -213,7 +236,7 @@ public:
         }
         return r;
     }
-    bool Check_Early_List() 
+    bool Check_Early_List()
     {
         Patient* temp;
         bool r = false;
@@ -221,11 +244,11 @@ public:
         Treatment* reqTreatment = nullptr;
 
 
-        if (!Early_Patients.peek(temp,priority))
+        if (!Early_Patients.peek(temp, priority))
         {
             return false;
         }
-        while (Early_Patients.peek(temp,priority) && timestep == temp->getPT()) // checks if the appointment time  
+        while (Early_Patients.peek(temp, priority) && timestep == temp->getPT()) // checks if the appointment time  
         {                                                                       // of the front patient matches the timestep
             Early_Patients.dequeue(temp, priority);
 
@@ -246,35 +269,35 @@ public:
                         TreatmentOfList = reqTreatment;
                     }
 
-                   /* if (dynamic_cast<X_Treatment*>(reqTreatment))
-                    {*/
+                    /* if (dynamic_cast<X_Treatment*>(reqTreatment))
+                     {*/
 
-                      /*  if (X_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
-                        {
-                            LeastLatency = X_Waiting_Patients.GetTreatmentLatency();
-                            TreatmentOfList = reqTreatment;
-                        }
+                     /*  if (X_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
+                       {
+                           LeastLatency = X_Waiting_Patients.GetTreatmentLatency();
+                           TreatmentOfList = reqTreatment;
+                       }
 
 
-                    }
-                    else if (dynamic_cast<U_Treatment*>(reqTreatment))
-                    {
+                   }
+                   else if (dynamic_cast<U_Treatment*>(reqTreatment))
+                   {
 
-                        if (U_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
-                        {
-                            LeastLatency = U_Waiting_Patients.GetTreatmentLatency();
-                            TreatmentOfList = reqTreatment;
-                        }
-                    }
-                    else if (dynamic_cast<E_Treatment*>(reqTreatment))
-                    {
+                       if (U_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
+                       {
+                           LeastLatency = U_Waiting_Patients.GetTreatmentLatency();
+                           TreatmentOfList = reqTreatment;
+                       }
+                   }
+                   else if (dynamic_cast<E_Treatment*>(reqTreatment))
+                   {
 
-                        if (E_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
-                        {
-                            LeastLatency = E_Waiting_Patients.GetTreatmentLatency();
-                            TreatmentOfList = reqTreatment;
-                        }
-                    }*/
+                       if (E_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
+                       {
+                           LeastLatency = E_Waiting_Patients.GetTreatmentLatency();
+                           TreatmentOfList = reqTreatment;
+                       }
+                   }*/
                     TempReqTreatmentList.enqueue(reqTreatment);
                 }
                 if (TreatmentOfList)
@@ -299,217 +322,211 @@ public:
 
                 while (TempReqTreatmentList.dequeue(reqTreatment))
                 {
-                    if (reqTreatment != TreatmentOfList) 
+                    if (reqTreatment != TreatmentOfList)
                     {
                         temp->Dequeue_ReqTreatment(reqTreatment);
                     }
-                
+
                 }
-                
+
             }
             else // logic of normal patients
             {
                 if (temp->Peek_ReqTreatment(reqTreatment))
                 {
-                   r = EnqueueToAppropriateWaitList(temp, reqTreatment);
-                }            
+                    r = EnqueueToAppropriateWaitList(temp, reqTreatment);
+                }
             }
         }
         return r;
     }
 
-        bool MoveToWait_U(Patient* currPatient)
+    bool MoveToWait_U(Patient* currPatient)
+    {
+        bool check = U_Waiting_Patients.enqueue(currPatient);
+        if (check)
         {
-                bool check = U_Waiting_Patients.enqueue(currPatient);
-                if (check)
+            currPatient->setStaute(WAIT);
+        }
+        return check;
+    }
+
+    bool MoveToWait_E(Patient* currPatient)
+    {
+        bool check = E_Waiting_Patients.enqueue(currPatient);
+        if (check)
+        {
+            currPatient->setStaute(WAIT);
+        }
+        return check;
+    }
+
+    bool MoveToWait_X(Patient* currPatient)
+    {
+        bool check = X_Waiting_Patients.enqueue(currPatient);
+        if (check)
+        {
+            currPatient->setStaute(WAIT);
+        }
+        return check;
+    }
+
+    bool From_Early_To_Wait()
+    {
+        Patient* temp;
+        Treatment* reqTreatment = nullptr;
+        int priority;
+        bool r = false;
+
+        while (Early_Patients.peek(temp, priority) && timestep == -priority)
+        {
+            if (temp->Peek_ReqTreatment(reqTreatment))
+            {
+                if (dynamic_cast<X_Treatment*>(reqTreatment))
                 {
-                    currPatient->setStaute(WAIT);
+                    bool check = Early_Patients.dequeue(temp, priority);
+                    if (check)
+                    {
+                        MoveToWait_X(temp);
+                        r = true;
+                    }
                 }
-                return check;
+                else if (dynamic_cast<U_Treatment*>(reqTreatment))
+                {
+                    bool check = Early_Patients.dequeue(temp, priority);
+                    if (check)
+                    {
+                        MoveToWait_U(temp);
+                        r = true;
+                    }
+                }
+                else if (dynamic_cast<E_Treatment*>(reqTreatment))
+                {
+                    bool check = Early_Patients.dequeue(temp, priority);
+                    if (check)
+                    {
+                        MoveToWait_E(temp);
+                        r = true;
+                    }
+                }
             }
-
-        bool MoveToWait_E(Patient* currPatient)
-        {
-            bool check = E_Waiting_Patients.enqueue(currPatient);
-            if (check)
-            {
-                currPatient->setStaute(WAIT);
-            }
-            return check;
         }
 
-        bool MoveToWait_X(Patient* currPatient)
+        return r;
+    }
+
+    bool From_Late_To_Wait()
+    {
+        Patient* temp;
+        Treatment* reqTreatment = nullptr;
+        int priority;
+        bool r = false;
+
+        while (Late_Patients.peek(temp, priority) && timestep == -priority)
         {
-            bool check = X_Waiting_Patients.enqueue(currPatient);
-            if (check)
+            if (temp->Peek_ReqTreatment(reqTreatment))
             {
-                currPatient->setStaute(WAIT);
+                if (dynamic_cast<X_Treatment*>(reqTreatment))
+                {
+                    bool check = Late_Patients.dequeue(temp, priority);
+                    if (check)
+                    {
+                        MoveToWait_X(temp);
+                        r = true;
+                    }
+                }
+                else if (dynamic_cast<U_Treatment*>(reqTreatment))
+                {
+                    bool check = Late_Patients.dequeue(temp, priority);
+                    if (check)
+                    {
+                        MoveToWait_U(temp);
+                        r = true;
+                    }
+                }
+                else if (dynamic_cast<E_Treatment*>(reqTreatment))
+                {
+                    bool check = Late_Patients.dequeue(temp, priority);
+                    if (check)
+                    {
+                        MoveToWait_E(temp);
+                        r = true;
+                    }
+                }
             }
-            return check;
         }
 
-        bool From_Early_To_Wait()
+        return r;
+    }
+    bool EnqueueToAppropriateWaitList(Patient* patient, Treatment* treatment)
+    {
+        bool r = false;
+        if (dynamic_cast<X_Treatment*>(treatment))
+        {
+            r = MoveToWait_X(patient);
+
+        }
+        else if (dynamic_cast<U_Treatment*>(treatment))
+        {
+            r = MoveToWait_U(patient);
+
+        }
+        else if (dynamic_cast<E_Treatment*>(treatment))
+        {
+            r = MoveToWait_E(patient);
+
+        }
+        return r;
+    }
+
+
+    int GetTreatmentLatency(Treatment* treatment)
+    {
+        if (dynamic_cast<X_Treatment*>(treatment))
+            return X_Waiting_Patients.GetTreatmentLatency();
+        else if (dynamic_cast<U_Treatment*>(treatment))
+            return U_Waiting_Patients.GetTreatmentLatency();
+        else if (dynamic_cast<E_Treatment*>(treatment))
+            return E_Waiting_Patients.GetTreatmentLatency();
+        return INT_MAX;
+    }
+
+    double Late_Penalty(Patient* Late_Patient)
+    {
+        return (Late_Patient->getPT() + Late_Patient->getVT()) / 2.0;
+    }
+
+    bool Cancel_Treatment()
+    {
+        int random_number = generateRandomNumber(0, 100);
+        if (random_number < Pcancel)
         {
             Patient* temp;
-            Treatment* reqTreatment = nullptr;
-            int priority;
-            bool r = false;
-
-            while (Early_Patients.peek(temp,priority) && timestep == -priority)
+            bool check= X_Waiting_Patients.cancel(temp);
+            if (check)
             {
-                if (temp->Peek_ReqTreatment(reqTreatment))
-                {
-                    if (dynamic_cast<X_Treatment*>(reqTreatment))
-                    {
-                        bool check = Early_Patients.dequeue(temp,priority);
-                        if (check)
-                        {
-                            MoveToWait_X(temp);
-                            r = true;
-                        }
-                    }
-                    else if (dynamic_cast<U_Treatment*>(reqTreatment))
-                    {
-                        bool check = Early_Patients.dequeue(temp, priority);
-                        if (check)
-                        {
-                            MoveToWait_U(temp);
-                            r = true;
-                        }
-                    }
-                    else if (dynamic_cast<E_Treatment*>(reqTreatment))
-                    {
-                        bool check = Early_Patients.dequeue(temp, priority);
-                        if (check)
-                        {
-                            MoveToWait_E(temp);
-                            r = true;
-                        }
-                    }
-                }
+                Finished_Patients.push(temp);
+                cout << "==========================Cancel Operation Successful==========================";
+                return true;
             }
-
-            return r;
         }
-
-        bool From_Late_To_Wait()
+        return false;
+    }
+    bool Reschedule_Treatment()
+    {
+        int random_number = generateRandomNumber(0, 100);
+        int newPriority = -(timestep + generateRandomNumber(1, 100));
+        if (random_number < Presc)
         {
             Patient* temp;
-            Treatment* reqTreatment = nullptr;
-            int priority;
-            bool r = false;
-
-            while (Late_Patients.peek(temp, priority) && timestep == -priority)
+            bool check = Early_Patients.reschedule(newPriority);
+            if (check)
             {
-                if (temp->Peek_ReqTreatment(reqTreatment))
-                {
-                    if (dynamic_cast<X_Treatment*>(reqTreatment))
-                    {
-                        bool check = Late_Patients.dequeue(temp, priority);
-                        if (check)
-                        {
-                            MoveToWait_X(temp);
-                            r = true;
-                        }
-                    }
-                    else if (dynamic_cast<U_Treatment*>(reqTreatment))
-                    {
-                        bool check = Late_Patients.dequeue(temp, priority);
-                        if (check)
-                        {
-                            MoveToWait_U(temp);
-                            r = true;
-                        }
-                    }
-                    else if (dynamic_cast<E_Treatment*>(reqTreatment))
-                    {
-                        bool check = Late_Patients.dequeue(temp, priority);
-                        if (check)
-                        {
-                            MoveToWait_E(temp);
-                            r = true;
-                        }
-                    }
-                }
-            }
-
-            return r;
-        }
-        bool EnqueueToAppropriateWaitList(Patient* patient, Treatment* treatment)
-        {
-            bool r = false;
-            if (dynamic_cast<X_Treatment*>(treatment))
-            {             
-                r = MoveToWait_X(patient);    
-                    
-            }
-            else if (dynamic_cast<U_Treatment*>(treatment))
-            {
-                r = MoveToWait_U(patient);
-                     
-            }
-            else if (dynamic_cast<E_Treatment*>(treatment))
-            {
-                r = MoveToWait_E(patient);
-                    
-            }
-            return r;
-        }
-
-
-        int GetTreatmentLatency(Treatment* treatment)
-        {
-            if (dynamic_cast<X_Treatment*>(treatment))
-                return X_Waiting_Patients.GetTreatmentLatency();
-            else if (dynamic_cast<U_Treatment*>(treatment))
-                return U_Waiting_Patients.GetTreatmentLatency();
-            else if (dynamic_cast<E_Treatment*>(treatment))
-                return E_Waiting_Patients.GetTreatmentLatency();
-            return INT_MAX;
-        }
-
-        
-
-        void Simulate()
-        {
-            Patient* temp = nullptr;
-            int priority; // Dummy Variable
-            bool check=false;
-            string inputfile = UI_Class::ReadInput();
-            File_Loading_Function(inputfile);
-            timestep = 0;
-            int NumAllPatients = All_Patients.getcount();
-            while(Finished_Patients.getCount() != NumAllPatients)
-            {
-                cout << "\nTimestep :" << timestep << endl;
-
-                Check_All_List();
-                From_Early_To_Wait();
-                From_Late_To_Wait();
-
-                UI_Class::PrintOutputScreen(
-                    All_Patients,
-                    Early_Patients,
-                    Late_Patients,
-                    U_Waiting_Patients,
-                    E_Waiting_Patients,
-                    X_Waiting_Patients,
-                    E_Devices,
-                    U_Devices,
-                    X_Rooms,
-                    In_Treatment_List,
-                    Finished_Patients
-                );
-                cout << "\nPress any key to proceed to the next timestep..." << endl;
-                _getch();  // Waits for a keypress
-                    timestep++;
+                cout << "==========================Reschedule Operation Successful==========================";
+                return true;
             }
         }
-        
-
-        double Late_Penalty(Patient* Late_Patient)
-        {
-            return (Late_Patient->getPT() + Late_Patient->getVT()) / 2.0;
-        }
+        return false;
+    }
 
 };
