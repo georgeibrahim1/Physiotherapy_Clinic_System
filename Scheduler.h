@@ -36,13 +36,6 @@ protected:
 
 public:
 
-    int generateRandomNumber(int min, int max, unsigned int seed = 42)
-    {
-        static std::mt19937 engine(seed); // Mersenne Twister engine with fixed seed
-        std::uniform_int_distribution<int> dist(min, max);
-        return dist(engine);
-    }
-
     void Simulate()
     {
         Patient* temp = nullptr;
@@ -56,9 +49,10 @@ public:
         {
             cout << "\nTimestep :" << timestep << endl;
 
-            Check_All_List();
+            Check_All_List(); //Moves Fromm All-Patients list to Early/Late/Waiting list
             From_Early_To_Wait();
             From_Late_To_Wait();
+            //Check_Early_List();
             Cancel_Treatment();
             Reschedule_Treatment();
 
@@ -141,7 +135,7 @@ public:
                 MyFile >> type >> PT >> VT >> NUM_R;
 
                 Input_P[i] = new Patient(i, PT, VT, type);
-
+                
                 for (int j = 0; j < NUM_R; j++)
                 {
                     MyFile >> R >> Time;
@@ -166,13 +160,13 @@ public:
                 All_Patients.enqueue(Input_P[i]);
             }
 
-            delete[]Capacities;
+            /*delete[]Capacities;
 
 
             delete[]ResE;
             delete[]ResU;
             delete[]ResX;
-            delete[]Input_P;
+            delete[]Input_P;*/
 
             MyFile.close();
         }
@@ -215,24 +209,9 @@ public:
 
                 if (temp->Peek_ReqTreatment(reqTreatment))
                 {
-                    if (dynamic_cast<X_Treatment*>(reqTreatment))
-                    {
-                        MoveToWait_X(temp);
-                        r = true;
-                    }
-                    else if (dynamic_cast<U_Treatment*>(reqTreatment))
-                    {
-                        MoveToWait_U(temp);
-                        r = true;
-                    }
-                    else if (dynamic_cast<E_Treatment*>(reqTreatment))
-                    {
-                        MoveToWait_E(temp);
-                        r = true;
-                    }
+                    EnqueueToAppropriateWaitList(temp, reqTreatment);
                 }
             }
-            // All_Patients.peek(temp);
         }
         return r;
     }
@@ -243,7 +222,7 @@ public:
         int priority = 0; // Early patient list is a priority queue, so it needs priority as a parameter 
         Treatment* reqTreatment = nullptr;
 
-
+        
         if (!Early_Patients.peek(temp, priority))
         {
             return false;
@@ -251,7 +230,7 @@ public:
         while (Early_Patients.peek(temp, priority) && timestep == temp->getPT()) // checks if the appointment time  
         {                                                                       // of the front patient matches the timestep
             Early_Patients.dequeue(temp, priority);
-
+            
             if (temp->get_Type() == 'R') // logic of recovering patients, we have to check treatment latencies
             {
                 LinkedQueue<Treatment*> TempReqTreatmentList;
@@ -324,9 +303,8 @@ public:
                 {
                     if (reqTreatment != TreatmentOfList)
                     {
-                        temp->Dequeue_ReqTreatment(reqTreatment);
+                        temp->Enqueue_ReqTreatment(reqTreatment, reqTreatment->GetDuration(), reqTreatment->get_type());
                     }
-
                 }
 
             }
@@ -479,7 +457,13 @@ public:
         return r;
     }
 
-
+    bool From_InTreatment_To_Wait_or_Finsih()
+    {
+        Patient* temp;
+        int priority;
+        In_Treatment_List.dequeue(temp,priority);
+     
+    }
     int GetTreatmentLatency(Treatment* treatment)
     {
         if (dynamic_cast<X_Treatment*>(treatment))
@@ -529,4 +513,10 @@ public:
         return false;
     }
 
+    int generateRandomNumber(int min, int max, unsigned int seed = 42)
+    {
+        static std::mt19937 engine(seed); // Mersenne Twister engine with fixed seed
+        std::uniform_int_distribution<int> dist(min, max);
+        return dist(engine);
+    }
 };
