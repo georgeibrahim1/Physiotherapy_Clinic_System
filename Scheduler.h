@@ -160,13 +160,13 @@ public:
                 All_Patients.enqueue(Input_P[i]);
             }
 
-            /*delete[]Capacities;
+            //delete[]Capacities;
 
 
-            delete[]ResE;
-            delete[]ResU;
-            delete[]ResX;
-            delete[]Input_P;*/
+            //delete[]ResE;
+            //delete[]ResU;
+            //delete[]ResX;
+            //delete[]Input_P;
 
             MyFile.close();
         }
@@ -456,13 +456,33 @@ public:
         }
         return r;
     }
-
     bool From_InTreatment_To_Wait_or_Finsih()
     {
         Patient* temp;
         int priority;
-        In_Treatment_List.dequeue(temp,priority);
-     
+        //Change Resource Status 
+        if (In_Treatment_List.dequeue(temp, priority))
+        {
+            if (!temp->Get_reqtreatmentlistcount())
+            {
+                temp->setStaute(FNSH);
+                Finished_Patients.push(temp);
+            }
+            else
+            {
+                temp->setStaute(WAIT);
+                if (temp->get_Type() == 'N')
+                {
+                    Treatment* assigned_treatment = nullptr;
+                    temp->Peek_ReqTreatment(assigned_treatment);
+                    EnqueueToAppropriateWaitList(temp, assigned_treatment);
+                }
+                //else
+                //APPLY FUNCTION FOR RECOVERED PATIENT CASE
+            }
+            return true;
+        }
+        return false;
     }
     int GetTreatmentLatency(Treatment* treatment)
     {
