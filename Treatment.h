@@ -38,5 +38,14 @@ public:
 	{
 		return Type;
 	}
+
+	//void Set_Assigned_Resource(Resource* r)
+	//{
+	//	r->
+	//}
+	Resource* Get_Assigned_Resource()
+	{
+		return AssignedResource;
+	}
 };
 
