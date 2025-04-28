@@ -50,8 +50,8 @@ public:
             cout << "\nTimestep :" << timestep << endl;
 
             Check_All_List(); //Moves Fromm All-Patients list to Early/Late/Waiting list
-            //Check_Early_List(); //bt3ml errors ya nour :) //Go to line 651 or Nour's Part
-            From_Early_To_Wait();
+            Check_Early_List(); //bt3ml errors ya nour :) //Go to line 651 or Nour's Part
+            //From_Early_To_Wait();
             Reschedule_Treatment();
             From_Late_To_Wait();
             Assign_E();
@@ -207,9 +207,14 @@ public:
                 r = true;
             }
             else // Move to Waiting List 
-            { // this should probably be deleted, what the hell is it doing here? it doesn't belong here.
+            { 
                 All_Patients.dequeue(temp);
                 Treatment* reqTreatment = nullptr;
+
+                if (temp->get_Type() == 'R')
+                {
+                    PrepareRecoveringPatient(temp);
+                }
 
                 if (temp->Peek_ReqTreatment(reqTreatment))
                 {
@@ -237,85 +242,13 @@ public:
             
             if (temp->get_Type() == 'R') // logic of recovering patients, we have to check treatment latencies
             {
-                LinkedQueue<Treatment*> TempReqTreatmentList;
-                Treatment* TreatmentOfList = nullptr; // this will have the treatment of the list with the least Latency
-
-                int LeastLatency = INT_MAX; // we will use this variable to get the min latency
-
-
-                while (temp->Dequeue_ReqTreatment(reqTreatment))
-                {
-
-                    if (GetTreatmentLatency(reqTreatment) < LeastLatency)
-                    {
-                        LeastLatency = GetTreatmentLatency(reqTreatment);
-                        TreatmentOfList = reqTreatment;
-                    }
-
-                    /* if (dynamic_cast<X_Treatment*>(reqTreatment))
-                     {*/
-
-                     /*  if (X_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
-                       {
-                           LeastLatency = X_Waiting_Patients.GetTreatmentLatency();
-                           TreatmentOfList = reqTreatment;
-                       }
-
-
-                   }
-                   else if (dynamic_cast<U_Treatment*>(reqTreatment))
-                   {
-
-                       if (U_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
-                       {
-                           LeastLatency = U_Waiting_Patients.GetTreatmentLatency();
-                           TreatmentOfList = reqTreatment;
-                       }
-                   }
-                   else if (dynamic_cast<E_Treatment*>(reqTreatment))
-                   {
-
-                       if (E_Waiting_Patients.GetTreatmentLatency() < LeastLatency)
-                       {
-                           LeastLatency = E_Waiting_Patients.GetTreatmentLatency();
-                           TreatmentOfList = reqTreatment;
-                       }
-                   }*/
-                    TempReqTreatmentList.enqueue(reqTreatment);
-                }
-                if (TreatmentOfList)
-                {
-                    r = EnqueueToAppropriateWaitList(temp, TreatmentOfList);
-                }
-                //if (dynamic_cast<X_Treatment*>(TreatmentOfList))
-                //{
-                //    MoveToWait_X(temp);//this should be a Treatment function, scheduler should have AddToWait, check doc 2, appendix A
-                //    r = true;
-                //}
-                //else if (dynamic_cast<U_Treatment*>(TreatmentOfList))
-                //{
-                //    MoveToWait_U(temp);
-                //    r = true;
-                //}
-                //else if (dynamic_cast<E_Treatment*>(TreatmentOfList))
-                //{
-                //    MoveToWait_E(temp);
-                //    r = true;              
-                //}
-
-                while (TempReqTreatmentList.dequeue(reqTreatment))
-                {
-                    if (reqTreatment != TreatmentOfList)
-                    {
-                        temp->Enqueue_ReqTreatment(reqTreatment, reqTreatment->GetDuration(), reqTreatment->get_type());
-                    }
-                }
-
+                PrepareRecoveringPatient(temp);
             }
-            else // logic of normal patients
+           // logic of normal patients (after PrepareRecoveringPatient() , Recovering patients are treated as normal)
             {
                 if (temp->Peek_ReqTreatment(reqTreatment))
                 {
+
                     r = EnqueueToAppropriateWaitList(temp, reqTreatment);
                 }
             }
@@ -406,7 +339,19 @@ public:
 
         while (Late_Patients.peek(temp, priority) && timestep == -priority)
         {
+
+            if (temp->get_Type() == 'R')
+            {
+                PrepareRecoveringPatient(temp);
+            }
+
             if (temp->Peek_ReqTreatment(reqTreatment))
+            {
+
+                r = EnqueueToAppropriateWaitList(temp, reqTreatment);
+            }
+
+            /*if (temp->Peek_ReqTreatment(reqTreatment))
             {
                 if (dynamic_cast<X_Treatment*>(reqTreatment))
                 {
@@ -434,8 +379,8 @@ public:
                         MoveToWait_E(temp);
                         r = true;
                     }
-                }
-            }
+                }*/
+           // }
         }
 
         return r;
@@ -640,60 +585,62 @@ public:
                 }
                 else
                 {
-                    currPatient->setStaute(WAIT);
-                    if (currPatient->get_Type() == 'N')
+                   // currPatient->setStaute(WAIT);
+                    if (currPatient->get_Type() == 'R')
                     {
-                        Treatment* assigned_treatment = nullptr;
-                        currPatient->Peek_ReqTreatment(assigned_treatment);
-                        EnqueueToAppropriateWaitList(currPatient, assigned_treatment);
+                        PrepareRecoveringPatient(currPatient);
                     }
-                    else if (currPatient->get_Type() == 'R')
+
+                    Treatment* assigned_treatment = nullptr;
+
+                    if (currPatient->Peek_ReqTreatment(assigned_treatment)) // logic of moving of recovering and normal is the same after calling Prepare()
                     {
-                        //Nour's Part
-
-                        LinkedQueue<Treatment*> TempReqTreatmentList;
-                        Treatment* TreatmentOfList = nullptr; // this will have the treatment of the list with the least Latency
-                        Treatment* assigned_treatment = nullptr;
-                        int LeastLatency = INT_MAX; // we will use this variable to get the min latency
-
-
-                        while (currPatient->Dequeue_ReqTreatment(assigned_treatment))
-                        {
-
-                            if (GetTreatmentLatency(assigned_treatment) < LeastLatency)
-                            {
-                                LeastLatency = GetTreatmentLatency(assigned_treatment);
-                                TreatmentOfList = assigned_treatment;
-                            }
-
-                            TempReqTreatmentList.enqueue(assigned_treatment);
-                        }
-
-                        patientmoved = currPatient->Enqueue_ReqTreatment(TreatmentOfList, TreatmentOfList->GetDuration(), TreatmentOfList->get_type());
-
-                        while (TempReqTreatmentList.dequeue(assigned_treatment))
-                        {
-                            if (assigned_treatment != TreatmentOfList)
-                            {
-                                patientmoved = currPatient->Enqueue_ReqTreatment(assigned_treatment, assigned_treatment->GetDuration(), assigned_treatment->get_type());
-                            }
-                        }
-
-                        if (TreatmentOfList)
-                        {
-                            patientmoved = EnqueueToAppropriateWaitList(currPatient, TreatmentOfList);
-                        }
-
-
-                    }
+                        patientmoved = EnqueueToAppropriateWaitList(currPatient, assigned_treatment);
+                    }                     
                 }
             }
 
         }
 
         return patientmoved;
+    }
+    // we don't actually enqueue patients to their waitlist, instead we prepare the recovering patient to be treated
+    // like a normal patient(just dequeue the required treatment list and move that patient to the appropriate treatment wait list) 
+    void PrepareRecoveringPatient(Patient* temp) // this functions puts the treatment with least latency at the front
+    { 
+        Treatment* reqTreatment;
+        LinkedQueue<Treatment*> TempReqTreatmentList;
+        Treatment* TreatmentOfList = nullptr; // this will have the treatment of the list with the least Latency
+
+        int LeastLatency = INT_MAX; // we will use this variable to get the min latency
+
+
+        while (temp->Dequeue_ReqTreatment(reqTreatment))
+        {
+            if (GetTreatmentLatency(reqTreatment) < LeastLatency)
+            {
+                LeastLatency = GetTreatmentLatency(reqTreatment);
+                TreatmentOfList = reqTreatment;
+            }
+
+            TempReqTreatmentList.enqueue(reqTreatment);
+        }
+
+       
+
+        temp->Enqueue_ReqTreatment(TreatmentOfList, TreatmentOfList->GetDuration(), TreatmentOfList->get_type());// the treatment with the min latency is at front
+
+        while (TempReqTreatmentList.dequeue(reqTreatment))
+        {
+            if (reqTreatment != TreatmentOfList)
+            {
+                temp->Enqueue_ReqTreatment(reqTreatment, reqTreatment->GetDuration(), reqTreatment->get_type());
+            }
+        }
 
     }
+
+
     int GetTreatmentLatency(Treatment* treatment)
     {
         if (dynamic_cast<X_Treatment*>(treatment))
@@ -747,5 +694,9 @@ public:
         static std::mt19937 engine(seed); // Mersenne Twister engine with fixed seed
         std::uniform_int_distribution<int> dist(min, max);
         return dist(engine);
+    }
+    void Create_Output_File()
+    {
+
     }
 };

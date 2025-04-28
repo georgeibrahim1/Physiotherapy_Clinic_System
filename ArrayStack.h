@@ -66,6 +66,8 @@ public:
 	}
 
 	void Print();
+
+	~ArrayStack();
 }; // end ArrayStack
 
 
@@ -86,6 +88,14 @@ void ArrayStack<Patient*>::Print()
 
 	cout << "\n";
 }
+
+template<>
+ArrayStack<Patient*> :: ~ArrayStack()
+{
+	Patient* temp;
+	while (pop(temp));
+}  // destructor to delete patient pointers and patients
+
 
 
 #endif
