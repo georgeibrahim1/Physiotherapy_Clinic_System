@@ -15,7 +15,7 @@ public:
 	{
 			if (isEmpty()) return false;
 
-			int randomIndex = generateRandomNumber(0, this->getcount());
+			int randomIndex = generateRandomNumber(0, this->getcount() - 1);
 
 			priNode<Patient*>* current = head;
 			priNode<Patient*>* prev = nullptr;

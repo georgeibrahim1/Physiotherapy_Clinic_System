@@ -29,7 +29,7 @@ protected:
     X_WaitList X_Waiting_Patients;
     LinkedQueue<Resource*> E_Devices;
     LinkedQueue<Resource*> U_Devices;
-    LinkedQueue<Resource*> X_Rooms;
+    LinkedQueue<X_Resource*> X_Rooms;
     priQueue<Patient*> In_Treatment_List;
     ArrayStack<Patient*> Finished_Patients;
     int timestep, Pcancel, Presc;
@@ -50,12 +50,16 @@ public:
             cout << "\nTimestep :" << timestep << endl;
 
             Check_All_List(); //Moves Fromm All-Patients list to Early/Late/Waiting list
+            //Check_Early_List(); //bt3ml errors ya nour :) //Go to line 651 or Nour's Part
             From_Early_To_Wait();
-            From_Late_To_Wait();
-            //Check_Early_List();
-            Cancel_Treatment();
             Reschedule_Treatment();
-
+            From_Late_To_Wait();
+            Assign_E();
+            Assign_U();
+            Cancel_Treatment();
+            Assign_X();
+            From_InTreatment_To_Wait_or_Finsih();
+            
             UI_Class::PrintOutputScreen(
                 All_Patients,
                 Early_Patients,
@@ -356,7 +360,7 @@ public:
         int priority;
         bool r = false;
 
-        while (Early_Patients.peek(temp, priority) && timestep == -priority)
+        while (Early_Patients.peek(temp, priority) && timestep == temp->getPT())
         {
             if (temp->Peek_ReqTreatment(reqTreatment))
             {
@@ -456,33 +460,239 @@ public:
         }
         return r;
     }
+
+    bool Assign_E()
+    {
+        Patient* currPatient;
+        Resource* resource = nullptr;
+        Treatment* treatment = nullptr;
+        bool patientmoved = false;
+
+        while(E_Waiting_Patients.peek(currPatient) && E_Devices.peek(resource) )
+        {
+            if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
+            { 
+                if (currPatient->Peek_ReqTreatment(treatment))
+                {
+                    if (treatment->CanAssign())
+                    {
+                        resource->Set_Availability(0);
+                        treatment->Set_Assigned_Resource(resource);
+                        treatment->setAssignmentTime(timestep);
+                        patientmoved = true;
+                        currPatient->setStaute(SERV);
+                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                    }
+                }
+            }
+        }
+
+        return patientmoved;
+    }
+
+    bool Assign_U()
+    {
+        Patient* currPatient;
+        Resource* resource = nullptr;
+        Treatment* treatment = nullptr;
+        bool patientmoved = false;
+
+        while (U_Waiting_Patients.peek(currPatient) && U_Devices.peek(resource))
+        {
+            if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
+            {
+                if (currPatient->Peek_ReqTreatment(treatment))
+                {
+                    if (treatment->CanAssign())
+                    {
+                        resource->Set_Availability(0);
+                        treatment->Set_Assigned_Resource(resource);
+                        treatment->setAssignmentTime(timestep);
+                        patientmoved = true;
+                        currPatient->setStaute(SERV);
+                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                    }
+                }
+            }
+        }
+
+        return patientmoved;
+    }
+
+    bool Assign_X()
+    {
+        Patient* currPatient;
+        X_Resource* resource = nullptr;
+        Treatment* treatment = nullptr;
+        bool patientmoved = false;
+
+        while (X_Waiting_Patients.peek(currPatient) && X_Rooms.peek(resource))
+        {
+            if (X_Waiting_Patients.dequeue(currPatient))
+            {
+                if (resource->get_Capacity() - resource->get_Num_Of_Patients() > 1)
+                {
+                    if (currPatient->Peek_ReqTreatment(treatment))
+                    {
+                        if (treatment->CanAssign())
+                        {
+                            if (resource->Increment_Patient())
+                            {
+                                treatment->Set_Assigned_Resource(resource);
+                                treatment->setAssignmentTime(timestep);
+                                patientmoved = true;
+                                currPatient->setStaute(SERV);
+                                In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                            }
+                        }
+                    }
+                }
+                else // Difference == 1 -> Means this resource must be dequeued from the Avail_X_Rooms List as the room would be full
+                {
+                    if (treatment->CanAssign())
+                    {
+                        if (resource->Increment_Patient())
+                        {
+                            if (X_Rooms.dequeue(resource))
+                            {
+                                resource->Set_Availability(0);
+                                treatment->Set_Assigned_Resource(resource);
+                                treatment->setAssignmentTime(timestep);
+                                patientmoved = true;
+                                currPatient->setStaute(SERV);
+                                In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return patientmoved;
+    }
+
+
     bool From_InTreatment_To_Wait_or_Finsih()
     {
-        Patient* temp;
-        int priority;
-        //Change Resource Status 
-        if (In_Treatment_List.dequeue(temp, priority))
+        Patient* currPatient;
+        Treatment* treatment = nullptr;
+        Resource* resource = nullptr;
+        int Priority;
+        bool patientmoved = false;
+
+        while(In_Treatment_List.peek(currPatient,Priority) && timestep == -(Priority))
         {
-            if (!temp->Get_reqtreatmentlistcount())
+            //Change Resource Status
+            //Dequeue the treatment from Reqtreatment List
+            if(currPatient->Peek_ReqTreatment(treatment))
             {
-                temp->setStaute(FNSH);
-                Finished_Patients.push(temp);
-            }
-            else
-            {
-                temp->setStaute(WAIT);
-                if (temp->get_Type() == 'N')
+                if (dynamic_cast<X_Treatment*>(treatment))
                 {
-                    Treatment* assigned_treatment = nullptr;
-                    temp->Peek_ReqTreatment(assigned_treatment);
-                    EnqueueToAppropriateWaitList(temp, assigned_treatment);
+                    if (treatment->Get_Assigned_Resource(resource))
+                    {
+                        if (resource->Get_Availability())
+                        {
+                            dynamic_cast<X_Resource*>(resource)->Decrement_Patient();
+                            treatment->Set_Assigned_Resource(nullptr);
+                            currPatient->Dequeue_ReqTreatment(treatment);
+                        }
+                        else
+                        {
+                            resource->Set_Availability(1);
+                            dynamic_cast<X_Resource*>(resource)->Decrement_Patient();
+                            X_Rooms.enqueue(dynamic_cast<X_Resource*>(resource));
+                            treatment->Set_Assigned_Resource(nullptr);
+                            currPatient->Dequeue_ReqTreatment(treatment);
+                        }
+                    }
                 }
-                //else
-                //APPLY FUNCTION FOR RECOVERED PATIENT CASE
+                else if (dynamic_cast<U_Treatment*>(treatment))
+                {
+                    if (treatment->Get_Assigned_Resource(resource))
+                    {
+                        resource->Set_Availability(1);
+                        U_Devices.enqueue(resource);
+                        treatment->Set_Assigned_Resource(nullptr);
+                        currPatient->Dequeue_ReqTreatment(treatment);
+                    }
+                }
+                else if (dynamic_cast<E_Treatment*>(treatment))
+                {
+                    if (treatment->Get_Assigned_Resource(resource))
+                    {
+                        resource->Set_Availability(1);
+                        E_Devices.enqueue(resource);
+                        treatment->Set_Assigned_Resource(nullptr);
+                        currPatient->Dequeue_ReqTreatment(treatment);
+                    }
+                }
             }
-            return true;
+
+
+            //Dequeue the patient from In Treatment List
+            if (In_Treatment_List.dequeue(currPatient, Priority))
+            {
+                if (!currPatient->Get_reqtreatmentlistcount())
+                {
+                    currPatient->setStaute(FNSH);
+                    patientmoved = true;
+                    Finished_Patients.push(currPatient);
+                }
+                else
+                {
+                    currPatient->setStaute(WAIT);
+                    if (currPatient->get_Type() == 'N')
+                    {
+                        Treatment* assigned_treatment = nullptr;
+                        currPatient->Peek_ReqTreatment(assigned_treatment);
+                        EnqueueToAppropriateWaitList(currPatient, assigned_treatment);
+                    }
+                    else if (currPatient->get_Type() == 'R')
+                    {
+                        //Nour's Part
+
+                        LinkedQueue<Treatment*> TempReqTreatmentList;
+                        Treatment* TreatmentOfList = nullptr; // this will have the treatment of the list with the least Latency
+                        Treatment* assigned_treatment = nullptr;
+                        int LeastLatency = INT_MAX; // we will use this variable to get the min latency
+
+
+                        while (currPatient->Dequeue_ReqTreatment(assigned_treatment))
+                        {
+
+                            if (GetTreatmentLatency(assigned_treatment) < LeastLatency)
+                            {
+                                LeastLatency = GetTreatmentLatency(assigned_treatment);
+                                TreatmentOfList = assigned_treatment;
+                            }
+
+                            TempReqTreatmentList.enqueue(assigned_treatment);
+                        }
+
+                        patientmoved = currPatient->Enqueue_ReqTreatment(TreatmentOfList, TreatmentOfList->GetDuration(), TreatmentOfList->get_type());
+
+                        while (TempReqTreatmentList.dequeue(assigned_treatment))
+                        {
+                            if (assigned_treatment != TreatmentOfList)
+                            {
+                                patientmoved = currPatient->Enqueue_ReqTreatment(assigned_treatment, assigned_treatment->GetDuration(), assigned_treatment->get_type());
+                            }
+                        }
+
+                        if (TreatmentOfList)
+                        {
+                            patientmoved = EnqueueToAppropriateWaitList(currPatient, TreatmentOfList);
+                        }
+
+
+                    }
+                }
+            }
+
         }
-        return false;
+
+        return patientmoved;
+
     }
     int GetTreatmentLatency(Treatment* treatment)
     {
@@ -522,7 +732,6 @@ public:
         int newPriority = -(timestep + generateRandomNumber(1, 100));
         if (random_number < Presc)
         {
-            Patient* temp;
             bool check = Early_Patients.reschedule(newPriority);
             if (check)
             {

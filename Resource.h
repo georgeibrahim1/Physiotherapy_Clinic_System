@@ -43,13 +43,6 @@ public:
 
 	virtual void Print() const
 	{
-		//if (Type == Electro_Device)
-		//{
 			cout << Id;
-		//}
-	//	else if (Type == Ultrasound_Device)
-		//{
-			//cout << Id;
-		//}
 	}
 };

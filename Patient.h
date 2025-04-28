@@ -107,7 +107,7 @@ public:
 		 return check;
 	}
 
-	bool Peek_ReqTreatment(Treatment* temp)
+	bool Peek_ReqTreatment(Treatment*& temp)
 	{
 		bool check = ReqTreatmentList.peek(temp);
 		return check;
@@ -152,7 +152,11 @@ public:
 		}
 		else if (Status == SERV)
 		{
-			cout << "P" << ID << "_" << "R0";
+			Treatment* tre;
+			Resource* res;
+			ReqTreatmentList.peek(tre);
+			tre->Get_Assigned_Resource(res);
+			cout << "P" << ID << "_" << tre->get_type() << res->Get_Id();
 		}
 		else if (Status == FNSH)
 		{

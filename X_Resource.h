@@ -10,6 +10,8 @@ protected:
 
 public:
 
+
+
 	X_Resource(Resource_Type type , int id , int cap) : Resource(type,id) , Capacity(cap)
 	{
 		Num_Of_Patients = 0;
@@ -17,7 +19,7 @@ public:
 
 	bool Increment_Patient()
 	{
-		if(Num_Of_Patients == Capacity)
+		if(Num_Of_Patients >= Capacity)
 		{
 			return false;
 		}
@@ -26,6 +28,22 @@ public:
 			Num_Of_Patients++;
 			return true;
 		}
+	}
+
+	void Decrement_Patient()
+	{
+		if (Num_Of_Patients > 0)
+			Num_Of_Patients--;
+	}
+
+	int get_Num_Of_Patients()
+	{
+		return Num_Of_Patients;
+	}
+
+	int get_Capacity()
+	{
+		return Capacity;
 	}
 
 	virtual void Print() const

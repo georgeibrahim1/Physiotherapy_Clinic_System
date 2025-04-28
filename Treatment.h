@@ -12,14 +12,14 @@ protected:
 public:
 	Treatment()
 	{
-		Duration = 0;
-		AssignmentTime = 0;
+		Duration = -1;
+		AssignmentTime = -1;
 		AssignedResource = nullptr;
 	}
 
-	virtual bool CanAssign() { return 0; };// to be edited
+	virtual bool CanAssign() = 0;
 
-	virtual bool MoveToWait() { return 0; }; // to be edited
+	virtual bool MoveToWait() = 0;
 
 	int GetDuration()
 	{
@@ -39,13 +39,25 @@ public:
 		return Type;
 	}
 
-	//void Set_Assigned_Resource(Resource* r)
-	//{
-	//	r->
-	//}
-	Resource* Get_Assigned_Resource()
+	void Set_Assigned_Resource(Resource* r)
 	{
-		return AssignedResource;
+		AssignedResource = r;
+	}
+
+	bool Get_Assigned_Resource(Resource*& r)
+	{
+		if (AssignedResource)
+		{
+			r = AssignedResource;
+			return true;
+		}
+		else
+			return false;
+	}
+
+	void setAssignmentTime(int assignment_time)
+	{
+		AssignmentTime = assignment_time;
 	}
 };
 

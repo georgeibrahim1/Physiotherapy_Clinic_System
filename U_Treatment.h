@@ -6,7 +6,12 @@ class U_Treatment : public Treatment
 public:
 	bool CanAssign()
 	{
-		return true;
+		if (!AssignedResource)
+		{
+			return true;
+		}
+		else
+			return false;
 	}
 
 	bool MoveToWait()

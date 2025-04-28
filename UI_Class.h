@@ -20,7 +20,7 @@ public:
         X_WaitList& X_Waiting_Patients,
         LinkedQueue<Resource*>& E_Devices,
         LinkedQueue<Resource*>& U_Devices,
-        LinkedQueue<Resource*>& X_Rooms,
+        LinkedQueue<X_Resource*>& X_Rooms,
         priQueue<Patient*>& In_Treatment_List,
         ArrayStack<Patient*>& Finished_Patients)
     {

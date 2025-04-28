@@ -15,7 +15,7 @@ public:
 		if (LinkedQueue <Patient*> ::isEmpty())
 			return false;
 
-		int to_cancel = generateRandomNumber(0, this->getcount());
+		int to_cancel = generateRandomNumber(0, this->getcount() - 1);
 
 		//loop to search for the patient to remove
 		//delete this node then connect previous node to next

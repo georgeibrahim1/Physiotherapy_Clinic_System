@@ -35,6 +35,12 @@ public:
 		return r;
 	}
 
+	bool peek(Patient*& frntEntry) const
+	{
+		bool r = LinkedQueue<Patient*>::peek(frntEntry);
+		return r;
+	}
+
 	bool InsertSorted(Patient*& newEntry, int SortingValue)
 	{
 		bool r = false;
