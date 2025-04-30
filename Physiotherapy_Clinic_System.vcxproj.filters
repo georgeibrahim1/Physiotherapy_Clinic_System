@@ -20,6 +20,12 @@
     <ClCompile Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="E_Resource.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="U_Resource.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Treatment.h">

@@ -89,12 +89,15 @@ void ArrayStack<Patient*>::Print()
 	cout << "\n";
 }
 
-template<>
-ArrayStack<Patient*> :: ~ArrayStack()
-{
-	Patient* temp;
-	while (pop(temp));
-}  // destructor to delete patient pointers and patients
+//template<>
+//ArrayStack<Patient*> :: ~ArrayStack()
+//{
+//	Patient* temp;
+//	while (pop(temp));
+//}  // destructor to delete patient pointers and patients
+
+template<typename T>
+ArrayStack<T>::~ArrayStack() {}
 
 
 

@@ -22,7 +22,9 @@ public:
         LinkedQueue<Resource*>& U_Devices,
         LinkedQueue<X_Resource*>& X_Rooms,
         priQueue<Patient*>& In_Treatment_List,
-        ArrayStack<Patient*>& Finished_Patients)
+        ArrayStack<Patient*>& Finished_Patients,
+        LinkedQueue<Resource*>& MainT_E,
+        LinkedQueue<Resource*>& MainT_U)
     {
         cout << "=============== All List ===============\n";
         cout << All_Patients.getcount() << " ";
@@ -61,19 +63,29 @@ public:
         cout << "\n=============== Avail E-Devices ===============\n";
         cout << E_Devices.getcount() << " ";
         cout << "Electro Devices: ";
-        E_Devices.Print_Avail_EU_Resources();
+        E_Devices.Print_EU_Resources();
 
-        cout << "=============== Avail U-Devices ===============\n";
+        cout << "\n=============== E-Devices In Maintenance ===============\n";
+        cout << MainT_E.getcount() << " ";
+        cout << "Electro Devices: ";
+        MainT_E.Print_EU_Resources();
+
+        cout << "\n=============== Avail U-Devices ===============\n";
         cout << U_Devices.getcount() << " ";
         cout << "Ultra Devices: ";
-        U_Devices.Print_Avail_EU_Resources();
+        U_Devices.Print_EU_Resources();
 
-        cout << "=============== Avail X-Devices ===============\n";
+        cout << "\n=============== U-Devices In Maintenance ===============\n";
+        cout << MainT_U.getcount() << " ";
+        cout << "Electro Devices: ";
+        MainT_U.Print_EU_Resources();
+
+        cout << "\n=============== Avail X-Devices ===============\n";
         cout << X_Rooms.getcount() << " ";
         cout << "Rooms: ";
         X_Rooms.Print_Avail_X_Resources();
 
-        cout << "=============== In-treatment List ===============\n";
+        cout << "\n=============== In-treatment List ===============\n";
         cout << In_Treatment_List.getcount() << " ";
         cout << "==>";
         In_Treatment_List.Print();

@@ -68,7 +68,7 @@ public :
 	int getcount() const;
 	void setcount(int c);
 	void PrintAllList(int);
-	void Print_Avail_EU_Resources();
+	void Print_EU_Resources();
 	void Print_Avail_X_Resources();
 	~LinkedQueue();
 
@@ -171,7 +171,7 @@ void LinkedQueue<T>::PrintAllList(int i)
 }
 
 template <typename T>
-void LinkedQueue<T>::Print_Avail_EU_Resources()
+void LinkedQueue<T>::Print_EU_Resources()
 {
 	if (isEmpty()) return;
 

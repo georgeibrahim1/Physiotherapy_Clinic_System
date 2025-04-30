@@ -7,6 +7,8 @@
 #include "EarlyPList.h"
 #include "X_WaitList.h"
 #include "Resource.h"
+#include "U_Resource.h"
+#include "E_Resource.h"
 #include "ArrayStack.h"
 #include "X_Resource.h"
 #include "UI_Class.h" 
@@ -28,11 +30,13 @@ protected:
     EU_WaitList E_Waiting_Patients;
     X_WaitList X_Waiting_Patients;
     LinkedQueue<Resource*> E_Devices;
+    LinkedQueue<Resource*> MainT_E;
     LinkedQueue<Resource*> U_Devices;
+    LinkedQueue<Resource*> MainT_U;
     LinkedQueue<X_Resource*> X_Rooms;
     priQueue<Patient*> In_Treatment_List;
     ArrayStack<Patient*> Finished_Patients;
-    int timestep, Pcancel, Presc;
+    int timestep, Pcancel, Presc , PFreeFail , PBusyFail;
 
 public:
 
@@ -50,12 +54,13 @@ public:
             cout << "\nTimestep :" << timestep << endl;
 
             Check_All_List(); //Moves Fromm All-Patients list to Early/Late/Waiting list
-            Check_Early_List(); //bt3ml errors ya nour :) //Go to line 651 or Nour's Part
-            //From_Early_To_Wait();
+            Check_Early_List();
             Reschedule_Treatment();
             From_Late_To_Wait();
             Assign_E();
             Assign_U();
+            E_U_To_Destroy(); // It may be destroied here after assigning U , E
+            From_MainT_E_U_to_Avail();
             Cancel_Treatment();
             Assign_X();
             From_InTreatment_To_Wait_or_Finsih();
@@ -71,8 +76,9 @@ public:
                 U_Devices,
                 X_Rooms,
                 In_Treatment_List,
-                Finished_Patients
-            );
+                Finished_Patients,
+                MainT_E, MainT_U);
+
             cout << "\nPress any key to proceed to the next timestep..." << endl;
             _getch();  // Waits for a keypress
             timestep++;
@@ -91,7 +97,21 @@ public:
         if (MyFile.is_open())
         {
             MyFile >> Num_E_Devices >> Num_U_Devices >> Num_X_Rooms;
+            int* MainT_E = new int[Num_E_Devices];
+            int* MainT_U = new int[Num_U_Devices];
             int* Capacities = new int[Num_X_Rooms];
+
+            for (int i = 0; i < Num_E_Devices; i++)
+            {
+
+                MyFile >> MainT_E[i];
+            }
+
+            for (int i = 0; i < Num_U_Devices; i++)
+            {
+
+                MyFile >> MainT_U[i];
+            }
 
             for (int i = 0; i < Num_X_Rooms; i++)
             {
@@ -100,19 +120,19 @@ public:
             }
 
 
-            Resource** ResE = new Resource * [Num_E_Devices];
-            Resource** ResU = new Resource * [Num_U_Devices];
+            E_Resource** ResE = new E_Resource * [Num_E_Devices];
+            U_Resource** ResU = new U_Resource * [Num_U_Devices];
             X_Resource** ResX = new X_Resource * [Num_X_Rooms];
 
             for (int i = 0; i < Num_E_Devices; i++)
             {
-                ResE[i] = new Resource(Electro_Device, i);
+                ResE[i] = new E_Resource(Electro_Device, i,MainT_E[i]);
                 E_Devices.enqueue(ResE[i]);
             }
 
             for (int i = 0; i < Num_U_Devices; i++)
             {
-                ResU[i] = new Resource(Ultrasound_Device, i);
+                ResU[i] = new U_Resource(Ultrasound_Device, i,MainT_U[i]);
                 U_Devices.enqueue(ResU[i]);
             }
 
@@ -122,7 +142,7 @@ public:
                 X_Rooms.enqueue(ResX[i]);
             }
 
-            MyFile >> Pcancel >> Presc;
+            MyFile >> Pcancel >> Presc >> PFreeFail >> PBusyFail;
 
 
             MyFile >> Num_Patients;
@@ -286,50 +306,6 @@ public:
         return check;
     }
 
-    bool From_Early_To_Wait()
-    {
-        Patient* temp;
-        Treatment* reqTreatment = nullptr;
-        int priority;
-        bool r = false;
-
-        while (Early_Patients.peek(temp, priority) && timestep == temp->getPT())
-        {
-            if (temp->Peek_ReqTreatment(reqTreatment))
-            {
-                if (dynamic_cast<X_Treatment*>(reqTreatment))
-                {
-                    bool check = Early_Patients.dequeue(temp, priority);
-                    if (check)
-                    {
-                        MoveToWait_X(temp);
-                        r = true;
-                    }
-                }
-                else if (dynamic_cast<U_Treatment*>(reqTreatment))
-                {
-                    bool check = Early_Patients.dequeue(temp, priority);
-                    if (check)
-                    {
-                        MoveToWait_U(temp);
-                        r = true;
-                    }
-                }
-                else if (dynamic_cast<E_Treatment*>(reqTreatment))
-                {
-                    bool check = Early_Patients.dequeue(temp, priority);
-                    if (check)
-                    {
-                        MoveToWait_E(temp);
-                        r = true;
-                    }
-                }
-            }
-        }
-
-        return r;
-    }
-
     bool From_Late_To_Wait()
     {
         Patient* temp;
@@ -350,37 +326,6 @@ public:
 
                 r = EnqueueToAppropriateWaitList(temp, reqTreatment);
             }
-
-            /*if (temp->Peek_ReqTreatment(reqTreatment))
-            {
-                if (dynamic_cast<X_Treatment*>(reqTreatment))
-                {
-                    bool check = Late_Patients.dequeue(temp, priority);
-                    if (check)
-                    {
-                        MoveToWait_X(temp);
-                        r = true;
-                    }
-                }
-                else if (dynamic_cast<U_Treatment*>(reqTreatment))
-                {
-                    bool check = Late_Patients.dequeue(temp, priority);
-                    if (check)
-                    {
-                        MoveToWait_U(temp);
-                        r = true;
-                    }
-                }
-                else if (dynamic_cast<E_Treatment*>(reqTreatment))
-                {
-                    bool check = Late_Patients.dequeue(temp, priority);
-                    if (check)
-                    {
-                        MoveToWait_E(temp);
-                        r = true;
-                    }
-                }*/
-           // }
         }
 
         return r;
@@ -415,20 +360,29 @@ public:
 
         while(E_Waiting_Patients.peek(currPatient) && E_Devices.peek(resource) )
         {
-            if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
-            { 
-                if (currPatient->Peek_ReqTreatment(treatment))
+            if (dynamic_cast<E_Resource*>(resource)->Get_Destroyed() == 0)
+            {
+                if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
                 {
-                    if (treatment->CanAssign())
+                    if (currPatient->Peek_ReqTreatment(treatment))
                     {
-                        resource->Set_Availability(0);
-                        treatment->Set_Assigned_Resource(resource);
-                        treatment->setAssignmentTime(timestep);
-                        patientmoved = true;
-                        currPatient->setStaute(SERV);
-                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        if (treatment->CanAssign())
+                        {
+                            resource->Set_Availability(0);
+                            treatment->Set_Assigned_Resource(resource);
+                            treatment->setAssignmentTime(timestep);
+                            patientmoved = true;
+                            currPatient->setStaute(SERV);
+                            In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        }
                     }
                 }
+            }
+            else
+            {
+                E_Devices.dequeue(resource);
+                dynamic_cast<E_Resource*>(resource)->Set_Assigment_Time(timestep);
+                MainT_E.enqueue(resource);
             }
         }
 
@@ -444,24 +398,70 @@ public:
 
         while (U_Waiting_Patients.peek(currPatient) && U_Devices.peek(resource))
         {
-            if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
+            if (dynamic_cast<U_Resource*>(resource)->Get_Destroyed() == 0)
             {
-                if (currPatient->Peek_ReqTreatment(treatment))
+                if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
                 {
-                    if (treatment->CanAssign())
+                    if (currPatient->Peek_ReqTreatment(treatment))
                     {
-                        resource->Set_Availability(0);
-                        treatment->Set_Assigned_Resource(resource);
-                        treatment->setAssignmentTime(timestep);
-                        patientmoved = true;
-                        currPatient->setStaute(SERV);
-                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        if (treatment->CanAssign())
+                        {
+                            resource->Set_Availability(0);
+                            treatment->Set_Assigned_Resource(resource);
+                            treatment->setAssignmentTime(timestep);
+                            patientmoved = true;
+                            currPatient->setStaute(SERV);
+                            In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        }
                     }
                 }
+            }
+            else
+            {
+                U_Devices.dequeue(resource);
+                dynamic_cast<U_Resource*>(resource)->Set_Assigment_Time(timestep);
+                MainT_U.enqueue(resource);
             }
         }
 
         return patientmoved;
+    }
+
+    bool From_MainT_E_U_to_Avail()
+    {
+        bool OneRepaired = false;
+        Resource* temp;
+        LinkedQueue<Resource*> tempQ;
+
+        // Handle E_Resources
+        while (MainT_E.dequeue(temp)) {
+            E_Resource* eres = dynamic_cast<E_Resource*>(temp);
+            if (eres && timestep == eres->Get_Assigment_Time() + eres->Get_Maintenance_Time()) {
+                eres->Set_Destroyed(0);
+                E_Devices.enqueue(temp);
+                OneRepaired = true;
+            }
+            else {
+                tempQ.enqueue(temp);
+            }
+        }
+        while (tempQ.dequeue(temp)) MainT_E.enqueue(temp);
+
+        // Handle U_Resources
+        while (MainT_U.dequeue(temp)) {
+            U_Resource* ures = dynamic_cast<U_Resource*>(temp);
+            if (ures && timestep == ures->Get_Assigment_Time() + ures->Get_Maintenance_Time()) {
+                ures->Set_Destroyed(0);
+                U_Devices.enqueue(temp);
+                OneRepaired = true;
+            }
+            else {
+                tempQ.enqueue(temp);
+            }
+        }
+        while (tempQ.dequeue(temp)) MainT_U.enqueue(temp);
+
+        return OneRepaired;
     }
 
     bool Assign_X()
@@ -655,6 +655,53 @@ public:
     double Late_Penalty(Patient* Late_Patient)
     {
         return (Late_Patient->getPT() + Late_Patient->getVT()) / 2.0;
+    }
+
+    bool E_U_To_Destroy()
+    {
+        bool One_Had_been_destroyed = false;
+        int random_number = generateRandomNumber(0, 100);
+        if (random_number < PFreeFail)
+        {
+            // ----------- E Devices -----------
+            int Ecount = E_Devices.getcount();
+            if (Ecount > 0) {
+                int Eidx = generateRandomNumber(0, Ecount - 1);
+                Resource* temp = nullptr;
+                // Move Eidx-th device to the front by rotating others to the back
+                for (int i = 0; i < Ecount; ++i) {
+                    E_Devices.dequeue(temp);
+                    if (i == Eidx) {
+                        // mark as destroyed
+                        E_Resource* eres = dynamic_cast<E_Resource*>(temp);
+                        if (eres) {
+                            eres->Set_Destroyed(1);
+                            One_Had_been_destroyed = true;
+                        }
+                    }
+                    E_Devices.enqueue(temp); // Put it back regardless of status
+                }
+            }
+
+            // ----------- U Devices -----------
+            int Ucount = U_Devices.getcount();
+            if (Ucount > 0) {
+                int Uidx = generateRandomNumber(0, Ucount - 1);
+                Resource* temp = nullptr;
+                for (int i = 0; i < Ucount; ++i) {
+                    U_Devices.dequeue(temp);
+                    if (i == Uidx) {
+                        U_Resource* ures = dynamic_cast<U_Resource*>(temp);
+                        if (ures) {
+                            ures->Set_Destroyed(1);
+                            One_Had_been_destroyed = true;
+                        }
+                    }
+                    U_Devices.enqueue(temp);
+                }
+            }
+        }
+        return One_Had_been_destroyed;
     }
 
     bool Cancel_Treatment()
