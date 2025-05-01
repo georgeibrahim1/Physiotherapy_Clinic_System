@@ -54,6 +54,7 @@ public:
 			to_delete = curr->getItem();
 			count--;
 			curr->setNext(nullptr);
+			curr->getItem()->SetDidCancel(true);
 			delete curr;
 			return true;
 		}

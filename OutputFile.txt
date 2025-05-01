@@ -1,0 +1,72 @@
+| PID | PType | PT | VT | FT | WT | TT | Cancel | Resc |
+|---|---|---|---|---|---|---|---|---|
+| P28 | N | 135 | 135 | 160 | 0 | 25 | F | F |
+
+| P29 | R | 140 | 140 | 156 | 11 | 15 | F | F |
+
+| P27 | R | 130 | 130 | 151 | 11 | 20 | F | F |
+
+| P26 | N | 125 | 125 | 148 | 26 | 20 | F | F |
+
+| P24 | N | 115 | 115 | 136 | 11 | 20 | F | F |
+
+| P25 | R | 120 | 120 | 134 | 4 | 10 | F | F |
+
+| P23 | R | 110 | 110 | 131 | 6 | 20 | F | F |
+
+| P22 | N | 105 | 105 | 125 | 0 | 20 | F | F |
+
+| P19 | N | 90 | 90 | 112 | 28 | 20 | F | F |
+
+| P21 | R | 100 | 100 | 0 | 6 | 15 | T | F |
+
+| P20 | R | 95 | 95 | 105 | 0 | 10 | F | F |
+
+| P18 | R | 85 | 85 | 101 | 6 | 15 | F | F |
+
+| P16 | N | 75 | 75 | 96 | 11 | 20 | F | F |
+
+| P17 | R | 80 | 80 | 95 | 0 | 15 | F | F |
+
+| P15 | R | 70 | 70 | 94 | 22 | 20 | F | F |
+
+| P0 | N | 62 | 10 | 82 | 52 | 20 | F | T |
+
+| P14 | N | 65 | 65 | 80 | 0 | 15 | F | F |
+
+| P13 | R | 60 | 60 | 77 | 13 | 10 | F | F |
+
+| P10 | R | 50 | 50 | 74 | 27 | 15 | F | F |
+
+| P12 | N | 55 | 55 | 0 | 6 | 20 | T | F |
+
+| P11 | R | 50 | 50 | 70 | 0 | 20 | F | F |
+
+| P9 | N | 45 | 45 | 61 | 9 | 15 | F | F |
+
+| P7 | N | 40 | 40 | 57 | 18 | 15 | F | F |
+
+| P6 | R | 40 | 40 | 57 | 12 | 15 | F | F |
+
+| P8 | R | 45 | 45 | 57 | 2 | 10 | F | F |
+
+| P2 | N | 25 | 20 | 53 | 45 | 25 | F | F |
+
+| P3 | R | 30 | 25 | 51 | 23 | 20 | F | F |
+
+| P5 | R | 35 | 35 | 46 | 1 | 10 | F | F |
+
+| P4 | N | 30 | 30 | 46 | 1 | 15 | F | F |
+
+| P1 | N | 20 | 20 | 42 | 23 | 15 | F | F |
+
+
+Total number of timesteps = 161
+Total number of all, N, and R patients = 30, 14, 16
+Average total waiting time for all, N, and R patients = 12.47, 16.43, 9.00
+Average total treatment time for all, N, and R patients = 16.83, 18.93, 15.00
+Percentage of patients of an accepted cancellation (%) = 7 %
+Percentage of patients of an accepted rescheduling (%) = 3 %
+Percentage of early patients (%) = 10 %
+Percentage of late patients (%) = 0 %
+Average late penalty = 0.0 timestep(s)

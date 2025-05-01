@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="E_Resource.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Patient.cpp" />
     <ClCompile Include="Resource.h" />
     <ClCompile Include="U_Resource.h" />
   </ItemGroup>

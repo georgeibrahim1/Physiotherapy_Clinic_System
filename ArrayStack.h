@@ -47,7 +47,13 @@ public:
 	{
 		if (isEmpty()) return false;
 		
-		TopEntry = items[top];		 
+		TopEntry = items[top];
+
+
+		//delete* (items[top]); // deleting patients
+		//delete items[top]; // deleting patient pointers
+
+
 		top--;
 		return true;
 	}  // end pop
@@ -97,7 +103,11 @@ void ArrayStack<Patient*>::Print()
 //}  // destructor to delete patient pointers and patients
 
 template<typename T>
-ArrayStack<T>::~ArrayStack() {}
+ArrayStack<T>::~ArrayStack()
+{
+	Patient* temp;
+	while (pop(temp));
+}
 
 
 

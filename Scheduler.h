@@ -3,7 +3,6 @@
 #include "LinkedQueue.h"
 #include "PriQueue.h"
 #include "EU_WaitList.h"
-#include "priQueue.h"
 #include "EarlyPList.h"
 #include "X_WaitList.h"
 #include "Resource.h"
@@ -16,7 +15,7 @@
 #include <conio.h>
 #include <random>
 #include <climits>
-
+#include <iomanip>
 
 
 class Scheduler
@@ -37,11 +36,13 @@ protected:
     priQueue<Patient*> In_Treatment_List;
     ArrayStack<Patient*> Finished_Patients;
     int timestep, Pcancel, Presc , PFreeFail , PBusyFail;
+    
 
 public:
 
     void Simulate()
     {
+
         Patient* temp = nullptr;
         int priority; // Dummy Variable
         bool check = false;
@@ -59,7 +60,7 @@ public:
             From_Late_To_Wait();
             Assign_E();
             Assign_U();
-            E_U_To_Destroy(); // It may be destroied here after assigning U , E
+            E_U_To_Destroy(); // It may be destroyed here after assigning U , E
             From_MainT_E_U_to_Avail();
             Cancel_Treatment();
             Assign_X();
@@ -147,6 +148,7 @@ public:
 
             MyFile >> Num_Patients;
 
+
             Patient** Input_P = new Patient * [Num_Patients];
 
             for (int i = 0; i < Num_Patients; i++)
@@ -159,11 +161,14 @@ public:
                 MyFile >> type >> PT >> VT >> NUM_R;
 
                 Input_P[i] = new Patient(i, PT, VT, type);
+
+                
+
                 
                 for (int j = 0; j < NUM_R; j++)
                 {
                     MyFile >> R >> Time;
-
+                    Input_P[i]->InctreatmentTime(Time); // for output file
                     if (R == 'E')
                     {
                         E_Treatment* P_Treatment = new E_Treatment();
@@ -215,6 +220,8 @@ public:
             {
                 All_Patients.dequeue(temp);
                 temp->setStaute(ERLY);
+                temp->Set_State('E'); //early
+
                 Early_Patients.enqueue(temp, -temp->getPT());// Sorted by PT
                 r = true;
                 //Done : to EarlyPList after merging the branches
@@ -223,6 +230,7 @@ public:
             {
                 All_Patients.dequeue(temp);
                 temp->setStaute(LATE);
+                temp->Set_State('L');//late
                 Late_Patients.enqueue(temp, -(temp->getVT() + Late_Penalty(temp))); // Sorted by VT+Penalty
                 r = true;
             }
@@ -371,6 +379,7 @@ public:
                             resource->Set_Availability(0);
                             treatment->Set_Assigned_Resource(resource);
                             treatment->setAssignmentTime(timestep);
+                            currPatient->IncwaitTime(timestep -currPatient->getVT()); 
                             patientmoved = true;
                             currPatient->setStaute(SERV);
                             In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -409,6 +418,7 @@ public:
                             resource->Set_Availability(0);
                             treatment->Set_Assigned_Resource(resource);
                             treatment->setAssignmentTime(timestep);
+                            currPatient->IncwaitTime(timestep - currPatient->getVT());
                             patientmoved = true;
                             currPatient->setStaute(SERV);
                             In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -485,6 +495,7 @@ public:
                             {
                                 treatment->Set_Assigned_Resource(resource);
                                 treatment->setAssignmentTime(timestep);
+                                currPatient->IncwaitTime(timestep - currPatient->getVT());
                                 patientmoved = true;
                                 currPatient->setStaute(SERV);
                                 In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -503,6 +514,7 @@ public:
                                 resource->Set_Availability(0);
                                 treatment->Set_Assigned_Resource(resource);
                                 treatment->setAssignmentTime(timestep);
+                                currPatient->IncwaitTime(timestep - currPatient->getVT());
                                 patientmoved = true;
                                 currPatient->setStaute(SERV);
                                 In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -580,6 +592,7 @@ public:
                 if (!currPatient->Get_reqtreatmentlistcount())
                 {
                     currPatient->setStaute(FNSH);
+                    currPatient->Set_FT(timestep);
                     patientmoved = true;
                     Finished_Patients.push(currPatient);
                 }
@@ -654,7 +667,10 @@ public:
 
     double Late_Penalty(Patient* Late_Patient)
     {
-        return (Late_Patient->getPT() + Late_Patient->getVT()) / 2.0;
+        double P = (Late_Patient->getVT() - Late_Patient->getPT()) / 2.0;
+
+        Late_Patient->SetLatePenalty(P);
+        return P;
     }
 
     bool E_U_To_Destroy()
@@ -722,6 +738,8 @@ public:
     }
     bool Reschedule_Treatment()
     {
+       /* srand(time(0));
+        int seed = rand();*/
         int random_number = generateRandomNumber(0, 100);
         int newPriority = -(timestep + generateRandomNumber(1, 100));
         if (random_number < Presc)
@@ -744,6 +762,150 @@ public:
     }
     void Create_Output_File()
     {
+        
+       
+        int totalPatients = 0;
+        int totalNPatients = 0;
+        int totalRPatients = 0;
+        int totalWaitTime = 0;
+        int totalNWaitTime = 0;
+        int totalRWaitTime = 0;
+        int totalTreatmentTime = 0;
+        int totalNTreatmentTime = 0;
+        int totalRTreatmentTime = 0;
+        int totalCancelled = 0;
+        int totalRescheduled = 0;
+        int totalEarly = 0;
+        int totalLate = 0;
+        double totalLatePenalty = 0;
+        double avgWaitAll = 0;
+        double avgWaitN = 0;
+        double avgWaitR = 0;
+        double avgTreatmentAll = 0;
+        double avgTreatmentN = 0;
+        double avgTreatmentR = 0;
+        double cancelPercentage = 0;
+        double rescPercentage = 0;
+        double earlyPercentage = 0;
+        double latePercentage = 0;
+        double avgLatePenalty = 0;
+
+       // string outputfile = UI_Class::ReadInput(); // if you want the user to choose the name of the file
+       //ofstream outFile(outputfile);
+
+        ofstream outFile("OutputFile.txt");
+        if (!outFile.is_open())
+        {
+            cout << "Error creating output file!" << endl;
+            return;
+        }
+
+        outFile << "| PID | PType | PT | VT | FT | WT | TT | Cancel | Resc |\n";
+        outFile << "|---|---|---|---|---|---|---|---|---|\n";
+
+        while (!Finished_Patients.isEmpty())
+        {
+            Patient* p;
+            Finished_Patients.pop(p);
+
+            
+            totalPatients++;
+            if (p->get_Type() == 'N')
+                totalNPatients++;
+            if (p->get_Type() == 'R')
+                totalRPatients++;
+
+             
+            int waitTime = 0; 
+            waitTime = p->GetwaitTime();
+            totalWaitTime += waitTime;
+            if (p->get_Type() == 'N')
+                totalNWaitTime += waitTime;
+            if (p->get_Type() == 'R') 
+                totalRWaitTime += waitTime;
+
+            
+            int treatmentTime = 0; 
+            treatmentTime = p->GettreatmentTime();
+            totalTreatmentTime += treatmentTime;
+            if (p->get_Type() == 'N')
+                totalNTreatmentTime += treatmentTime;
+            if (p->get_Type() == 'R')
+                totalRTreatmentTime += treatmentTime;
+
+            // Count cancellations and reschedules
+            if (p->GetDidCancel()) 
+                totalCancelled++;
+            if (p->GetDidReschedule() > 0)
+                totalRescheduled++;
+
+             /*Count early/late patients*/
+            if (p->get_State() == 'E')
+                totalEarly++;
+            if (p->get_State() == 'L')
+            {
+                int LatePenalty = 0;
+                LatePenalty = p->GetLatePenalty();
+                totalLatePenalty += LatePenalty;
+                totalLate++;
+            }
+
+            // Output patient data
+            /*outFile << "| P" << p->getID() << " | "
+                << p->get_Type() << " | "
+                << p->getPT() << " | "
+                << p->getVT() << " | "
+                << p->getFT() << " | "
+                << waitTime << " | "
+                << treatmentTime << " | "
+                << (p->GetDidCancel() ? "T" : "F") << " | "
+                << (p->GetDidReschedule() > 0 ? "T" : "F") << " |\n";*/
+            outFile << *p << "\n";
+        }
+        if (totalPatients > 0)
+        {
+            avgWaitAll = (double)totalWaitTime / totalPatients;
+            avgTreatmentAll = (double)totalTreatmentTime / totalPatients;
+            cancelPercentage = ((double)totalCancelled / totalPatients) * 100;
+            rescPercentage = ((double)totalRescheduled / totalPatients) * 100;
+            earlyPercentage = ((double)totalEarly / totalPatients) * 100;
+            latePercentage = ((double)totalLate / totalPatients) * 100;
+        }
+        if (totalNPatients > 0)
+        {
+            avgWaitN = (double)totalNWaitTime / totalNPatients;
+            avgTreatmentN = (double)totalNTreatmentTime / totalNPatients;
+        }
+        if (totalRPatients > 0)
+        {
+            avgWaitR = (double)totalRWaitTime / totalRPatients;
+            avgTreatmentR = (double)totalRTreatmentTime / totalRPatients;
+        }
+
+        if (totalLate > 0)
+        {
+            avgLatePenalty = ((double)totalLatePenalty / totalLate);
+        }
+
+
+        outFile << "\nTotal number of timesteps = " << timestep << "\n";
+        outFile << "Total number of all, N, and R patients = "
+            << totalPatients << ", " << totalNPatients << ", " << totalRPatients << "\n";
+        outFile << "Average total waiting time for all, N, and R patients = "
+            << fixed << setprecision(2) << avgWaitAll << ", " << avgWaitN << ", " << avgWaitR << "\n";
+        outFile << "Average total treatment time for all, N, and R patients = "
+            << fixed << setprecision(2) << avgTreatmentAll << ", " << avgTreatmentN << ", " << avgTreatmentR << "\n";
+        outFile << "Percentage of patients of an accepted cancellation (%) = "
+            << fixed << setprecision(0) << cancelPercentage << " %\n";
+        outFile << "Percentage of patients of an accepted rescheduling (%) = "
+            << fixed << setprecision(0) << rescPercentage << " %\n";
+        outFile << "Percentage of early patients (%) = "
+            << fixed << setprecision(0) << earlyPercentage << " %\n";
+        outFile << "Percentage of late patients (%) = "
+            << fixed << setprecision(0) << latePercentage << " %\n";
+        outFile << "Average late penalty = " << fixed << setprecision(1) << avgLatePenalty << " timestep(s)\n";
+
+        outFile.close();
 
     }
 };

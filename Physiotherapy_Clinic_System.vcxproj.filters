@@ -26,6 +26,9 @@
     <ClCompile Include="U_Resource.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Patient.cpp">
+      <Filter>Header Files\Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Treatment.h">

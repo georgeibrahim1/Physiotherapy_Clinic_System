@@ -28,6 +28,10 @@ public:
 			int oldPriority;
 			Patient* patient = current->getItem(oldPriority);
 
+			if (patient)
+				if (patient->GetDidReschedule() == 3)
+					return false;
+
 			if (newPriority < oldPriority)
 			{
 				if (prev)
@@ -40,8 +44,12 @@ public:
 
 
 				current->setItem(patient, newPriority);
+
+
+				patient->Set_PT(-newPriority); // newpriority equals -newPT
 				enqueue(patient, newPriority);
 
+				patient->IncDidReschedule(1);
 				return true;
 			}
 			else

@@ -22,13 +22,17 @@ protected:
 	int ID;
 	int PT;
 	int VT;
+	int FT;
 	char Type; // N or R
+	char State;// early or late (E or L)
 	LinkedQueue<Treatment*> ReqTreatmentList;
 	P_Status Status;
-	static int N_Patitents, R_Patients, R_Waiting_Time, N_Waiting_Time,
-		R_Treatment_Time, N_Treatment_Time, Total_Early, Total_Late,Total_Presc,Total_Pcancel,Avg_Late_Penalty;
-
-	//Treatment* CurrTreatment;// wasn't mentioned by TAs
+	int DidReschedule; // to be used in in output file
+	bool DidCancel;
+	int waitTime;
+	int treatmentTime;
+	int LatePenalty;
+	//friend ostream& operator << (ostream& out, const Patient& p);
 
 public:
 
@@ -37,9 +41,15 @@ public:
 		 ID = 0;
 		 PT = 0;
 		 VT = 0;
+		 FT = 0;
+		 DidReschedule = 0;
+		 DidCancel = false;
+		 waitTime = 0;
+		 treatmentTime = 0;
+		 LatePenalty = 0;
 	}
 
-	Patient(int d, int pt, int vt, char type) : ID(d) , PT(pt) , VT(vt) , Type(type)
+	Patient(int d, int pt, int vt, char type) : ID(d) , PT(pt) , VT(vt), FT(0), Type(type), DidReschedule(0), DidCancel(false), waitTime(0), treatmentTime(0), LatePenalty(0)
 	{
 		//CurrTreatment == nullptr;
 	}
@@ -54,7 +64,7 @@ public:
 		PT = pt;
 	}
 
-	int getPT() const
+	int getPT() const const
 	{
 		return PT;
 	}
@@ -69,12 +79,22 @@ public:
 		return VT;
 	}
 
-	int getID()
+	void Set_FT(int ft)
+	{
+		FT = ft;
+	}
+
+	int getFT() const
+	{
+		return FT;
+	}
+
+	int getID() const
 	{
 		return ID;
 	}
 
-	P_Status getStatue()
+	P_Status getStatue() const
 	{
 		return Status;
 	}
@@ -88,9 +108,72 @@ public:
 	{
 		Type = T;
 	}
-	char get_Type()
+
+	void Set_State(char T)
+	{
+		State = T;
+	}
+
+	void IncDidReschedule(int T)
+	{
+		DidReschedule = DidReschedule + T;
+	}
+
+	void SetDidCancel(bool T)
+	{
+		DidCancel = T;
+	}
+
+	
+
+	int GetDidReschedule() const
+	{
+		return DidReschedule;
+	}
+
+	bool GetDidCancel() const
+
+	{
+		return DidCancel;
+
+	}
+	int GetwaitTime() const
+	{
+		return waitTime;
+	}
+	void IncwaitTime(int T)
+	{
+		waitTime = waitTime + T;
+	}
+
+	int GettreatmentTime() const
+	{
+		return treatmentTime;
+	}
+	void InctreatmentTime(int T)
+	{
+		treatmentTime = treatmentTime + T;
+	}
+
+	int GetLatePenalty() const
+	{
+		return LatePenalty;
+	}
+
+	void SetLatePenalty(double T)
+	{
+		LatePenalty = T;
+	}
+
+
+
+	char get_Type() const
 	{
 		return Type;
+	}
+	char get_State() const
+	{
+		return State;
 	}
 
 	bool Enqueue_ReqTreatment(Treatment* treatment , int d,char type )
@@ -141,6 +224,7 @@ public:
 		else if (Status == ERLY)
 		{
 			cout << ID;
+			cout << endl<< PT; // for debugging
 		}
 		else if (Status == LATE)
 		{
@@ -164,4 +248,20 @@ public:
 		}
 	}
 
+
+	friend ostream& operator << (ostream& outFile, const Patient& p)
+	{
+		outFile << "| P" << p.getID() << " | "
+			<< p.get_Type() << " | "
+			<< p.getPT() << " | "
+			<< p.getVT() << " | "
+			<< p.getFT() << " | "
+			<< p.GetwaitTime() << " | "
+			<< p.GettreatmentTime() << " | "
+			<< (p.GetDidCancel() ? "T" : "F") << " | "
+			<< (p.GetDidReschedule() > 0 ? "T" : "F") << " |\n";
+		return outFile;
+	}
+
 };
+

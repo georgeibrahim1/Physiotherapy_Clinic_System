@@ -11,5 +11,6 @@ int main()
     // the loop for silent mode will call simulate.
     // the loop for normal mode will call simulate then print to the console.
     Maestro.Simulate();
+    Maestro.Create_Output_File();
     return 0;
 }
