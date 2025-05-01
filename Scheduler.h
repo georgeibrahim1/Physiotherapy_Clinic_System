@@ -861,6 +861,8 @@ public:
                 << (p->GetDidCancel() ? "T" : "F") << " | "
                 << (p->GetDidReschedule() > 0 ? "T" : "F") << " |\n";*/
             outFile << *p << "\n";
+            delete p;
+            
         }
         if (totalPatients > 0)
         {
