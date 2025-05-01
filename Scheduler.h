@@ -286,7 +286,14 @@ public:
 
     bool MoveToWait_U(Patient* currPatient)
     {
-        bool check = U_Waiting_Patients.enqueue(currPatient);
+        char state = currPatient->get_State();
+        bool check = false;
+        if (state == 'E' && currPatient->getStatue() != SERV)
+            check = U_Waiting_Patients.enqueue(currPatient);
+        else if (state == 'L' && currPatient->getStatue() != SERV)
+            check = U_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
+        else if (currPatient->getStatue() == SERV)
+            check = U_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
         if (check)
         {
             currPatient->setStaute(WAIT);
@@ -296,7 +303,14 @@ public:
 
     bool MoveToWait_E(Patient* currPatient)
     {
-        bool check = E_Waiting_Patients.enqueue(currPatient);
+        char state = currPatient->get_State();
+        bool check = false;
+        if (state == 'E' && currPatient->getStatue() != SERV)
+            check = E_Waiting_Patients.enqueue(currPatient);
+        else if (state == 'L' && currPatient->getStatue() != SERV)
+            check = E_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
+        else if (currPatient->getStatue() == SERV)
+            check = U_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
         if (check)
         {
             currPatient->setStaute(WAIT);
@@ -306,7 +320,14 @@ public:
 
     bool MoveToWait_X(Patient* currPatient)
     {
-        bool check = X_Waiting_Patients.enqueue(currPatient);
+        char state = currPatient->get_State();
+        bool check = false;
+        if (state == 'E' && currPatient->getStatue() != SERV)
+            check = X_Waiting_Patients.enqueue(currPatient);
+        else if (state == 'L' && currPatient->getStatue() != SERV)
+            check = X_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
+        else if (currPatient->getStatue() == SERV)
+            check = U_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
         if (check)
         {
             currPatient->setStaute(WAIT);
@@ -323,6 +344,7 @@ public:
 
         while (Late_Patients.peek(temp, priority) && timestep == -priority)
         {
+            Late_Patients.dequeue(temp,priority);
 
             if (temp->get_Type() == 'R')
             {
@@ -331,7 +353,6 @@ public:
 
             if (temp->Peek_ReqTreatment(reqTreatment))
             {
-
                 r = EnqueueToAppropriateWaitList(temp, reqTreatment);
             }
         }
@@ -665,9 +686,9 @@ public:
         return INT_MAX;
     }
 
-    double Late_Penalty(Patient* Late_Patient)
+    int Late_Penalty(Patient* Late_Patient)
     {
-        double P = (Late_Patient->getVT() - Late_Patient->getPT()) / 2.0;
+        int P = (Late_Patient->getVT() - Late_Patient->getPT()) / 2.0;
 
         Late_Patient->SetLatePenalty(P);
         return P;
