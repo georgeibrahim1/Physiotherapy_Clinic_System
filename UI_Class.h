@@ -9,7 +9,14 @@ public:
     static string ReadInput()
     {
         string s;
-        cout << "Type in File Name : ";   
+        //cout << "Type in File Name : ";   
+        cin >> s;
+        return s;
+    }
+
+    static char ReadChar()
+    {
+        char s;
         cin >> s;
         return s;
     }
@@ -99,4 +106,10 @@ public:
         cout << "Finished Patients: ";
         Finished_Patients.Print();
     }
+
+    static void PrintMsg(string s)
+    {
+        cout << s << endl;
+    }
+
 };

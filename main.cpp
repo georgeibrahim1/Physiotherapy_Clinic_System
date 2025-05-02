@@ -7,10 +7,17 @@
 int main()
 {
     Scheduler Maestro;
-    //Nour: I think the while loop should be here, we should have two loops. one for silent mode and one for normal.
-    // the loop for silent mode will call simulate.
-    // the loop for normal mode will call simulate then print to the console.
     Maestro.Simulate();
-    Maestro.Create_Output_File();
+    bool Created = Maestro.Create_Output_File();
+    if (!Created) 
+    {
+        string s = "Error creating output file!";
+        UI_Class::PrintMsg(s);
+    }
+    /*else
+    {
+        string s = "Output file created succesfully!";
+        UI_Class::PrintMsg(s);
+    }*/
     return 0;
 }

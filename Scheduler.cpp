@@ -10,13 +10,21 @@ void Scheduler::Simulate()
     Patient* temp = nullptr;
     int priority; // Dummy Variable
     bool check = false;
+    string m = "Type in File Name:";
+    UI_Class::PrintMsg(m);
     string inputfile = UI_Class::ReadInput();
-    File_Loading_Function(inputfile);
+    bool loaded = File_Loading_Function(inputfile);
+    if (!loaded)
+    {
+        string M = "Can't Open the File ... :D";
+        UI_Class::PrintMsg(M);
+        return;
+    }
     timestep = 1;
     bool silent = true;
-    cout << "Do you want it in silent mode ? Y/N....." << endl;
-    char answer;
-    cin >> answer;
+    string s = "Do you want it in silent mode ? Y/N.....";
+    UI_Class::PrintMsg(s);
+    char answer = UI_Class::ReadChar();
     if (answer == 'Y' || answer == 'y')
     {
         silent = 1;
@@ -87,11 +95,12 @@ void Scheduler::Simulate()
 
     if (silent)
     {
-        cout << "Silent Mode, Simulation Ends, Output File Created...." << endl;
+        string F = "Silent Mode, Simulation Ends, Output File Created"; // logically you shouldn't say output file created here because it hasn't been created yet
+        UI_Class::PrintMsg(F);
     }
 }
 
-void Scheduler::File_Loading_Function(string s)
+bool Scheduler::File_Loading_Function(string s)
 {
     int Num_E_Devices;
     int Num_U_Devices;
@@ -203,10 +212,11 @@ void Scheduler::File_Loading_Function(string s)
         //delete[]Input_P;
 
         MyFile.close();
+        return true;
     }
     else
     {
-        cout << "Can't Open the File ... :D" << endl;
+        return false;
     }
 }
 
@@ -299,6 +309,9 @@ bool Scheduler::MoveToWait_U(Patient* currPatient)
         check = U_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
     else if (currPatient->getStatue() == SERV)
         check = U_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
+    else
+        check = U_Waiting_Patients.enqueue(currPatient);
+
     if (check)
     {
         currPatient->setStaute(WAIT);
@@ -316,6 +329,9 @@ bool Scheduler::MoveToWait_E(Patient* currPatient)
         check = E_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
     else if (currPatient->getStatue() == SERV)
         check = E_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
+    else
+        check = E_Waiting_Patients.enqueue(currPatient);
+
     if (check)
     {
         currPatient->setStaute(WAIT);
@@ -333,6 +349,9 @@ bool Scheduler::MoveToWait_X(Patient* currPatient)
         check = X_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
     else if (currPatient->getStatue() == SERV)
         check = X_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
+    else
+        check = X_Waiting_Patients.enqueue(currPatient);
+
     if (check)
     {
         currPatient->setStaute(WAIT);
@@ -768,7 +787,7 @@ int Scheduler::generateRandomNumber(int min, int max, unsigned int seed)
     std::uniform_int_distribution<int> dist(min, max);
     return dist(engine);
 }
-void Scheduler::Create_Output_File()
+bool Scheduler::Create_Output_File()
 {
 
 
@@ -798,14 +817,15 @@ void Scheduler::Create_Output_File()
     double latePercentage = 0;
     double avgLatePenalty = 0;
 
+    //string msg = "Enter the name of your file";
+    //UI_Class::PrintMsg(msg);
     // string outputfile = UI_Class::ReadInput(); // if you want the user to choose the name of the file
     //ofstream outFile(outputfile);
 
     ofstream outFile("OutputFile.txt");
     if (!outFile.is_open())
     {
-        cout << "Error creating output file!" << endl;
-        return;
+        return false;
     }
 
     outFile << "| PID | PType | PT | VT | FT | WT | TT | Cancel | Resc |\n";
@@ -916,5 +936,5 @@ void Scheduler::Create_Output_File()
     outFile << "Average late penalty = " << fixed << setprecision(1) << avgLatePenalty << " timestep(s)\n";
 
     outFile.close();
-
+    return true;
 }

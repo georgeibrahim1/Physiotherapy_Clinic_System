@@ -45,7 +45,7 @@ public:
 
     void Simulate();
 
-    void File_Loading_Function(string s);
+    bool File_Loading_Function(string s);
 
 
     bool Check_All_List();
@@ -86,5 +86,5 @@ public:
 
     int generateRandomNumber(int min, int max, unsigned int seed = 42);
 
-    void Create_Output_File();
+    bool Create_Output_File();
 };

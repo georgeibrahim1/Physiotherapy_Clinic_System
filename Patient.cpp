@@ -185,7 +185,7 @@ Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0
 		else if (Status == ERLY)
 		{
 			cout << ID;
-			cout << endl << PT; // for debugging
+			//cout << endl << PT; // for debugging
 		}
 		else if (Status == LATE)
 		{
