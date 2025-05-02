@@ -6,16 +6,20 @@
 #include <random>
 #include <climits>
 #include <iomanip>
-#include "X_Resource.h"
-#include "Resource.h"
-#include "U_Resource.h"
-#include "E_Resource.h"
+//#include "X_Resource.h"
+////#include "Resource.h"
+//#include "U_Resource.h"
+//#include "E_Resource.h"
+
 
 class Patient;
 class EarlyPList;
 class EU_WaitList;
 class X_WaitList;
-
+//class E_Treatment;
+//class U_Treatment;
+//class X_Treatment;
+//class Treatment;
 
 class Scheduler
 {

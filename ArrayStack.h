@@ -9,7 +9,9 @@
 #define ARRAY_STACK_
 
 #include "StackADT.h"
-#include "Patient.h"
+#include <iostream>
+using namespace std;
+//#include "Patient.h"
 
 //Unless spesificed by the stack user, the default size is 100
 template<typename T>
@@ -78,8 +80,8 @@ public:
 
 
 
-template<>
-void ArrayStack<Patient*>::Print()
+template<typename T>
+void ArrayStack<T>::Print()
 {
 	if (isEmpty()) return;
 
@@ -105,7 +107,7 @@ void ArrayStack<Patient*>::Print()
 template<typename T>
 ArrayStack<T>::~ArrayStack()
 {
-	Patient* temp;
+	T temp;
 	while (pop(temp));
 }
 

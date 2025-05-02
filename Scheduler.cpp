@@ -1,8 +1,8 @@
 #include "Scheduler.h"
-#include "EarlyPList.h"
-#include "X_WaitList.h"
-#include "EU_WaitList.h"
-#include "Patient.h"
+//#include "EarlyPList.h"
+//#include "X_WaitList.h"
+//#include "EU_WaitList.h"
+//#include "Patient.h"
 
 void Scheduler::Simulate()
 {

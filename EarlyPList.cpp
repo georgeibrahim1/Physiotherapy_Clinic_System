@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "priQueue.h"
 #include <fstream>
 #include <conio.h>

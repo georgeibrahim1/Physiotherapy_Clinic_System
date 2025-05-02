@@ -1,8 +1,17 @@
 #pragma once
 
-#include "Treatment.h"
+//#include "Treatment.h"
+#include "E_Treatment.h"
+#include "U_Treatment.h"
+#include "X_Treatment.h"
+
 #include "LinkedQueue.h"
 using namespace std;
+
+//class Treatment;
+class E_Treatment;
+class U_Treatment;
+class X_Treatment;
 
 enum P_Status
 {

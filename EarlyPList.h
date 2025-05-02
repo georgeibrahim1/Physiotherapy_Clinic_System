@@ -1,10 +1,9 @@
 #pragma once
 #include "priQueue.h"
+#include "Patient.h"
 #include <fstream>
 #include <conio.h>
 #include <random>
-#include "Patient.h"
-
 
 class EarlyPList : public priQueue<Patient*>
 {

@@ -1,5 +1,8 @@
 #pragma once
 #include<string>
+#include "ArrayStack.h"
+#include "EarlyPList.h"
+#include "X_WaitList.h"
 class UI_Class
 {
 public:

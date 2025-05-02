@@ -1,6 +1,8 @@
 #pragma once
-#include "Resource.h"
-
+//#include "Resource.h"
+#include "X_Resource.h"
+#include "E_Resource.h"
+#include "U_Resource.h"
 class Scheduler;
 class Patient;
 

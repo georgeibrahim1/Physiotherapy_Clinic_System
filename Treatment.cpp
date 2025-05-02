@@ -1,6 +1,5 @@
 #include"Treatment.h"
-#include "Scheduler.h"
-#include "Patient.h"
+
 
 Treatment::Treatment()
 {

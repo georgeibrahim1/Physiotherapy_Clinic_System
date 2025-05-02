@@ -44,10 +44,10 @@ Single Node Case:
 
 #include "Node.h"
 #include "QueueADT.h"
-#include "Resource.h"
-#include "X_Resource.h"
+//#include "Resource.h"
+//#include "X_Resource.h"
 #include <iostream>
-#include "Patient.h"
+//#include "Patient.h"
 using namespace std;
 
 template <typename T>
