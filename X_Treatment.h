@@ -1,22 +1,13 @@
 #pragma once
 #include "Treatment.h"
 
+class Scheduler;
+class Patient;
 
 class X_Treatment : public Treatment
 {
 public:
-	bool CanAssign()
-	{
-		if (!AssignedResource)
-		{
-			return true;
-		}
-		else
-			return false;
-	}
+	virtual bool CanAssign();
 
-	bool MoveToWait()
-	{
-		return true;
-	}
+	virtual bool MoveToWait(Scheduler* schedular, Patient* currPatient);
 };

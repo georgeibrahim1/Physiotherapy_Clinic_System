@@ -12,37 +12,58 @@
     <Filter Include="Header Files\Classes">
       <UniqueIdentifier>{d6f86844-565e-4f5d-9921-b61f07f46357}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Treatment">
+      <UniqueIdentifier>{e90e1780-f025-4948-8045-75a556f96747}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Resource">
+      <UniqueIdentifier>{14eef1d1-8b44-4ca7-a212-014e96af4713}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Patient">
+      <UniqueIdentifier>{c886ea1f-d565-4ff8-a11a-5198d96051bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Resource.h">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="Scheduler.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="E_Resource.h">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="E_Treatment.cpp">
+      <Filter>Header Files\Treatment</Filter>
+    </ClCompile>
+    <ClCompile Include="U_Treatment.cpp">
+      <Filter>Header Files\Treatment</Filter>
+    </ClCompile>
+    <ClCompile Include="X_Treatment.cpp">
+      <Filter>Header Files\Treatment</Filter>
+    </ClCompile>
+    <ClCompile Include="Treatment.cpp">
+      <Filter>Header Files\Treatment</Filter>
+    </ClCompile>
+    <ClCompile Include="EU_WaitList.cpp">
+      <Filter>Header Files\Classes</Filter>
     </ClCompile>
     <ClCompile Include="U_Resource.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="E_Resource.h">
+      <Filter>Header Files\Resource</Filter>
     </ClCompile>
     <ClCompile Include="Patient.cpp">
+      <Filter>Header Files\Patient</Filter>
+    </ClCompile>
+    <ClCompile Include="X_WaitList.cpp">
+      <Filter>Header Files\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="EarlyPList.cpp">
       <Filter>Header Files\Classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Treatment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="X_Treatment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="E_Treatment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="U_Treatment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ArrayStack.h">
       <Filter>Header Files\Classes</Filter>
     </ClInclude>
@@ -50,9 +71,6 @@
       <Filter>Header Files\Classes</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
-      <Filter>Header Files\Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Patient.h">
       <Filter>Header Files\Classes</Filter>
     </ClInclude>
     <ClInclude Include="priNode.h">
@@ -79,11 +97,26 @@
     <ClInclude Include="Scheduler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="X_Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UI_Class.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="X_Resource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="E_Treatment.h">
+      <Filter>Header Files\Treatment</Filter>
+    </ClInclude>
+    <ClInclude Include="Treatment.h">
+      <Filter>Header Files\Treatment</Filter>
+    </ClInclude>
+    <ClInclude Include="U_Treatment.h">
+      <Filter>Header Files\Treatment</Filter>
+    </ClInclude>
+    <ClInclude Include="X_Treatment.h">
+      <Filter>Header Files\Treatment</Filter>
+    </ClInclude>
+    <ClInclude Include="Patient.h">
+      <Filter>Header Files\Patient</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,9 +1,8 @@
 #pragma once
-#include"LinkedQueue.h"
-#include"Treatment.h"
-#include"X_Treatment.h"
-#include"U_Treatment.h"
-#include"E_Treatment.h"
+
+#include "Treatment.h"
+#include "LinkedQueue.h"
+using namespace std;
 
 enum P_Status
 {
@@ -15,6 +14,7 @@ enum P_Status
 	FNSH
 };
 
+class Treatment;
 
 class Patient
 {
@@ -25,243 +25,79 @@ protected:
 	int FT;
 	char Type; // N or R
 	char State;// early or late (E or L)
-	LinkedQueue<Treatment*> ReqTreatmentList;
 	P_Status Status;
 	int DidReschedule; // to be used in in output file
 	bool DidCancel;
 	int waitTime;
 	int treatmentTime;
 	int LatePenalty;
-	//friend ostream& operator << (ostream& out, const Patient& p);
+	LinkedQueue<Treatment*> ReqTreatmentList;
 
 public:
 
-	Patient()
-	{
-		 ID = 0;
-		 PT = 0;
-		 VT = 0;
-		 FT = 0;
-		 DidReschedule = 0;
-		 DidCancel = false;
-		 waitTime = 0;
-		 treatmentTime = 0;
-		 LatePenalty = 0;
-	}
+	Patient();
 
-	Patient(int d, int pt, int vt, char type) : ID(d) , PT(pt) , VT(vt), FT(0), Type(type), DidReschedule(0), DidCancel(false), waitTime(0), treatmentTime(0), LatePenalty(0)
-	{
-		//CurrTreatment == nullptr;
-	}
+	Patient(int d, int pt, int vt, char type);
 
-	void Set_ID(int d)
-	{
-		ID = d;
-	}
+	void Set_ID(int d);
 
-	void Set_PT(int pt)
-	{
-		PT = pt;
-	}
+	void Set_PT(int pt);
 
-	int getPT() const const
-	{
-		return PT;
-	}
+	int getPT() const;
 
-	void Set_VT(int vt)
-	{
-		VT = vt;
-	}
+	void Set_VT(int vt);
 
-	int getVT() const
-	{
-		return VT;
-	}
+	int getVT() const;
 
-	void Set_FT(int ft)
-	{
-		FT = ft;
-	}
+	void Set_FT(int ft);
 
-	int getFT() const
-	{
-		return FT;
-	}
+	int getFT() const;
 
-	int getID() const
-	{
-		return ID;
-	}
+	int getID() const;
 
-	P_Status getStatue() const
-	{
-		return Status;
-	}
+	P_Status getStatue() const;
 
-	void setStaute(P_Status S)
-	{
-		Status = S;
-	}
+	void setStaute(P_Status S);
 
-	void Set_Type(char T)
-	{
-		Type = T;
-	}
+	void Set_Type(char T);
 
-	void Set_State(char T)
-	{
-		State = T;
-	}
+	void Set_State(char T);
 
-	void IncDidReschedule(int T)
-	{
-		DidReschedule = DidReschedule + T;
-	}
+	void IncDidReschedule(int T);
 
-	void SetDidCancel(bool T)
-	{
-		DidCancel = T;
-	}
+	void SetDidCancel(bool T);
 
-	
+	int GetDidReschedule() const;
 
-	int GetDidReschedule() const
-	{
-		return DidReschedule;
-	}
+	bool GetDidCancel() const;
 
-	bool GetDidCancel() const
+	int GetwaitTime() const;
 
-	{
-		return DidCancel;
+	void IncwaitTime(int T);
 
-	}
-	int GetwaitTime() const
-	{
-		return waitTime;
-	}
-	void IncwaitTime(int T)
-	{
-		waitTime = waitTime + T;
-	}
+	int GettreatmentTime() const;
 
-	int GettreatmentTime() const
-	{
-		return treatmentTime;
-	}
-	void InctreatmentTime(int T)
-	{
-		treatmentTime = treatmentTime + T;
-	}
+	void InctreatmentTime(int T);
 
-	int GetLatePenalty() const
-	{
-		return LatePenalty;
-	}
+	int GetLatePenalty() const;
 
-	void SetLatePenalty(double T)
-	{
-		LatePenalty = T;
-	}
+	void SetLatePenalty(double T);
 
+	char get_Type() const;
 
+	char get_State() const;
 
-	char get_Type() const
-	{
-		return Type;
-	}
-	char get_State() const
-	{
-		return State;
-	}
+	bool Enqueue_ReqTreatment(Treatment* treatment, int d, char type);
 
-	bool Enqueue_ReqTreatment(Treatment* treatment , int d,char type )
-	{
-		treatment->Set_Duration(d);
-		treatment->set_type(type);
-		bool check = ReqTreatmentList.enqueue(treatment);
-		return check;
-	}
+	bool Dequeue_ReqTreatment(Treatment*& temp);
 
-	bool Dequeue_ReqTreatment(Treatment*& temp)
-	{
-		 bool check = ReqTreatmentList.dequeue(temp);
-		 return check;
-	}
+	bool Peek_ReqTreatment(Treatment*& temp);
 
-	bool Peek_ReqTreatment(Treatment*& temp)
-	{
-		bool check = ReqTreatmentList.peek(temp);
-		return check;
-	}
-	/*void SetCurrTreatment(Treatment* c)
-	{
-		CurrTreatment = c;
-	}
+	LinkedQueue<Treatment*> Get_reqtreatmentlist() const;
 
-	Treatment* GetCurrTreatment()
-	{
-		return CurrTreatment;
-	}*/
+	int Get_reqtreatmentlistcount();
 
-	LinkedQueue<Treatment*> Get_reqtreatmentlist()
-	{
-		return ReqTreatmentList;
-	}
+	void Print();
 
-	int Get_reqtreatmentlistcount()
-	{
-		return ReqTreatmentList.getcount();
-	}
-
-	void Print()
-	{
-		if (Status == IDLE)
-		{
-			cout << "P" << ID << "_" << VT;
-		}
-		else if (Status == ERLY)
-		{
-			cout << ID;
-			cout << endl<< PT; // for debugging
-		}
-		else if (Status == LATE)
-		{
-			cout << ID;
-		}
-		else if (Status == WAIT)
-		{
-			cout << ID;
-		}
-		else if (Status == SERV)
-		{
-			Treatment* tre;
-			Resource* res;
-			ReqTreatmentList.peek(tre);
-			tre->Get_Assigned_Resource(res);
-			cout << "P" << ID << "_" << tre->get_type() << res->Get_Id();
-		}
-		else if (Status == FNSH)
-		{
-			cout << ID;
-		}
-	}
-
-
-	friend ostream& operator << (ostream& outFile, const Patient& p)
-	{
-		outFile << "| P" << p.getID() << " | "
-			<< p.get_Type() << " | "
-			<< p.getPT() << " | "
-			<< p.getVT() << " | "
-			<< p.getFT() << " | "
-			<< p.GetwaitTime() << " | "
-			<< p.GettreatmentTime() << " | "
-			<< (p.GetDidCancel() ? "T" : "F") << " | "
-			<< (p.GetDidReschedule() > 0 ? "T" : "F") << " |\n";
-		return outFile;
-	}
-
+	friend ostream& operator << (ostream& outFile, const Patient& p);
 };
-

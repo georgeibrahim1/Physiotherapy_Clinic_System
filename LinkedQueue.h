@@ -44,12 +44,11 @@ Single Node Case:
 
 #include "Node.h"
 #include "QueueADT.h"
-#include "Patient.h"
 #include "Resource.h"
 #include "X_Resource.h"
 #include <iostream>
+#include "Patient.h"
 using namespace std;
-
 
 template <typename T>
 class LinkedQueue:public QueueADT<T>
@@ -75,6 +74,7 @@ public :
 	//copy constructor
 	LinkedQueue(const LinkedQueue<T> & LQ);
 };
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /*
@@ -237,7 +237,7 @@ Output: True if the queue is empty; otherwise false.
 template <typename T>
 bool LinkedQueue<T>::isEmpty() const
 {
-	return (frontPtr==nullptr);
+	return (frontPtr == nullptr);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -250,7 +250,7 @@ Output: True if the operation is successful; otherwise false.
 */
 
 template <typename T>
-bool LinkedQueue<T>::enqueue( const T& newEntry)
+bool LinkedQueue<T>::enqueue(const T& newEntry)
 {
 	Node<T>* newNodePtr = new Node<T>(newEntry);
 	// Insert the new node
@@ -261,7 +261,7 @@ bool LinkedQueue<T>::enqueue( const T& newEntry)
 
 	backPtr = newNodePtr; // New node is the last node now
 	count++;
-	return true ;
+	return true;
 } // end enqueue
 
 
@@ -276,9 +276,9 @@ Output: True if the operation is successful; otherwise false.
 */
 
 template <typename T>
-bool LinkedQueue<T>:: dequeue(T& frntEntry)  
+bool LinkedQueue<T>::dequeue(T& frntEntry)
 {
-	if(isEmpty())
+	if (isEmpty())
 		return false;
 
 	Node<T>* nodeToDeletePtr = frontPtr;
@@ -286,8 +286,8 @@ bool LinkedQueue<T>:: dequeue(T& frntEntry)
 	frontPtr = frontPtr->getNext();
 	// Queue is not empty; remove front
 	if (nodeToDeletePtr == backPtr)	 // Special case: last node in the queue
-		backPtr = nullptr ;	
-		
+		backPtr = nullptr;
+
 	// Free memory reserved for the dequeued node
 	delete nodeToDeletePtr;
 	count--;
@@ -303,9 +303,9 @@ Input: None.
 Output: The front of the queue.
 */
 template <typename T>
-bool LinkedQueue<T>:: peek(T& frntEntry) const 
+bool LinkedQueue<T>::peek(T& frntEntry) const
 {
-	if(isEmpty())
+	if (isEmpty())
 		return false;
 
 	frntEntry = frontPtr->getItem();
@@ -322,12 +322,12 @@ LinkedQueue<T>::~LinkedQueue()
 {
 	//Free all nodes in the queue
 	T temp;
-	while(dequeue(temp));
+	while (dequeue(temp));
 }
 /////////////////////////////////////////////////////////////////////////////////////////
 /*
 Function: Copy constructor
-To avoid shallow copy, 
+To avoid shallow copy,
 copy constructor is provided
 
 Input: LinkedQueue<T>: The Queue to be copied
@@ -335,15 +335,16 @@ Output: none
 */
 
 template <typename T>
-LinkedQueue<T>::LinkedQueue(const LinkedQueue<T> & LQ)
-{	
+LinkedQueue<T>::LinkedQueue(const LinkedQueue<T>& LQ)
+{
 	frontPtr = backPtr = nullptr;
 	Node<T>* NodePtr = LQ.frontPtr;	//start at the front node in LQ
 	while (NodePtr)
 	{
 		enqueue(NodePtr->getItem());	//get data of each node and enqueue it in this queue 
 		NodePtr = NodePtr->getNext();
-	}	
+	}
 }
+
 
 #endif

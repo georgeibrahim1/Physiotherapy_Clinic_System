@@ -1,6 +1,8 @@
-    #pragma once
+#pragma once
 #include "Resource.h"
-#include "Scheduler.h"
+
+class Scheduler;
+class Patient;
 
 class Treatment
 {
@@ -10,54 +12,15 @@ protected:
 	Resource* AssignedResource;
 	char Type; // pls check
 public:
-	Treatment()
-	{
-		Duration = -1;
-		AssignmentTime = -1;
-		AssignedResource = nullptr;
-	}
-
+	Treatment();
 	virtual bool CanAssign() = 0;
-
-	virtual bool MoveToWait() = 0;
-
-	int GetDuration()
-	{
-		return Duration;
-	}
-
-	void Set_Duration(int t)
-	{
-		Duration = t;
-	}
-	void set_type(char c)
-	{
-		Type = c;
-	}
-	char get_type()
-	{
-		return Type;
-	}
-
-	void Set_Assigned_Resource(Resource* r)
-	{
-		AssignedResource = r;
-	}
-
-	bool Get_Assigned_Resource(Resource*& r)
-	{
-		if (AssignedResource)
-		{
-			r = AssignedResource;
-			return true;
-		}
-		else
-			return false;
-	}
-
-	void setAssignmentTime(int assignment_time)
-	{
-		AssignmentTime = assignment_time;
-	}
+	virtual bool MoveToWait(Scheduler* schedular, Patient* currPatient) = 0;
+	int GetDuration();
+	void Set_Duration(int t);
+	void set_type(char c);
+	char get_type();
+	void Set_Assigned_Resource(Resource* r);
+	bool Get_Assigned_Resource(Resource*& r);
+	void setAssignmentTime(int assignment_time);
 };
 

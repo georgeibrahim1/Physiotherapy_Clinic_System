@@ -3,67 +3,20 @@
 #include <fstream>
 #include <conio.h>
 #include <random>
+#include "Patient.h"
+
 
 class EarlyPList : public priQueue<Patient*>
 {
 public:
-	EarlyPList() {}
 
-	~EarlyPList() {}
+	EarlyPList();
 
-	bool reschedule(int newPriority)
-	{
-			if (isEmpty()) return false;
+	~EarlyPList();
 
-			int randomIndex = generateRandomNumber(0, this->getcount() - 1);
+	bool reschedule();
 
-			priNode<Patient*>* current = head;
-			priNode<Patient*>* prev = nullptr;
-
-			for (int i = 0; i < randomIndex; ++i) {
-				prev = current;
-				current = current->getNext();
-			}
-
-			int oldPriority;
-			Patient* patient = current->getItem(oldPriority);
-
-			if (patient)
-				if (patient->GetDidReschedule() == 3)
-					return false;
-
-			if (newPriority < oldPriority)
-			{
-				if (prev)
-					prev->setNext(current->getNext());
-				else
-					head = current->getNext(); // it was head
-
-				current->setNext(nullptr);
-				count--;
-
-
-				current->setItem(patient, newPriority);
-
-
-				patient->Set_PT(-newPriority); // newpriority equals -newPT
-				enqueue(patient, newPriority);
-
-				patient->IncDidReschedule(1);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-   	}
-
-	int generateRandomNumber(int min, int max, unsigned int seed = 42)
-	{
-		static std::mt19937 engine(seed); // Mersenne Twister engine with fixed seed
-		std::uniform_int_distribution<int> dist(min, max);
-		return dist(engine);
-	}
+	int generateRandomNumber(int min, int max, unsigned int seed = 42);
 
 };
 
