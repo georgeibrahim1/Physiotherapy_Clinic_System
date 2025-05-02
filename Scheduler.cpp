@@ -204,6 +204,9 @@ bool Scheduler::File_Loading_Function(string s)
         }
 
         delete[]Capacities;
+        delete[]MainT_E;
+        delete[]MainT_U;
+
 
 
         delete[]ResE;
