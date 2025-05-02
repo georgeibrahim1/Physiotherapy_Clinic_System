@@ -203,13 +203,13 @@ bool Scheduler::File_Loading_Function(string s)
             All_Patients.enqueue(Input_P[i]);
         }
 
-        //delete[]Capacities;
+        delete[]Capacities;
 
 
-        //delete[]ResE;
-        //delete[]ResU;
-        //delete[]ResX;
-        //delete[]Input_P;
+        delete[]ResE;
+        delete[]ResU;
+        delete[]ResX;
+        delete[]Input_P;
 
         MyFile.close();
         return true;
