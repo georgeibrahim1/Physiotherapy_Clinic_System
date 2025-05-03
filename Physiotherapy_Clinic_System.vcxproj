@@ -129,14 +129,12 @@
   <ItemGroup>
     <ClCompile Include="EarlyPList.cpp" />
     <ClCompile Include="EU_WaitList.cpp" />
-    <ClCompile Include="E_Resource.h" />
     <ClCompile Include="E_Treatment.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Patient.cpp" />
     <ClCompile Include="Resource.h" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Treatment.cpp" />
-    <ClCompile Include="U_Resource.h" />
     <ClCompile Include="U_Treatment.cpp" />
     <ClCompile Include="X_Treatment.cpp" />
     <ClCompile Include="X_WaitList.cpp" />

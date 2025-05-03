@@ -1,8 +1,4 @@
 #include "Scheduler.h"
-//#include "EarlyPList.h"
-//#include "X_WaitList.h"
-//#include "EU_WaitList.h"
-//#include "Patient.h"
 
 void Scheduler::Simulate()
 {
@@ -65,8 +61,6 @@ void Scheduler::Simulate()
         From_Late_To_Wait();
         Assign_E();
         Assign_U();
-        E_U_To_Destroy(); // It may be destroyed here after assigning U , E
-        From_MainT_E_U_to_Avail();
         Cancel_Treatment();
         Assign_X();
         From_InTreatment_To_Wait_or_Finsih();
@@ -84,8 +78,7 @@ void Scheduler::Simulate()
                 U_Devices,
                 X_Rooms,
                 In_Treatment_List,
-                Finished_Patients,
-                MainT_E, MainT_U);
+                Finished_Patients);
 
             cout << "\nPress any key to proceed to the next timestep..." << endl;
             _getch();  // Waits for a keypress
@@ -112,21 +105,7 @@ bool Scheduler::File_Loading_Function(string s)
     if (MyFile.is_open())
     {
         MyFile >> Num_E_Devices >> Num_U_Devices >> Num_X_Rooms;
-        int* MainT_E = new int[Num_E_Devices];
-        int* MainT_U = new int[Num_U_Devices];
         int* Capacities = new int[Num_X_Rooms];
-
-        for (int i = 0; i < Num_E_Devices; i++)
-        {
-
-            MyFile >> MainT_E[i];
-        }
-
-        for (int i = 0; i < Num_U_Devices; i++)
-        {
-
-            MyFile >> MainT_U[i];
-        }
 
         for (int i = 0; i < Num_X_Rooms; i++)
         {
@@ -135,19 +114,19 @@ bool Scheduler::File_Loading_Function(string s)
         }
 
 
-        E_Resource** ResE = new E_Resource * [Num_E_Devices];
-        U_Resource** ResU = new U_Resource * [Num_U_Devices];
+        Resource** ResE = new Resource * [Num_E_Devices];
+        Resource** ResU = new Resource * [Num_U_Devices];
         X_Resource** ResX = new X_Resource * [Num_X_Rooms];
 
         for (int i = 0; i < Num_E_Devices; i++)
         {
-            ResE[i] = new E_Resource(Electro_Device, i, MainT_E[i]);
+            ResE[i] = new Resource(Electro_Device, i);
             E_Devices.enqueue(ResE[i]);
         }
 
         for (int i = 0; i < Num_U_Devices; i++)
         {
-            ResU[i] = new U_Resource(Ultrasound_Device, i, MainT_U[i]);
+            ResU[i] = new Resource(Ultrasound_Device, i);
             U_Devices.enqueue(ResU[i]);
         }
 
@@ -157,7 +136,7 @@ bool Scheduler::File_Loading_Function(string s)
             X_Rooms.enqueue(ResX[i]);
         }
 
-        MyFile >> Pcancel >> Presc >> PFreeFail >> PBusyFail;
+        MyFile >> Pcancel >> Presc;
 
 
         MyFile >> Num_Patients;
@@ -204,8 +183,7 @@ bool Scheduler::File_Loading_Function(string s)
         }
 
         delete[]Capacities;
-        delete[]MainT_E;
-        delete[]MainT_U;
+        
 
 
 
@@ -403,30 +381,21 @@ bool Scheduler::Assign_E()
 
     while (E_Waiting_Patients.peek(currPatient) && E_Devices.peek(resource))
     {
-        if (dynamic_cast<E_Resource*>(resource)->Get_Destroyed() == 0)
+        if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
         {
-            if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
+            if (currPatient->Peek_ReqTreatment(treatment))
             {
-                if (currPatient->Peek_ReqTreatment(treatment))
+                if (treatment->CanAssign())
                 {
-                    if (treatment->CanAssign())
-                    {
-                        resource->Set_Availability(0);
-                        treatment->Set_Assigned_Resource(resource);
-                        treatment->setAssignmentTime(timestep);
-                        currPatient->IncwaitTime(timestep - currPatient->getVT());
-                        patientmoved = true;
-                        currPatient->setStaute(SERV);
-                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
-                    }
+                    resource->Set_Availability(0);
+                    treatment->Set_Assigned_Resource(resource);
+                    treatment->setAssignmentTime(timestep);
+                    currPatient->IncwaitTime(timestep - currPatient->getVT());
+                    patientmoved = true;
+                    currPatient->setStaute(SERV);
+                    In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
                 }
             }
-        }
-        else
-        {
-            E_Devices.dequeue(resource);
-            dynamic_cast<E_Resource*>(resource)->Set_Assigment_Time(timestep);
-            MainT_E.enqueue(resource);
         }
     }
 
@@ -442,71 +411,26 @@ bool Scheduler::Assign_U()
 
     while (U_Waiting_Patients.peek(currPatient) && U_Devices.peek(resource))
     {
-        if (dynamic_cast<U_Resource*>(resource)->Get_Destroyed() == 0)
+        if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
         {
-            if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
+            if (currPatient->Peek_ReqTreatment(treatment))
             {
-                if (currPatient->Peek_ReqTreatment(treatment))
+                if (treatment->CanAssign())
                 {
-                    if (treatment->CanAssign())
-                    {
-                        resource->Set_Availability(0);
-                        treatment->Set_Assigned_Resource(resource);
-                        treatment->setAssignmentTime(timestep);
-                        currPatient->IncwaitTime(timestep - currPatient->getVT());
-                        patientmoved = true;
-                        currPatient->setStaute(SERV);
-                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
-                    }
+                    resource->Set_Availability(0);
+                    treatment->Set_Assigned_Resource(resource);
+                    treatment->setAssignmentTime(timestep);
+                    currPatient->IncwaitTime(timestep - currPatient->getVT());
+                    patientmoved = true;
+                    currPatient->setStaute(SERV);
+                    In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
                 }
             }
         }
-        else
-        {
-            U_Devices.dequeue(resource);
-            dynamic_cast<U_Resource*>(resource)->Set_Assigment_Time(timestep);
-            MainT_U.enqueue(resource);
-        }
+
     }
 
     return patientmoved;
-}
-
-bool Scheduler::From_MainT_E_U_to_Avail()
-{
-    bool OneRepaired = false;
-    Resource* temp;
-    LinkedQueue<Resource*> tempQ;
-
-    // Handle E_Resources
-    while (MainT_E.dequeue(temp)) {
-        E_Resource* eres = dynamic_cast<E_Resource*>(temp);
-        if (eres && timestep == eres->Get_Assigment_Time() + eres->Get_Maintenance_Time()) {
-            eres->Set_Destroyed(0);
-            E_Devices.enqueue(temp);
-            OneRepaired = true;
-        }
-        else {
-            tempQ.enqueue(temp);
-        }
-    }
-    while (tempQ.dequeue(temp)) MainT_E.enqueue(temp);
-
-    // Handle U_Resources
-    while (MainT_U.dequeue(temp)) {
-        U_Resource* ures = dynamic_cast<U_Resource*>(temp);
-        if (ures && timestep == ures->Get_Assigment_Time() + ures->Get_Maintenance_Time()) {
-            ures->Set_Destroyed(0);
-            U_Devices.enqueue(temp);
-            OneRepaired = true;
-        }
-        else {
-            tempQ.enqueue(temp);
-        }
-    }
-    while (tempQ.dequeue(temp)) MainT_U.enqueue(temp);
-
-    return OneRepaired;
 }
 
 bool Scheduler::Assign_X()
@@ -708,53 +632,6 @@ int Scheduler::Late_Penalty(Patient* Late_Patient)
     return P;
 }
 
-bool Scheduler::E_U_To_Destroy()
-{
-    bool One_Had_been_destroyed = false;
-    int random_number = generateRandomNumber(0, 100);
-    if (random_number < PFreeFail)
-    {
-        // ----------- E Devices -----------
-        int Ecount = E_Devices.getcount();
-        if (Ecount > 0) {
-            int Eidx = generateRandomNumber(0, Ecount - 1);
-            Resource* temp = nullptr;
-            // Move Eidx-th device to the front by rotating others to the back
-            for (int i = 0; i < Ecount; ++i) {
-                E_Devices.dequeue(temp);
-                if (i == Eidx) {
-                    // mark as destroyed
-                    E_Resource* eres = dynamic_cast<E_Resource*>(temp);
-                    if (eres) {
-                        eres->Set_Destroyed(1);
-                        One_Had_been_destroyed = true;
-                    }
-                }
-                E_Devices.enqueue(temp); // Put it back regardless of status
-            }
-        }
-
-        // ----------- U Devices -----------
-        int Ucount = U_Devices.getcount();
-        if (Ucount > 0) {
-            int Uidx = generateRandomNumber(0, Ucount - 1);
-            Resource* temp = nullptr;
-            for (int i = 0; i < Ucount; ++i) {
-                U_Devices.dequeue(temp);
-                if (i == Uidx) {
-                    U_Resource* ures = dynamic_cast<U_Resource*>(temp);
-                    if (ures) {
-                        ures->Set_Destroyed(1);
-                        One_Had_been_destroyed = true;
-                    }
-                }
-                U_Devices.enqueue(temp);
-            }
-        }
-    }
-    return One_Had_been_destroyed;
-}
-
 bool Scheduler::Cancel_Treatment()
 {
     int random_number = generateRandomNumber(0, 100);
@@ -792,8 +669,6 @@ int Scheduler::generateRandomNumber(int min, int max, unsigned int seed)
 }
 bool Scheduler::Create_Output_File()
 {
-
-
     int totalPatients = 0;
     int totalNPatients = 0;
     int totalRPatients = 0;
@@ -881,16 +756,6 @@ bool Scheduler::Create_Output_File()
             totalLate++;
         }
 
-        // Output patient data
-        /*outFile << "| P" << p->getID() << " | "
-            << p->get_Type() << " | "
-            << p->getPT() << " | "
-            << p->getVT() << " | "
-            << p->getFT() << " | "
-            << waitTime << " | "
-            << treatmentTime << " | "
-            << (p->GetDidCancel() ? "T" : "F") << " | "
-            << (p->GetDidReschedule() > 0 ? "T" : "F") << " |\n";*/
         outFile << *p << "\n";
         delete p;
 

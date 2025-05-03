@@ -44,13 +44,7 @@
     <ClCompile Include="EU_WaitList.cpp">
       <Filter>Header Files\Classes</Filter>
     </ClCompile>
-    <ClCompile Include="U_Resource.h">
-      <Filter>Header Files\Resource</Filter>
-    </ClCompile>
     <ClCompile Include="Resource.h">
-      <Filter>Header Files\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="E_Resource.h">
       <Filter>Header Files\Resource</Filter>
     </ClCompile>
     <ClCompile Include="Patient.cpp">

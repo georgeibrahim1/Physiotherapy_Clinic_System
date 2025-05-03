@@ -8,8 +8,7 @@ class UI_Class
 public:
     static string ReadInput()
     {
-        string s;
-        //cout << "Type in File Name : ";   
+        string s;   
         cin >> s;
         return s;
     }
@@ -32,9 +31,7 @@ public:
         LinkedQueue<Resource*>& U_Devices,
         LinkedQueue<X_Resource*>& X_Rooms,
         priQueue<Patient*>& In_Treatment_List,
-        ArrayStack<Patient*>& Finished_Patients,
-        LinkedQueue<Resource*>& MainT_E,
-        LinkedQueue<Resource*>& MainT_U)
+        ArrayStack<Patient*>& Finished_Patients)
     {
         cout << "=============== All List ===============\n";
         cout << All_Patients.getcount() << " ";
@@ -75,20 +72,10 @@ public:
         cout << "Electro Devices: ";
         E_Devices.Print_EU_Resources();
 
-        cout << "\n=============== E-Devices In Maintenance ===============\n";
-        cout << MainT_E.getcount() << " ";
-        cout << "Electro Devices: ";
-        MainT_E.Print_EU_Resources();
-
         cout << "\n=============== Avail U-Devices ===============\n";
         cout << U_Devices.getcount() << " ";
         cout << "Ultra Devices: ";
         U_Devices.Print_EU_Resources();
-
-        cout << "\n=============== U-Devices In Maintenance ===============\n";
-        cout << MainT_U.getcount() << " ";
-        cout << "Electro Devices: ";
-        MainT_U.Print_EU_Resources();
 
         cout << "\n=============== Avail X-Devices ===============\n";
         cout << X_Rooms.getcount() << " ";
@@ -109,7 +96,7 @@ public:
 
     static void PrintMsg(string s)
     {
-        cout << s << endl;
+        cout << s ;
     }
 
 };
