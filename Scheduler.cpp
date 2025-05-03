@@ -234,7 +234,7 @@ bool Scheduler::Check_All_List()
         {
             All_Patients.dequeue(temp);
             Treatment* reqTreatment = nullptr;
-
+            temp->Set_EnteredWaitRoom(timestep);
             if (temp->get_Type() == 'R')
             {
                 PrepareRecoveringPatient(temp);
@@ -274,6 +274,8 @@ bool Scheduler::Check_Early_List()
             {
 
                 r = EnqueueToAppropriateWaitList(temp, reqTreatment);
+                temp->Set_EnteredWaitRoom(timestep);
+
             }
         }
     }
@@ -359,6 +361,8 @@ bool Scheduler::From_Late_To_Wait()
         if (temp->Peek_ReqTreatment(reqTreatment))
         {
             r = EnqueueToAppropriateWaitList(temp, reqTreatment);
+            temp->Set_EnteredWaitRoom(timestep);
+
         }
     }
 
@@ -390,7 +394,7 @@ bool Scheduler::Assign_E()
                     resource->Set_Availability(0);
                     treatment->Set_Assigned_Resource(resource);
                     treatment->setAssignmentTime(timestep);
-                    currPatient->IncwaitTime(timestep - currPatient->getVT());
+                    currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
                     patientmoved = true;
                     currPatient->setStaute(SERV);
                     In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -420,7 +424,7 @@ bool Scheduler::Assign_U()
                     resource->Set_Availability(0);
                     treatment->Set_Assigned_Resource(resource);
                     treatment->setAssignmentTime(timestep);
-                    currPatient->IncwaitTime(timestep - currPatient->getVT());
+                    currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
                     patientmoved = true;
                     currPatient->setStaute(SERV);
                     In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -454,7 +458,7 @@ bool Scheduler::Assign_X()
                         {
                             treatment->Set_Assigned_Resource(resource);
                             treatment->setAssignmentTime(timestep);
-                            currPatient->IncwaitTime(timestep - currPatient->getVT());
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
                             patientmoved = true;
                             currPatient->setStaute(SERV);
                             In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -473,7 +477,7 @@ bool Scheduler::Assign_X()
                             resource->Set_Availability(0);
                             treatment->Set_Assigned_Resource(resource);
                             treatment->setAssignmentTime(timestep);
-                            currPatient->IncwaitTime(timestep - currPatient->getVT());
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
                             patientmoved = true;
                             currPatient->setStaute(SERV);
                             In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -568,6 +572,8 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                 if (currPatient->Peek_ReqTreatment(assigned_treatment)) // logic of moving of recovering and normal is the same after calling Prepare()
                 {
                     patientmoved = EnqueueToAppropriateWaitList(currPatient, assigned_treatment);
+                    currPatient->Set_EnteredWaitRoom(timestep);
+
                 }
             }
         }

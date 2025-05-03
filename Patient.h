@@ -38,6 +38,7 @@ protected:
 	int DidReschedule; // to be used in in output file
 	bool DidCancel;
 	int waitTime;
+	int EnteredWaitRoom; // time of entering waiting list
 	int treatmentTime;
 	int LatePenalty;
 	LinkedQueue<Treatment*> ReqTreatmentList;
@@ -81,6 +82,11 @@ public:
 	bool GetDidCancel() const;
 
 	int GetwaitTime() const;
+
+	int getEnteredWaitRoom() const;
+
+	void Set_EnteredWaitRoom(int t);
+
 
 	void IncwaitTime(int T);
 

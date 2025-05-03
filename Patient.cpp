@@ -17,9 +17,10 @@ Patient::Patient()
 		waitTime = 0;
 		treatmentTime = 0;
 		LatePenalty = 0;
+		EnteredWaitRoom = 0;
 	}
 
-Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0), Type(type), DidReschedule(0), DidCancel(false), waitTime(0), treatmentTime(0), LatePenalty(0)
+Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0), Type(type), DidReschedule(0), DidCancel(false), waitTime(0), treatmentTime(0), LatePenalty(0), EnteredWaitRoom(0)
 	{
 		//CurrTreatment == nullptr;
 	}
@@ -134,6 +135,18 @@ Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0
 	{
 		LatePenalty = T;
 	}
+
+	int Patient::getEnteredWaitRoom() const
+	{
+		return EnteredWaitRoom;
+	}
+
+	void Patient::Set_EnteredWaitRoom(int t)
+	{
+		EnteredWaitRoom = t;
+	}
+
+	
 
 
 
