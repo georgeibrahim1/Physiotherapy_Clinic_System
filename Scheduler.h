@@ -74,4 +74,5 @@ public:
     int generateRandomNumber(int min, int max, unsigned int seed = 42);
 
     bool Create_Output_File();
+    ~Scheduler();
 };

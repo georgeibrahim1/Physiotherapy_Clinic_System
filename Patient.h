@@ -115,4 +115,5 @@ public:
 	void Print();
 
 	friend ostream& operator << (ostream& outFile, const Patient& p);
+	~Patient();
 };

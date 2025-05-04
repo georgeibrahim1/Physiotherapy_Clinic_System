@@ -33,8 +33,11 @@ void Scheduler::Simulate()
     {
         while (answer != 'Y' || answer != 'y' || answer != 'N' || answer != 'n')
         {
-            cout << "Invalid Character";
-            cin >> answer;
+            //cout << "Invalid Character";
+            string sos = "Invalid Character";
+            UI_Class::PrintMsg(sos);
+            answer = UI_Class::ReadChar();   
+            //cin >> answer;
 
             if (answer == 'Y' || answer == 'y')
             {
@@ -50,10 +53,10 @@ void Scheduler::Simulate()
     int NumAllPatients = All_Patients.getcount();
     while (Finished_Patients.getCount() != NumAllPatients)
     {
-        if (!silent)
+        /*if (!silent)
         {
             cout << "\nTimestep :" << timestep << endl;
-        }
+        }*/
 
         Check_All_List(); //Moves Fromm All-Patients list to Early/Late/Waiting list
         Check_Early_List();
@@ -78,9 +81,12 @@ void Scheduler::Simulate()
                 U_Devices,
                 X_Rooms,
                 In_Treatment_List,
-                Finished_Patients);
+                Finished_Patients, timestep);
 
-            cout << "\nPress any key to proceed to the next timestep..." << endl;
+
+            string Rotoscope = "\nPress any key to proceed to the next timestep...";
+            UI_Class::PrintMsg(Rotoscope);
+            //cout << "\nPress any key to proceed to the next timestep..." << endl;
             _getch();  // Waits for a keypress
         }
         timestep++;
@@ -518,6 +524,7 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                         dynamic_cast<X_Resource*>(resource)->Decrement_Patient();
                         treatment->Set_Assigned_Resource(nullptr);
                         currPatient->Dequeue_ReqTreatment(treatment);
+                        delete treatment;
                     }
                     else
                     {
@@ -526,6 +533,8 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                         X_Rooms.enqueue(dynamic_cast<X_Resource*>(resource));
                         treatment->Set_Assigned_Resource(nullptr);
                         currPatient->Dequeue_ReqTreatment(treatment);
+                        delete treatment;
+
                     }
                 }
             }
@@ -537,6 +546,8 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                     U_Devices.enqueue(resource);
                     treatment->Set_Assigned_Resource(nullptr);
                     currPatient->Dequeue_ReqTreatment(treatment);
+                    delete treatment;
+
                 }
             }
             else if (dynamic_cast<E_Treatment*>(treatment))
@@ -547,6 +558,8 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                     E_Devices.enqueue(resource);
                     treatment->Set_Assigned_Resource(nullptr);
                     currPatient->Dequeue_ReqTreatment(treatment);
+                    delete treatment;
+
                 }
             }
         }
@@ -715,8 +728,10 @@ bool Scheduler::Create_Output_File()
         return false;
     }
 
-    outFile << "| PID | PType | PT | VT | FT | WT | TT | Cancel | Resc |\n";
-    outFile << "|---|---|---|---|---|---|---|---|---|\n";
+    //outFile << "| PID | PType | PT | VT | FT | WT | TT | Cancel | Resc |\n";
+    //outFile << "|---|---|---|---|---|---|---|---|---|\n";
+    outFile << "PID\tPType\tPT\tVT\tFT\tWT\tTT\tCancel\tResc\n";
+
 
     while (!Finished_Patients.isEmpty())
     {
@@ -814,4 +829,24 @@ bool Scheduler::Create_Output_File()
 
     outFile.close();
     return true;
+}
+
+Scheduler::~Scheduler() {
+    // Delete all resources
+    while (!E_Devices.isEmpty()) {
+        Resource* res;
+        E_Devices.dequeue(res);
+        delete res;
+    }
+    while (!U_Devices.isEmpty()) {
+        Resource* res;
+        U_Devices.dequeue(res);
+        delete res;
+    }
+    while (!X_Rooms.isEmpty()) {
+        X_Resource* res;
+        X_Rooms.dequeue(res);
+        delete res;
+    }
+   
 }
