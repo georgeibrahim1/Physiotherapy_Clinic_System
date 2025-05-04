@@ -37,8 +37,11 @@ void Scheduler::Simulate()
     {
         while (answer != 'Y' || answer != 'y' || answer != 'N' || answer != 'n')
         {
-            cout << "Invalid Character";
-            cin >> answer;
+            //cout << "Invalid Character";
+            string sos = "Invalid Character";
+            UI_Class::PrintMsg(sos);
+            answer = UI_Class::ReadChar();
+            //cin >> answer;
 
             if (answer == 'Y' || answer == 'y')
             {
@@ -54,10 +57,10 @@ void Scheduler::Simulate()
     int NumAllPatients = All_Patients.getcount();
     while (Finished_Patients.getCount() != NumAllPatients)
     {
-        if (!silent)
+       /* if (!silent)
         {
             cout << "\nTimestep :" << timestep << endl;
-        }
+        }*/
 
         Check_All_List(); //Moves Fromm All-Patients list to Early/Late/Waiting list
         Check_Early_List();
@@ -85,9 +88,11 @@ void Scheduler::Simulate()
                 X_Rooms,
                 In_Treatment_List,
                 Finished_Patients,
-                MainT_E, MainT_U);
+                MainT_E, MainT_U, timestep);
 
-            cout << "\nPress any key to proceed to the next timestep..." << endl;
+            string Rotoscope = "\nPress any key to proceed to the next timestep...";
+            UI_Class::PrintMsg(Rotoscope);
+            //cout << "\nPress any key to proceed to the next timestep..." << endl;
             _getch();  // Waits for a keypress
         }
         timestep++;
@@ -265,6 +270,7 @@ bool Scheduler::Check_All_List()
             if (temp->Peek_ReqTreatment(reqTreatment))
             {
                 EnqueueToAppropriateWaitList(temp, reqTreatment);
+                temp->Set_EnteredWaitRoom(timestep);
             }
         }
     }
@@ -296,6 +302,7 @@ bool Scheduler::Check_Early_List()
             {
 
                 r = EnqueueToAppropriateWaitList(temp, reqTreatment);
+                temp->Set_EnteredWaitRoom(timestep);
             }
         }
     }
@@ -381,6 +388,7 @@ bool Scheduler::From_Late_To_Wait()
         if (temp->Peek_ReqTreatment(reqTreatment))
         {
             r = EnqueueToAppropriateWaitList(temp, reqTreatment);
+            temp->Set_EnteredWaitRoom(timestep);
         }
     }
 
@@ -414,7 +422,7 @@ bool Scheduler::Assign_E()
                         resource->Set_Availability(0);
                         treatment->Set_Assigned_Resource(resource);
                         treatment->setAssignmentTime(timestep);
-                        currPatient->IncwaitTime(timestep - currPatient->getVT());
+                        currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
                         patientmoved = true;
                         currPatient->setStaute(SERV);
                         In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -453,7 +461,7 @@ bool Scheduler::Assign_U()
                         resource->Set_Availability(0);
                         treatment->Set_Assigned_Resource(resource);
                         treatment->setAssignmentTime(timestep);
-                        currPatient->IncwaitTime(timestep - currPatient->getVT());
+                        currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
                         patientmoved = true;
                         currPatient->setStaute(SERV);
                         In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -530,7 +538,7 @@ bool Scheduler::Assign_X()
                         {
                             treatment->Set_Assigned_Resource(resource);
                             treatment->setAssignmentTime(timestep);
-                            currPatient->IncwaitTime(timestep - currPatient->getVT());
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
                             patientmoved = true;
                             currPatient->setStaute(SERV);
                             In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -551,7 +559,7 @@ bool Scheduler::Assign_X()
                                 resource->Set_Availability(0);
                                 treatment->Set_Assigned_Resource(resource);
                                 treatment->setAssignmentTime(timestep);
-                                currPatient->IncwaitTime(timestep - currPatient->getVT());
+                                currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
                                 patientmoved = true;
                                 currPatient->setStaute(SERV);
                                 In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
@@ -590,6 +598,7 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                         dynamic_cast<X_Resource*>(resource)->Decrement_Patient();
                         treatment->Set_Assigned_Resource(nullptr);
                         currPatient->Dequeue_ReqTreatment(treatment);
+                        delete treatment;
                     }
                     else
                     {
@@ -598,6 +607,7 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                         X_Rooms.enqueue(dynamic_cast<X_Resource*>(resource));
                         treatment->Set_Assigned_Resource(nullptr);
                         currPatient->Dequeue_ReqTreatment(treatment);
+                        delete treatment;
                     }
                 }
             }
@@ -609,6 +619,7 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                     U_Devices.enqueue(resource);
                     treatment->Set_Assigned_Resource(nullptr);
                     currPatient->Dequeue_ReqTreatment(treatment);
+                    delete treatment;
                 }
             }
             else if (dynamic_cast<E_Treatment*>(treatment))
@@ -619,6 +630,7 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                     E_Devices.enqueue(resource);
                     treatment->Set_Assigned_Resource(nullptr);
                     currPatient->Dequeue_ReqTreatment(treatment);
+                    delete treatment;
                 }
             }
         }
@@ -647,6 +659,8 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                 if (currPatient->Peek_ReqTreatment(assigned_treatment)) // logic of moving of recovering and normal is the same after calling Prepare()
                 {
                     patientmoved = EnqueueToAppropriateWaitList(currPatient, assigned_treatment);
+                    currPatient->Set_EnteredWaitRoom(timestep);
+
                 }
             }
         }
@@ -834,8 +848,9 @@ bool Scheduler::Create_Output_File()
         return false;
     }
 
-    outFile << "| PID | PType | PT | VT | FT | WT | TT | Cancel | Resc |\n";
-    outFile << "|---|---|---|---|---|---|---|---|---|\n";
+    //outFile << "| PID | PType | PT | VT | FT | WT | TT | Cancel | Resc |\n";
+    //outFile << "|---|---|---|---|---|---|---|---|---|\n";
+    outFile << "PID\tPType\tPT\tVT\tFT\tWT\tTT\tCancel\tResc\n";
 
     while (!Finished_Patients.isEmpty())
     {
@@ -943,4 +958,40 @@ bool Scheduler::Create_Output_File()
 
     outFile.close();
     return true;
+}
+
+Scheduler::~Scheduler() {
+    // Delete all resources
+    while (!E_Devices.isEmpty()) 
+    {
+        Resource* res;
+        E_Devices.dequeue(res);
+        delete res;
+    }
+    while (!U_Devices.isEmpty()) 
+    {
+        Resource* res;
+        U_Devices.dequeue(res);
+        delete res;
+    }
+    while (!X_Rooms.isEmpty()) 
+    {
+        X_Resource* res;
+        X_Rooms.dequeue(res);
+        delete res;
+    }
+
+    while (!MainT_E.isEmpty()) 
+    {
+        Resource* res;
+        MainT_E.dequeue(res);
+        delete res;
+    }
+    while (!MainT_U.isEmpty()) 
+    {
+        Resource* res;
+        MainT_U.dequeue(res);
+        delete res;
+    }
+
 }

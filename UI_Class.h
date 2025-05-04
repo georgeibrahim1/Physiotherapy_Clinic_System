@@ -34,8 +34,10 @@ public:
         priQueue<Patient*>& In_Treatment_List,
         ArrayStack<Patient*>& Finished_Patients,
         LinkedQueue<Resource*>& MainT_E,
-        LinkedQueue<Resource*>& MainT_U)
+        LinkedQueue<Resource*>& MainT_U, int timestep)
     {
+        cout << "\nTimestep :" << timestep << endl;
+
         cout << "=============== All List ===============\n";
         cout << All_Patients.getcount() << " ";
         cout << "Patients remaining: ";

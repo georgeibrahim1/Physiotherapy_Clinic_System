@@ -19,7 +19,7 @@ Patient::Patient()
 		LatePenalty = 0;
 	}
 
-Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0), Type(type), DidReschedule(0), DidCancel(false), waitTime(0), treatmentTime(0), LatePenalty(0)
+Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0), Type(type), DidReschedule(0), DidCancel(false), waitTime(0), treatmentTime(0), LatePenalty(0), EnteredWaitRoom(0)
 	{
 		//CurrTreatment == nullptr;
 	}
@@ -136,6 +136,15 @@ Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0
 	}
 
 
+	int Patient::getEnteredWaitRoom() const
+	{
+		return EnteredWaitRoom;
+	}
+
+	void Patient::Set_EnteredWaitRoom(int t)
+	{
+		EnteredWaitRoom = t;
+	}
 
 	char Patient::get_Type() const
 	{
@@ -209,17 +218,26 @@ Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0
 		}
 	}
 
+	Patient::~Patient()
+	{
+		Treatment* treatment;
+		while (ReqTreatmentList.dequeue(treatment)) // probably not needed because the required treatment list should be already empty(all treatments have been probably deleted already)
+		{
+			delete treatment;
+		}
+	}
+
 	ostream& operator << (ostream& outFile, const Patient& p)
 	{
-		outFile << "| P" << p.getID() << " | "
-			<< p.get_Type() << " | "
-			<< p.getPT() << " | "
-			<< p.getVT() << " | "
-			<< p.getFT() << " | "
-			<< p.GetwaitTime() << " | "
-			<< p.GettreatmentTime() << " | "
-			<< (p.GetDidCancel() ? "T" : "F") << " | "
-			<< (p.GetDidReschedule() > 0 ? "T" : "F") << " |\n";
+			outFile << "P" << p.getID() << "\t"
+			<< p.get_Type() << "\t"
+			<< p.getPT() << "\t"
+			<< p.getVT() << "\t"
+			<< p.getFT() << "\t"
+			<< p.GetwaitTime() << "\t"
+			<< p.GettreatmentTime() << "\t"
+			<< (p.GetDidCancel() ? "T" : "F") << "\t"
+			<< (p.GetDidReschedule() ? "T" : "F") << "\n";
 		return outFile;
 	}
 
