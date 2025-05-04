@@ -528,15 +528,15 @@ bool Scheduler::Assign_X()
     Treatment* treatment = nullptr;
     bool patientmoved = false;
 
-    while (X_Waiting_Patients.peek(currPatient) && X_Rooms.peek(resource))
+    while (X_Waiting_Patients.peek(currPatient))
     {
-        if (X_Waiting_Patients.dequeue(currPatient))
+        if (currPatient->Peek_ReqTreatment(treatment))
         {
-            if (resource->get_Capacity() - resource->get_Num_Of_Patients() > 1)
+            if (treatment->CanAssign(this))
             {
-                if (currPatient->Peek_ReqTreatment(treatment))
+                if (X_Waiting_Patients.dequeue(currPatient) && X_Rooms.peek(resource))
                 {
-                    if (treatment->CanAssign(this))
+                    if (resource->get_Capacity() - resource->get_Num_Of_Patients() > 1)
                     {
                         if (resource->Increment_Patient())
                         {
@@ -548,13 +548,7 @@ bool Scheduler::Assign_X()
                             In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
                         }
                     }
-                }
-            }
-            else // Difference == 1 -> Means this resource must be dequeued from the Avail_X_Rooms List as the room would be full
-            {
-                if (currPatient->Peek_ReqTreatment(treatment))
-                { 
-                    if (treatment->CanAssign(this))
+                    else
                     {
                         if (resource->Increment_Patient())
                         {
@@ -570,7 +564,12 @@ bool Scheduler::Assign_X()
                             }
                         }
                     }
+
                 }
+            }
+            else
+            {
+                break;
             }
         }
     }
@@ -964,19 +963,19 @@ bool Scheduler::Create_Output_File()
     return true;
 }
 
-bool Scheduler::CanAssign_E(Resource*& e)
+bool Scheduler::CanAssign_E()
 {
-    return E_Devices.peek(e);
+    return !E_Devices.isEmpty();
 }
 
-bool Scheduler::CanAssign_U(Resource*& u)
+bool Scheduler::CanAssign_U()
 {
-    return U_Devices.peek(u);
+    return !U_Devices.isEmpty();
 }
 
-bool Scheduler::CanAssign_X(X_Resource*& x)
+bool Scheduler::CanAssign_X()
 {
-    return X_Rooms.peek(x);
+    return !X_Rooms.isEmpty();
 }
 
 Scheduler::~Scheduler() {

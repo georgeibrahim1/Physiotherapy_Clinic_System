@@ -2,9 +2,9 @@
 #include "Scheduler.h"
 #include "Patient.h"
 
-bool X_Treatment::CanAssign(Scheduler* s, X_Resource*& x)
+bool X_Treatment::CanAssign(Scheduler* s)
 {
-	return s->CanAssign_X(x);
+	return s->CanAssign_X();
 }
 
 bool X_Treatment::MoveToWait(Scheduler* schedular, Patient* currPatient)

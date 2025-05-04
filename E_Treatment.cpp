@@ -3,9 +3,9 @@
 #include "Patient.h"
 #include "Scheduler.h"
 
-bool E_Treatment::CanAssign(Scheduler* s, Resource*& e)
+bool E_Treatment::CanAssign(Scheduler* s)
 {
-	return s->CanAssign_E(e);
+	return s->CanAssign_E();
 }
 
 bool E_Treatment::MoveToWait(Scheduler* schedular, Patient* currPatient)
