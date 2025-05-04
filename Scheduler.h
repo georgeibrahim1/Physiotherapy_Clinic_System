@@ -6,20 +6,14 @@
 #include <random>
 #include <climits>
 #include <iomanip>
-//#include "X_Resource.h"
-////#include "Resource.h"
-//#include "U_Resource.h"
-//#include "E_Resource.h"
+
 
 
 class Patient;
 class EarlyPList;
 class EU_WaitList;
 class X_WaitList;
-//class E_Treatment;
-//class U_Treatment;
-//class X_Treatment;
-//class Treatment;
+
 
 class Scheduler
 {
@@ -38,6 +32,8 @@ protected:
     LinkedQueue<X_Resource*> X_Rooms;
     priQueue<Patient*> In_Treatment_List;
     ArrayStack<Patient*> Finished_Patients;
+    priQueue<Patient*>  E_Interrupted_Patients;
+    priQueue<Patient*>  U_Interrupted_Patients;
     int timestep, Pcancel, Presc, PFreeFail, PBusyFail;
 
 
@@ -46,7 +42,6 @@ public:
     void Simulate();
 
     bool File_Loading_Function(string s);
-
 
     bool Check_All_List();
 
@@ -79,6 +74,8 @@ public:
     int Late_Penalty(Patient* Late_Patient);
 
     bool E_U_To_Destroy();
+
+    bool From_SERV_Patinet_to_IP();
 
     bool Cancel_Treatment();
 

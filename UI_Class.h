@@ -34,7 +34,7 @@ public:
         priQueue<Patient*>& In_Treatment_List,
         ArrayStack<Patient*>& Finished_Patients,
         LinkedQueue<Resource*>& MainT_E,
-        LinkedQueue<Resource*>& MainT_U, int timestep)
+        LinkedQueue<Resource*>& MainT_U, int timestep , priQueue<Patient*>& E_Interrupted_Patients, priQueue<Patient*>&U_Interrupted_Patients)
     {
         cout << "\nTimestep :" << timestep << endl;
 
@@ -102,6 +102,15 @@ public:
         cout << "==>";
         In_Treatment_List.Print();
       
+        cout << "\n=============== E_Interrupted Patients List ===============\n";
+        cout << E_Interrupted_Patients.getcount() << " ";
+        cout << "==>";
+        E_Interrupted_Patients.Print();
+
+        cout << "\n=============== U_Interrupted Patients List ===============\n";
+        cout << U_Interrupted_Patients.getcount() << " ";
+        cout << "==>";
+        U_Interrupted_Patients.Print();
 
         cout << "\n======================================\n";
         cout << Finished_Patients.getCount() << " ";

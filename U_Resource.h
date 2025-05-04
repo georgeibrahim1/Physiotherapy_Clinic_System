@@ -8,12 +8,23 @@ protected:
 	int Assigment_Time;
 	int Maintenance_Time;
 	bool Destroyed;
+	int Max_D;
 public:
 
 	U_Resource(Resource_Type type, int id, int main) : Resource(type, id),Maintenance_Time(main)
 	{
 		Assigment_Time = -1;
 		Destroyed = 0; //flase
+	}
+
+	int Get_Max_D()
+	{
+		return Max_D;
+	}
+
+	void set_Max_D(int y)
+	{
+		Max_D = y;
 	}
 
 	bool Get_Destroyed()

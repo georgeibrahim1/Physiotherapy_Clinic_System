@@ -1,8 +1,4 @@
 #include "Scheduler.h"
-//#include "EarlyPList.h"
-//#include "X_WaitList.h"
-//#include "EU_WaitList.h"
-//#include "Patient.h"
 
 void Scheduler::Simulate()
 {
@@ -37,11 +33,9 @@ void Scheduler::Simulate()
     {
         while (answer != 'Y' || answer != 'y' || answer != 'N' || answer != 'n')
         {
-            //cout << "Invalid Character";
             string sos = "Invalid Character";
             UI_Class::PrintMsg(sos);
             answer = UI_Class::ReadChar();
-            //cin >> answer;
 
             if (answer == 'Y' || answer == 'y')
             {
@@ -67,9 +61,10 @@ void Scheduler::Simulate()
         Reschedule_Treatment();
         From_Late_To_Wait();
         From_InTreatment_To_Wait_or_Finsih();
+        E_U_To_Destroy(); // It may be destroyed here after assigning U , E
+        From_SERV_Patinet_to_IP();
         Assign_E();
         Assign_U();
-        E_U_To_Destroy(); // It may be destroyed here after assigning U , E
         From_MainT_E_U_to_Avail();
         Cancel_Treatment();
         Assign_X();
@@ -88,7 +83,7 @@ void Scheduler::Simulate()
                 X_Rooms,
                 In_Treatment_List,
                 Finished_Patients,
-                MainT_E, MainT_U, timestep);
+                MainT_E, MainT_U, timestep,E_Interrupted_Patients,U_Interrupted_Patients);
 
             string Rotoscope = "\nPress any key to proceed to the next timestep...";
             UI_Class::PrintMsg(Rotoscope);
@@ -405,28 +400,65 @@ bool Scheduler::EnqueueToAppropriateWaitList(Patient* patient, Treatment* treatm
 bool Scheduler::Assign_E()
 {
     Patient* currPatient;
+    int pri;
+    priQueue<Patient*> temp_IP;
     Resource* resource = nullptr;
     Treatment* treatment = nullptr;
     bool patientmoved = false;
 
-    while (E_Waiting_Patients.peek(currPatient))
+    while (E_Interrupted_Patients.peek(currPatient, pri))
     {
-
         if (currPatient->Peek_ReqTreatment(treatment))
         {
             if (treatment->CanAssign(this))
             {
-                if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
+                if (E_Devices.dequeue(resource))
                 {
                     if (dynamic_cast<E_Resource*>(resource)->Get_Destroyed() == 0)
                     {
-                        resource->Set_Availability(0);
-                        treatment->Set_Assigned_Resource(resource);
-                        treatment->setAssignmentTime(timestep);
-                        currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
-                        patientmoved = true;
-                        currPatient->setStaute(SERV);
-                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        if (E_Interrupted_Patients.dequeue(currPatient, pri))
+                        {
+                            resource->Set_Availability(0);
+                            treatment->Set_Assigned_Resource(resource);
+                            treatment->setAssignmentTime(timestep);
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                            patientmoved = true;
+                            currPatient->setStaute(SERV);
+                            In_Treatment_List.enqueue(currPatient, pri);
+                        }
+                    }
+                    else
+                    {
+                        dynamic_cast<E_Resource*>(resource)->Set_Assigment_Time(timestep);
+                        MainT_E.enqueue(resource);
+                    }
+                }
+            }
+            else
+                break;
+        }
+    }
+
+    while (E_Waiting_Patients.peek(currPatient))
+    {
+        if (currPatient->Peek_ReqTreatment(treatment))
+        {
+            if (treatment->CanAssign(this))
+            {
+                if (E_Devices.dequeue(resource))
+                {
+                    if (dynamic_cast<E_Resource*>(resource)->Get_Destroyed() == 0)
+                    {
+                        if (E_Waiting_Patients.dequeue(currPatient))
+                        {
+                            resource->Set_Availability(0);
+                            treatment->Set_Assigned_Resource(resource);
+                            treatment->setAssignmentTime(timestep);
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                            patientmoved = true;
+                            currPatient->setStaute(SERV);
+                            In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        }
                     }
                     else
                     {
@@ -448,8 +480,43 @@ bool Scheduler::Assign_U()
 {
     Patient* currPatient;
     Resource* resource = nullptr;
+    int pri;
     Treatment* treatment = nullptr;
     bool patientmoved = false;
+
+    while (U_Interrupted_Patients.peek(currPatient, pri))
+    {
+        if (currPatient->Peek_ReqTreatment(treatment))
+        {
+            if (treatment->CanAssign(this))
+            {
+                if (U_Devices.dequeue(resource))
+                {
+                    if (dynamic_cast<U_Resource*>(resource)->Get_Destroyed() == 0)
+                    {
+                        if (U_Interrupted_Patients.dequeue(currPatient, pri))
+                        {
+                            resource->Set_Availability(0);
+                            treatment->Set_Assigned_Resource(resource);
+                            treatment->setAssignmentTime(timestep);
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                            patientmoved = true;
+                            currPatient->setStaute(SERV);
+                            In_Treatment_List.enqueue(currPatient, pri);
+                        }
+                    }
+                    else
+                    {
+                        dynamic_cast<U_Resource*>(resource)->Set_Assigment_Time(timestep);
+                        MainT_U.enqueue(resource);
+                    }
+                }
+            }
+            else
+                break;
+        }
+    }
+
 
     while (U_Waiting_Patients.peek(currPatient))
     {
@@ -457,23 +524,27 @@ bool Scheduler::Assign_U()
         {
             if (treatment->CanAssign(this))
             {
-                if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
+                if (U_Devices.dequeue(resource))
                 {
                     if (dynamic_cast<U_Resource*>(resource)->Get_Destroyed() == 0)
                     {
-                        resource->Set_Availability(0);
-                        treatment->Set_Assigned_Resource(resource);
-                        treatment->setAssignmentTime(timestep);
-                        currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
-                        patientmoved = true;
-                        currPatient->setStaute(SERV);
-                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        if (U_Waiting_Patients.dequeue(currPatient))
+                        {
+                            resource->Set_Availability(0);
+                            treatment->Set_Assigned_Resource(resource);
+                            treatment->setAssignmentTime(timestep);
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                            patientmoved = true;
+                            currPatient->setStaute(SERV);
+                            In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        }
                     }
                     else
                     {
                         dynamic_cast<U_Resource*>(resource)->Set_Assigment_Time(timestep);
                         MainT_U.enqueue(resource);
                     }
+                    
                 }
             }
             else
@@ -745,8 +816,9 @@ bool Scheduler::E_U_To_Destroy()
                 if (i == Eidx) {
                     // mark as destroyed
                     E_Resource* eres = dynamic_cast<E_Resource*>(temp);
-                    if (eres) {
+                    if (eres && eres->Get_Max_D() <= 2) {
                         eres->Set_Destroyed(1);
+                        eres->set_Max_D(eres->Get_Max_D() + 1);
                         One_Had_been_destroyed = true;
                     }
                 }
@@ -763,7 +835,8 @@ bool Scheduler::E_U_To_Destroy()
                 U_Devices.dequeue(temp);
                 if (i == Uidx) {
                     U_Resource* ures = dynamic_cast<U_Resource*>(temp);
-                    if (ures) {
+                    if (ures && ures->Get_Max_D() <= 2) {
+                        ures->set_Max_D(ures->Get_Max_D() + 1);
                         ures->Set_Destroyed(1);
                         One_Had_been_destroyed = true;
                     }
@@ -773,6 +846,73 @@ bool Scheduler::E_U_To_Destroy()
         }
     }
     return One_Had_been_destroyed;
+}
+
+bool Scheduler::From_SERV_Patinet_to_IP()
+{
+    bool One_Had_been_Interrupted = false;
+    int random_number = generateRandomNumber(0, 100);
+
+    if (random_number >= PBusyFail)
+        return false;
+
+    int count = In_Treatment_List.getcount();
+    if (count <= 0)
+        return false;
+
+    int random_index = generateRandomNumber(0, count - 1);
+    priQueue<Patient*> temp_InTreatment;
+    Patient* temp = nullptr;
+    int pri;
+
+    for (int i = 0; i < count; ++i)
+    {
+        In_Treatment_List.dequeue(temp, pri);
+        Treatment* t = nullptr;
+
+        if (i == random_index && temp->Peek_ReqTreatment(t) && t && temp->Get_Max_I() <= 2 && timestep <= -pri)
+        {
+            if (dynamic_cast<U_Treatment*>(t) || dynamic_cast<E_Treatment*>(t))
+            {
+                int d = t->GetDuration() / 2;
+                int newpri = -(d + timestep);
+
+                temp->setStaute(INT);
+                temp->Set_Max_I(temp->Get_Max_I()+1);
+                if (dynamic_cast<E_Treatment*>(t))
+                    E_Interrupted_Patients.enqueue(temp, newpri);
+                else if (dynamic_cast<U_Treatment*>(t))
+                    U_Interrupted_Patients.enqueue(temp, newpri);
+
+                // Handle unassigning the resource, if any
+                Resource* r = nullptr;
+                if (t->Get_Assigned_Resource(r) && r)
+                {
+                    if (dynamic_cast<E_Treatment*>(t) && dynamic_cast<E_Resource*>(r)) {
+                        dynamic_cast<E_Resource*>(r)->Set_Assigment_Time(timestep);
+                        MainT_E.enqueue(r);
+                    }
+                    else if (dynamic_cast<U_Treatment*>(t) && dynamic_cast<U_Resource*>(r)) {
+                        dynamic_cast<U_Resource*>(r)->Set_Assigment_Time(timestep);
+                        MainT_U.enqueue(r);
+                    }
+                    t->Set_Assigned_Resource(nullptr);
+                }
+
+                One_Had_been_Interrupted = true;
+                // Don't enqueue this patient back; it's now in interrupted queue
+                continue;
+            }
+        }
+        // Not the selected to interrupt, or not eligible - keep in treatment list
+        temp_InTreatment.enqueue(temp, pri);
+    }
+
+    // Restore the rest of the patients
+    while (temp_InTreatment.dequeue(temp, pri))
+        In_Treatment_List.enqueue(temp, pri);
+
+    return One_Had_been_Interrupted;
 }
 
 bool Scheduler::Cancel_Treatment()
@@ -901,17 +1041,6 @@ bool Scheduler::Create_Output_File()
             totalLatePenalty += LatePenalty;
             totalLate++;
         }
-
-        // Output patient data
-        /*outFile << "| P" << p->getID() << " | "
-            << p->get_Type() << " | "
-            << p->getPT() << " | "
-            << p->getVT() << " | "
-            << p->getFT() << " | "
-            << waitTime << " | "
-            << treatmentTime << " | "
-            << (p->GetDidCancel() ? "T" : "F") << " | "
-            << (p->GetDidReschedule() > 0 ? "T" : "F") << " |\n";*/
         outFile << *p << "\n";
         delete p;
 

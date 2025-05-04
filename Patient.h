@@ -20,7 +20,8 @@ enum P_Status
 	LATE,
 	WAIT,
 	SERV,
-	FNSH
+	FNSH,
+	INT
 };
 
 class Treatment;
@@ -42,6 +43,7 @@ protected:
 	int treatmentTime;
 	int LatePenalty;
 	LinkedQueue<Treatment*> ReqTreatmentList;
+	int Max_I;
 
 public:
 
@@ -50,6 +52,10 @@ public:
 	Patient(int d, int pt, int vt, char type);
 
 	void Set_ID(int d);
+
+	int Get_Max_I();
+
+	void Set_Max_I(int);
 
 	void Set_PT(int pt);
 

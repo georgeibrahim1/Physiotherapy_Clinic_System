@@ -24,6 +24,17 @@ Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0
 		//CurrTreatment == nullptr;
 	}
 
+	int Patient::Get_Max_I()
+	{
+		return Max_I;
+	}
+
+	void Patient::Set_Max_I(int y)
+	{
+		Max_I = y;
+	}
+
+
 	void Patient::Set_ID(int d)
 	{
 		ID = d;
@@ -213,6 +224,10 @@ Patient::Patient(int d, int pt, int vt, char type) : ID(d), PT(pt), VT(vt), FT(0
 			cout << "P" << ID << "_" << tre->get_type() << res->Get_Id();
 		}
 		else if (Status == FNSH)
+		{
+			cout << ID;
+		}
+		else if (Status == INT)
 		{
 			cout << ID;
 		}
