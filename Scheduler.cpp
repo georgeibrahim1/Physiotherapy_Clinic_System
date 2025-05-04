@@ -62,11 +62,11 @@ void Scheduler::Simulate()
         Check_Early_List();
         Reschedule_Treatment();
         From_Late_To_Wait();
+        From_InTreatment_To_Wait_or_Finsih();
         Assign_E();
         Assign_U();
         Cancel_Treatment();
         Assign_X();
-        From_InTreatment_To_Wait_or_Finsih();
 
         if (!silent)
         {
