@@ -31,7 +31,7 @@ protected:
     priQueue<Patient*> In_Treatment_List;
     ArrayStack<Patient*> Finished_Patients;
     int timestep, Pcancel, Presc;
-
+    bool silent;
 
 public:
 

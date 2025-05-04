@@ -17,7 +17,7 @@ void Scheduler::Simulate()
         return;
     }
     timestep = 1;
-    bool silent = true;
+    silent = true;
     string s = "Do you want it in silent mode ? Y/N.....";
     UI_Class::PrintMsg(s);
     char answer = UI_Class::ReadChar();
@@ -395,21 +395,24 @@ bool Scheduler::Assign_E()
         {
             if (treatment->CanAssign(this))
             {
-                if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
+                if (E_Devices.dequeue(resource))
                 {
-                    resource->Set_Availability(0);
-                    treatment->Set_Assigned_Resource(resource);
-                    treatment->setAssignmentTime(timestep);
-                    currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
-                    patientmoved = true;
-                    currPatient->setStaute(SERV);
-                    In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                    if (E_Waiting_Patients.dequeue(currPatient))
+                    {
+                        resource->Set_Availability(0);
+                        treatment->Set_Assigned_Resource(resource);
+                        treatment->setAssignmentTime(timestep);
+                        currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                        patientmoved = true;
+                        currPatient->setStaute(SERV);
+                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                    }
+
                 }
             }
             else
                 break;
         }
-
     }
 
     return patientmoved;
@@ -427,21 +430,26 @@ bool Scheduler::Assign_U()
         {
             if (treatment->CanAssign(this))
             {
-                if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
+                if (U_Devices.dequeue(resource))
                 {
-                    resource->Set_Availability(0);
-                    treatment->Set_Assigned_Resource(resource);
-                    treatment->setAssignmentTime(timestep);
-                    currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
-                    patientmoved = true;
-                    currPatient->setStaute(SERV);
-                    In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                    if (U_Waiting_Patients.dequeue(currPatient))
+                    {
+                        resource->Set_Availability(0);
+                        treatment->Set_Assigned_Resource(resource);
+                        treatment->setAssignmentTime(timestep);
+                        currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                        patientmoved = true;
+                        currPatient->setStaute(SERV);
+                        In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                    }
+
                 }
             }
             else
                 break;
         }
     }
+
 
     return patientmoved;
 }
@@ -665,6 +673,11 @@ bool Scheduler::Cancel_Treatment()
         bool check = X_Waiting_Patients.cancel(temp);
         if (check)
         {
+            if (!silent)
+            {
+                string s = "Cancel is Done\n";
+                UI_Class::PrintMsg(s);
+            }
             Finished_Patients.push(temp);
             return true;
         }
@@ -679,6 +692,11 @@ bool Scheduler::Reschedule_Treatment()
         bool check = Early_Patients.reschedule();
         if (check)
         {
+            if(!silent)
+            {
+                string s = "Reschedule is Done\n";
+                UI_Class::PrintMsg(s);
+            }
             return true;
         }
     }
