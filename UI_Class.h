@@ -90,7 +90,7 @@ public:
         cout << "Electro Devices: ";
         MainT_U.Print_EU_Resources();
 
-        cout << "\n=============== Avail X-Devices ===============\n";
+        cout << "\n=============== Avail X-Rooms ===============\n";
         cout << X_Rooms.getcount() << " ";
         cout << "Rooms: ";
         X_Rooms.Print_Avail_X_Resources();

@@ -540,19 +540,22 @@ bool Scheduler::Assign_X()
             }
             else // Difference == 1 -> Means this resource must be dequeued from the Avail_X_Rooms List as the room would be full
             {
-                if (treatment->CanAssign())
-                {
-                    if (resource->Increment_Patient())
+                if (currPatient->Peek_ReqTreatment(treatment))
+                { 
+                    if (treatment->CanAssign())
                     {
-                        if (X_Rooms.dequeue(resource))
+                        if (resource->Increment_Patient())
                         {
-                            resource->Set_Availability(0);
-                            treatment->Set_Assigned_Resource(resource);
-                            treatment->setAssignmentTime(timestep);
-                            currPatient->IncwaitTime(timestep - currPatient->getVT());
-                            patientmoved = true;
-                            currPatient->setStaute(SERV);
-                            In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                            if (X_Rooms.dequeue(resource))
+                            {
+                                resource->Set_Availability(0);
+                                treatment->Set_Assigned_Resource(resource);
+                                treatment->setAssignmentTime(timestep);
+                                currPatient->IncwaitTime(timestep - currPatient->getVT());
+                                patientmoved = true;
+                                currPatient->setStaute(SERV);
+                                In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                            }
                         }
                     }
                 }
@@ -702,7 +705,7 @@ int Scheduler::GetTreatmentLatency(Treatment* treatment)
 
 int Scheduler::Late_Penalty(Patient* Late_Patient)
 {
-    int P = (Late_Patient->getVT() - Late_Patient->getPT()) / 2.0;
+    int P = (Late_Patient->getVT() - Late_Patient->getPT()) / 2;
 
     Late_Patient->SetLatePenalty(P);
     return P;
