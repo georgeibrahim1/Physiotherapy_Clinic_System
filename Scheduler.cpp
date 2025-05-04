@@ -84,7 +84,7 @@ void Scheduler::Simulate()
                 Finished_Patients, timestep);
 
 
-            string Rotoscope = "\nPress any key to proceed to the next timestep...";
+            string Rotoscope = "\nPress any key to proceed to the next timestep...\n";
             UI_Class::PrintMsg(Rotoscope);
             //cout << "\nPress any key to proceed to the next timestep..." << endl;
             _getch();  // Waits for a keypress
@@ -675,7 +675,7 @@ bool Scheduler::Cancel_Treatment()
         {
             if (!silent)
             {
-                string s = "Cancel is Done\n";
+                string s = "\nCancel is Done\n";
                 UI_Class::PrintMsg(s);
             }
             Finished_Patients.push(temp);
@@ -694,7 +694,7 @@ bool Scheduler::Reschedule_Treatment()
         {
             if(!silent)
             {
-                string s = "Reschedule is Done\n";
+                string s = "\nReschedule is Done\n";
                 UI_Class::PrintMsg(s);
             }
             return true;
@@ -865,7 +865,7 @@ bool Scheduler::Create_Output_File()
     outFile.close();
     return true;
 }
-
+  
 Scheduler::~Scheduler() {
     // Delete all resources
     while (!E_Devices.isEmpty()) {
