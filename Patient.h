@@ -3,8 +3,11 @@
 //#include "Treatment.h"
 #include "E_Treatment.h"
 #include "U_Treatment.h"
-#include "X_Treatment.h"
+#include "X_TreatmentA.h"
 
+#include "X_TreatmentB.h"
+
+#include "X_TreatmentC.h"
 #include "LinkedQueue.h"
 using namespace std;
 

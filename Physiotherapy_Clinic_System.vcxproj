@@ -139,6 +139,9 @@
     <ClCompile Include="U_Resource.h" />
     <ClCompile Include="U_Treatment.cpp" />
     <ClCompile Include="X_Treatment.cpp" />
+    <ClCompile Include="X_TreatmentA.cpp" />
+    <ClCompile Include="X_TreatmentB.cpp" />
+    <ClCompile Include="X_TreatmentC.cpp" />
     <ClCompile Include="X_WaitList.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -147,10 +150,13 @@
     <ClInclude Include="E_Treatment.h" />
     <ClInclude Include="Patient.h" />
     <ClInclude Include="Scheduler.h" />
+    <ClInclude Include="X_TreatmentA.h" />
     <ClInclude Include="UI_Class.h" />
     <ClInclude Include="U_Treatment.h" />
     <ClInclude Include="X_Resource.h" />
     <ClInclude Include="X_Treatment.h" />
+    <ClInclude Include="X_TreatmentB.h" />
+    <ClInclude Include="X_TreatmentC.h" />
     <ClInclude Include="X_WaitList.h" />
     <ClInclude Include="LinkedQueue.h" />
     <ClInclude Include="Node.h" />

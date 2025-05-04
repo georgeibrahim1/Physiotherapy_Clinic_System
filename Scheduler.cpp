@@ -65,9 +65,12 @@ void Scheduler::Simulate()
         From_SERV_Patinet_to_IP();
         Assign_E();
         Assign_U();
+        Assign_XA();
+        Assign_XB();
+        Assign_XC();
         From_MainT_E_U_to_Avail();
         Cancel_Treatment();
-        Assign_X();
+
 
         if (!silent)
         {
@@ -83,12 +86,13 @@ void Scheduler::Simulate()
                 X_Rooms,
                 In_Treatment_List,
                 Finished_Patients,
-                MainT_E, MainT_U, timestep,E_Interrupted_Patients,U_Interrupted_Patients);
+                MainT_E, MainT_U, timestep,E_Interrupted_Patients,U_Interrupted_Patients,XA_Waiting_Patients,XB_Waiting_Patients,XC_Waiting_Patients);
 
             string Rotoscope = "\nPress any key to proceed to the next timestep...";
             UI_Class::PrintMsg(Rotoscope);
             //cout << "\nPress any key to proceed to the next timestep..." << endl;
             _getch();  // Waits for a keypress
+
         }
         timestep++;
     }
@@ -115,6 +119,9 @@ bool Scheduler::File_Loading_Function(string s)
         int* MainT_E = new int[Num_E_Devices];
         int* MainT_U = new int[Num_U_Devices];
         int* Capacities = new int[Num_X_Rooms];
+        int* CapacitiesA = new int[Num_X_Rooms];
+        int* CapacitiesB = new int[Num_X_Rooms];
+        int* CapacitiesC = new int[Num_X_Rooms];
 
         for (int i = 0; i < Num_E_Devices; i++)
         {
@@ -131,7 +138,7 @@ bool Scheduler::File_Loading_Function(string s)
         for (int i = 0; i < Num_X_Rooms; i++)
         {
 
-            MyFile >> Capacities[i];
+            MyFile >>  CapacitiesA[i] >> CapacitiesB[i] >> CapacitiesC[i];
         }
 
 
@@ -153,7 +160,7 @@ bool Scheduler::File_Loading_Function(string s)
 
         for (int i = 0; i < Num_X_Rooms; i++)
         {
-            ResX[i] = new X_Resource(Room, i, Capacities[i]);
+            ResX[i] = new X_Resource(Room, i, CapacitiesA[i], CapacitiesB[i], CapacitiesC[i]);
             X_Rooms.enqueue(ResX[i]);
         }
 
@@ -193,10 +200,20 @@ bool Scheduler::File_Loading_Function(string s)
                     U_Treatment* P_Treatment = new U_Treatment();
                     Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time, 'U');
                 }
-                else if (R == 'X')
+                else if (R == 'A')
                 {
-                    X_Treatment* P_Treatment = new X_Treatment();
-                    Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time, 'X');
+                    X_TreatmentA* P_Treatment = new X_TreatmentA();
+                    Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time, 'A');
+                }
+                else if (R == 'B')
+                {
+                    X_TreatmentB* P_Treatment = new X_TreatmentB();
+                    Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time, 'B');
+                }
+                else if (R == 'C')
+                {
+                    X_TreatmentC* P_Treatment = new X_TreatmentC();
+                    Input_P[i]->Enqueue_ReqTreatment(P_Treatment, Time, 'C');
                 }
             }
             Input_P[i]->setStaute(IDLE);
@@ -204,6 +221,9 @@ bool Scheduler::File_Loading_Function(string s)
         }
 
         delete[]Capacities;
+        delete[]CapacitiesA;
+        delete[]CapacitiesB;
+        delete[]CapacitiesC;
         delete[]MainT_E;
         delete[]MainT_U;
 
@@ -363,6 +383,67 @@ bool Scheduler::MoveToWait_X(Patient* currPatient)
     }
     return check;
 }
+
+bool Scheduler::MoveToWait_XA(Patient* currPatient)
+{
+    char state = currPatient->get_State();
+    bool check = false;
+    if (state == 'E' && currPatient->getStatue() != SERV)
+        check = XA_Waiting_Patients.enqueue(currPatient);
+    else if (state == 'L' && currPatient->getStatue() != SERV)
+        check = XA_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
+    else if (currPatient->getStatue() == SERV)
+        check = XA_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
+    else
+        check = XA_Waiting_Patients.enqueue(currPatient);
+
+    if (check)
+    {
+        currPatient->setStaute(WAIT);
+    }
+    return check;
+}
+
+bool Scheduler::MoveToWait_XB(Patient* currPatient)
+{
+    char state = currPatient->get_State();
+    bool check = false;
+    if (state == 'E' && currPatient->getStatue() != SERV)
+        check = XB_Waiting_Patients.enqueue(currPatient);
+    else if (state == 'L' && currPatient->getStatue() != SERV)
+        check = XB_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
+    else if (currPatient->getStatue() == SERV)
+        check = XB_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
+    else
+        check = XB_Waiting_Patients.enqueue(currPatient);
+
+    if (check)
+    {
+        currPatient->setStaute(WAIT);
+    }
+    return check;
+}
+
+bool Scheduler::MoveToWait_XC(Patient* currPatient)
+{
+    char state = currPatient->get_State();
+    bool check = false;
+    if (state == 'E' && currPatient->getStatue() != SERV)
+        check = XC_Waiting_Patients.enqueue(currPatient);
+    else if (state == 'L' && currPatient->getStatue() != SERV)
+        check = XC_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT() + Late_Penalty(currPatient));
+    else if (currPatient->getStatue() == SERV)
+        check = XC_Waiting_Patients.InsertSorted(currPatient, currPatient->getPT());
+    else
+        check = XC_Waiting_Patients.enqueue(currPatient);
+
+    if (check)
+    {
+        currPatient->setStaute(WAIT);
+    }
+    return check;
+}
+
 
 bool Scheduler::From_Late_To_Wait()
 {
@@ -592,24 +673,25 @@ bool Scheduler::From_MainT_E_U_to_Avail()
     return OneRepaired;
 }
 
-bool Scheduler::Assign_X()
+
+bool Scheduler::Assign_XA()
 {
     Patient* currPatient;
     X_Resource* resource = nullptr;
     Treatment* treatment = nullptr;
     bool patientmoved = false;
 
-    while (X_Waiting_Patients.peek(currPatient))
+    while (XA_Waiting_Patients.peek(currPatient))
     {
         if (currPatient->Peek_ReqTreatment(treatment))
         {
             if (treatment->CanAssign(this))
             {
-                if (X_Waiting_Patients.dequeue(currPatient) && X_Rooms.peek(resource))
+                if (XA_Waiting_Patients.dequeue(currPatient) && X_Rooms.peek(resource))
                 {
-                    if (resource->get_Capacity() - resource->get_Num_Of_Patients() > 1)
+                    if (resource->get_CapacityA() - resource->get_Num_Of_PatientsA() > 1)
                     {
-                        if (resource->Increment_Patient())
+                        if (resource->Increment_PatientA())
                         {
                             treatment->Set_Assigned_Resource(resource);
                             treatment->setAssignmentTime(timestep);
@@ -621,7 +703,7 @@ bool Scheduler::Assign_X()
                     }
                     else
                     {
-                        if (resource->Increment_Patient())
+                        if (resource->Increment_PatientA())
                         {
                             if (X_Rooms.dequeue(resource))
                             {
@@ -649,6 +731,120 @@ bool Scheduler::Assign_X()
 }
 
 
+bool Scheduler::Assign_XB()
+{
+    Patient* currPatient;
+    X_Resource* resource = nullptr;
+    Treatment* treatment = nullptr;
+    bool patientmoved = false;
+
+    while (XB_Waiting_Patients.peek(currPatient))
+    {
+        if (currPatient->Peek_ReqTreatment(treatment))
+        {
+            if (treatment->CanAssign(this))
+            {
+                if (XB_Waiting_Patients.dequeue(currPatient) && X_Rooms.peek(resource))
+                {
+                    if (resource->get_CapacityB() - resource->get_Num_Of_PatientsB() > 1)
+                    {
+                        if (resource->Increment_PatientB())
+                        {
+                            treatment->Set_Assigned_Resource(resource);
+                            treatment->setAssignmentTime(timestep);
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                            patientmoved = true;
+                            currPatient->setStaute(SERV);
+                            In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        }
+                    }
+                    else
+                    {
+                        if (resource->Increment_PatientB())
+                        {
+                            if (X_Rooms.dequeue(resource))
+                            {
+                                resource->Set_Availability(0);
+                                treatment->Set_Assigned_Resource(resource);
+                                treatment->setAssignmentTime(timestep);
+                                currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                                patientmoved = true;
+                                currPatient->setStaute(SERV);
+                                In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                            }
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    return patientmoved;
+}
+
+bool Scheduler::Assign_XC()
+{
+    Patient* currPatient;
+    X_Resource* resource = nullptr;
+    Treatment* treatment = nullptr;
+    bool patientmoved = false;
+
+    while (XC_Waiting_Patients.peek(currPatient))
+    {
+        if (currPatient->Peek_ReqTreatment(treatment))
+        {
+            if (treatment->CanAssign(this))
+            {
+                if (XC_Waiting_Patients.dequeue(currPatient) && X_Rooms.peek(resource))
+                {
+                    if (resource->get_CapacityC() - resource->get_Num_Of_PatientsC() > 1)
+                    {
+                        if (resource->Increment_PatientC())
+                        {
+                            treatment->Set_Assigned_Resource(resource);
+                            treatment->setAssignmentTime(timestep);
+                            currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                            patientmoved = true;
+                            currPatient->setStaute(SERV);
+                            In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                        }
+                    }
+                    else
+                    {
+                        if (resource->Increment_PatientC())
+                        {
+                            if (X_Rooms.dequeue(resource))
+                            {
+                                resource->Set_Availability(0);
+                                treatment->Set_Assigned_Resource(resource);
+                                treatment->setAssignmentTime(timestep);
+                                currPatient->IncwaitTime(timestep - currPatient->getEnteredWaitRoom());
+                                patientmoved = true;
+                                currPatient->setStaute(SERV);
+                                In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
+                            }
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    return patientmoved;
+}
+
+
+
 bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
 {
     Patient* currPatient;
@@ -663,13 +859,13 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
         //Dequeue the treatment from Reqtreatment List
         if (currPatient->Peek_ReqTreatment(treatment))
         {
-            if (dynamic_cast<X_Treatment*>(treatment))
+            if (dynamic_cast<X_TreatmentA*>(treatment))
             {
                 if (treatment->Get_Assigned_Resource(resource))
                 {
                     if (resource->Get_Availability())
                     {
-                        dynamic_cast<X_Resource*>(resource)->Decrement_Patient();
+                        dynamic_cast<X_Resource*>(resource)->Decrement_PatientA();
                         treatment->Set_Assigned_Resource(nullptr);
                         currPatient->Dequeue_ReqTreatment(treatment);
                         delete treatment;
@@ -677,7 +873,51 @@ bool Scheduler::From_InTreatment_To_Wait_or_Finsih()
                     else
                     {
                         resource->Set_Availability(1);
-                        dynamic_cast<X_Resource*>(resource)->Decrement_Patient();
+                        dynamic_cast<X_Resource*>(resource)->Decrement_PatientA();
+                        X_Rooms.enqueue(dynamic_cast<X_Resource*>(resource));
+                        treatment->Set_Assigned_Resource(nullptr);
+                        currPatient->Dequeue_ReqTreatment(treatment);
+                        delete treatment;
+                    }
+                }
+            }
+            else if (dynamic_cast<X_TreatmentB*>(treatment))
+            {
+                if (treatment->Get_Assigned_Resource(resource))
+                {
+                    if (resource->Get_Availability())
+                    {
+                        dynamic_cast<X_Resource*>(resource)->Decrement_PatientB();
+                        treatment->Set_Assigned_Resource(nullptr);
+                        currPatient->Dequeue_ReqTreatment(treatment);
+                        delete treatment;
+                    }
+                    else
+                    {
+                        resource->Set_Availability(1);
+                        dynamic_cast<X_Resource*>(resource)->Decrement_PatientB();
+                        X_Rooms.enqueue(dynamic_cast<X_Resource*>(resource));
+                        treatment->Set_Assigned_Resource(nullptr);
+                        currPatient->Dequeue_ReqTreatment(treatment);
+                        delete treatment;
+                    }
+                }
+            }
+            else if (dynamic_cast<X_TreatmentC*>(treatment))
+            {
+                if (treatment->Get_Assigned_Resource(resource))
+                {
+                    if (resource->Get_Availability())
+                    {
+                        dynamic_cast<X_Resource*>(resource)->Decrement_PatientC();
+                        treatment->Set_Assigned_Resource(nullptr);
+                        currPatient->Dequeue_ReqTreatment(treatment);
+                        delete treatment;
+                    }
+                    else
+                    {
+                        resource->Set_Availability(1);
+                        dynamic_cast<X_Resource*>(resource)->Decrement_PatientC();
                         X_Rooms.enqueue(dynamic_cast<X_Resource*>(resource));
                         treatment->Set_Assigned_Resource(nullptr);
                         currPatient->Dequeue_ReqTreatment(treatment);
@@ -874,8 +1114,7 @@ bool Scheduler::From_SERV_Patinet_to_IP()
         {
             if (dynamic_cast<U_Treatment*>(t) || dynamic_cast<E_Treatment*>(t))
             {
-                int d = t->GetDuration() / 2;
-                int newpri = -(d + timestep);
+                int newpri = -(10 + timestep);
 
                 temp->setStaute(INT);
                 temp->Set_Max_I(temp->Get_Max_I()+1);
@@ -1106,6 +1345,7 @@ bool Scheduler::CanAssign_X()
 {
     return !X_Rooms.isEmpty();
 }
+
 
 Scheduler::~Scheduler() {
     // Delete all resources

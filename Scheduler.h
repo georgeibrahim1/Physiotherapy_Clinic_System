@@ -25,6 +25,9 @@ protected:
     EU_WaitList U_Waiting_Patients;
     EU_WaitList E_Waiting_Patients;
     X_WaitList X_Waiting_Patients;
+    X_WaitList XA_Waiting_Patients;
+    X_WaitList XB_Waiting_Patients;
+    X_WaitList XC_Waiting_Patients;
     LinkedQueue<Resource*> E_Devices;
     LinkedQueue<Resource*> MainT_E;
     LinkedQueue<Resource*> U_Devices;
@@ -53,6 +56,12 @@ public:
 
     bool MoveToWait_X(Patient* currPatient);
 
+    bool MoveToWait_XA(Patient* currPatient);
+
+    bool MoveToWait_XB(Patient* currPatient);
+
+    bool MoveToWait_XC(Patient* currPatient);
+
     bool From_Late_To_Wait();
 
     bool EnqueueToAppropriateWaitList(Patient* patient, Treatment* treatment);
@@ -63,7 +72,11 @@ public:
 
     bool From_MainT_E_U_to_Avail();
 
-    bool Assign_X();
+    bool Assign_XA();
+
+    bool Assign_XB();
+
+    bool Assign_XC();
 
     bool From_InTreatment_To_Wait_or_Finsih();
 

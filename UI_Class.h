@@ -34,7 +34,7 @@ public:
         priQueue<Patient*>& In_Treatment_List,
         ArrayStack<Patient*>& Finished_Patients,
         LinkedQueue<Resource*>& MainT_E,
-        LinkedQueue<Resource*>& MainT_U, int timestep , priQueue<Patient*>& E_Interrupted_Patients, priQueue<Patient*>&U_Interrupted_Patients)
+        LinkedQueue<Resource*>& MainT_U, int timestep , priQueue<Patient*>& E_Interrupted_Patients, priQueue<Patient*>&U_Interrupted_Patients , X_WaitList& XA_Waiting_Patients , X_WaitList& XB_Waiting_Patients , X_WaitList& XC_Waiting_Patients )
     {
         cout << "\nTimestep :" << timestep << endl;
 
@@ -59,6 +59,24 @@ public:
         cout << X_Waiting_Patients.getcount() << " ";
         cout << "X-therapy Patients: ";
         X_Waiting_Patients.PrintAllList(1);
+
+        cout << endl;
+
+        cout << XA_Waiting_Patients.getcount() << " ";
+        cout << "XA-therapy Patients: ";
+        XA_Waiting_Patients.PrintAllList(1);
+
+        cout << endl;
+
+        cout << XB_Waiting_Patients.getcount() << " ";
+        cout << "XB-therapy Patients: ";
+        XB_Waiting_Patients.PrintAllList(1);
+
+        cout << endl;
+
+        cout << XC_Waiting_Patients.getcount() << " ";
+        cout << "XC-therapy Patients: ";
+        XC_Waiting_Patients.PrintAllList(1);
 
         cout << endl;
 
@@ -89,7 +107,7 @@ public:
 
         cout << "\n=============== U-Devices In Maintenance ===============\n";
         cout << MainT_U.getcount() << " ";
-        cout << "Electro Devices: ";
+        cout << "Ultra Devices: ";
         MainT_U.Print_EU_Resources();
 
         cout << "\n=============== Avail X-Rooms ===============\n";
