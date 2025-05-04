@@ -7,6 +7,6 @@ class Patient;
 class U_Treatment : public Treatment
 {
 public:
-	virtual bool CanAssign();
+	virtual bool CanAssign(Scheduler* s, Resource*& u);
 	virtual bool MoveToWait(Scheduler* schedular, Patient* currPatient);
 };

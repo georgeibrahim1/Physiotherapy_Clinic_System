@@ -66,13 +66,13 @@ void Scheduler::Simulate()
         Check_Early_List();
         Reschedule_Treatment();
         From_Late_To_Wait();
+        From_InTreatment_To_Wait_or_Finsih();
         Assign_E();
         Assign_U();
         E_U_To_Destroy(); // It may be destroyed here after assigning U , E
         From_MainT_E_U_to_Avail();
         Cancel_Treatment();
         Assign_X();
-        From_InTreatment_To_Wait_or_Finsih();
 
         if (!silent)
         {
@@ -409,15 +409,16 @@ bool Scheduler::Assign_E()
     Treatment* treatment = nullptr;
     bool patientmoved = false;
 
-    while (E_Waiting_Patients.peek(currPatient) && E_Devices.peek(resource))
+    while (E_Waiting_Patients.peek(currPatient))
     {
-        if (dynamic_cast<E_Resource*>(resource)->Get_Destroyed() == 0)
+
+        if (currPatient->Peek_ReqTreatment(treatment))
         {
-            if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
+            if (treatment->CanAssign(this))
             {
-                if (currPatient->Peek_ReqTreatment(treatment))
+                if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
                 {
-                    if (treatment->CanAssign())
+                    if (dynamic_cast<E_Resource*>(resource)->Get_Destroyed() == 0)
                     {
                         resource->Set_Availability(0);
                         treatment->Set_Assigned_Resource(resource);
@@ -427,15 +428,17 @@ bool Scheduler::Assign_E()
                         currPatient->setStaute(SERV);
                         In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
                     }
+                    else
+                    {
+                        dynamic_cast<E_Resource*>(resource)->Set_Assigment_Time(timestep);
+                        MainT_E.enqueue(resource);
+                    }
                 }
             }
+            else
+                break;
         }
-        else
-        {
-            E_Devices.dequeue(resource);
-            dynamic_cast<E_Resource*>(resource)->Set_Assigment_Time(timestep);
-            MainT_E.enqueue(resource);
-        }
+    
     }
 
     return patientmoved;
@@ -448,15 +451,15 @@ bool Scheduler::Assign_U()
     Treatment* treatment = nullptr;
     bool patientmoved = false;
 
-    while (U_Waiting_Patients.peek(currPatient) && U_Devices.peek(resource))
+    while (U_Waiting_Patients.peek(currPatient))
     {
-        if (dynamic_cast<U_Resource*>(resource)->Get_Destroyed() == 0)
+        if (currPatient->Peek_ReqTreatment(treatment))
         {
-            if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
+            if (treatment->CanAssign(this))
             {
-                if (currPatient->Peek_ReqTreatment(treatment))
+                if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
                 {
-                    if (treatment->CanAssign())
+                    if (dynamic_cast<U_Resource*>(resource)->Get_Destroyed() == 0)
                     {
                         resource->Set_Availability(0);
                         treatment->Set_Assigned_Resource(resource);
@@ -466,14 +469,15 @@ bool Scheduler::Assign_U()
                         currPatient->setStaute(SERV);
                         In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
                     }
+                    else
+                    {
+                        dynamic_cast<U_Resource*>(resource)->Set_Assigment_Time(timestep);
+                        MainT_U.enqueue(resource);
+                    }
                 }
             }
-        }
-        else
-        {
-            U_Devices.dequeue(resource);
-            dynamic_cast<U_Resource*>(resource)->Set_Assigment_Time(timestep);
-            MainT_U.enqueue(resource);
+            else
+                break;
         }
     }
 
@@ -532,7 +536,7 @@ bool Scheduler::Assign_X()
             {
                 if (currPatient->Peek_ReqTreatment(treatment))
                 {
-                    if (treatment->CanAssign())
+                    if (treatment->CanAssign(this))
                     {
                         if (resource->Increment_Patient())
                         {
@@ -550,7 +554,7 @@ bool Scheduler::Assign_X()
             {
                 if (currPatient->Peek_ReqTreatment(treatment))
                 { 
-                    if (treatment->CanAssign())
+                    if (treatment->CanAssign(this))
                     {
                         if (resource->Increment_Patient())
                         {
@@ -958,6 +962,21 @@ bool Scheduler::Create_Output_File()
 
     outFile.close();
     return true;
+}
+
+bool Scheduler::CanAssign_E(Resource*& e)
+{
+    return E_Devices.peek(e);
+}
+
+bool Scheduler::CanAssign_U(Resource*& u)
+{
+    return U_Devices.peek(u);
+}
+
+bool Scheduler::CanAssign_X(X_Resource*& x)
+{
+    return X_Rooms.peek(x);
 }
 
 Scheduler::~Scheduler() {

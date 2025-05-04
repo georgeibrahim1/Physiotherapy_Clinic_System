@@ -88,5 +88,11 @@ public:
 
     bool Create_Output_File();
 
+    bool CanAssign_E(Resource*&);
+
+    bool CanAssign_U(Resource*&);
+
+    bool CanAssign_X(X_Resource*&);
+
     ~Scheduler();
 };
