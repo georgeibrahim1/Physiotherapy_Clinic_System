@@ -1,112 +1,32 @@
 | PID | PType | PT | VT | FT | WT | TT | Cancel | Resc |
 |---|---|---|---|---|---|---|---|---|
-| P48 | N | 48 | 48 | 153 | 73 | 32 | F | F |
+| P9 | R | 22 | 23 | 47 | 2 | 22 | F | F |
 
-| P44 | N | 44 | 44 | 136 | 70 | 22 | F | F |
+| P7 | N | 16 | 18 | 46 | 10 | 17 | F | F |
 
-| P47 | R | 43 | 47 | 134 | 65 | 20 | F | F |
+| P8 | R | 20 | 20 | 46 | 9 | 17 | F | F |
 
-| P42 | N | 38 | 42 | 132 | 63 | 25 | F | F |
+| P5 | R | 8 | 13 | 39 | 9 | 15 | F | F |
 
-| P45 | R | 40 | 45 | 126 | 49 | 30 | F | F |
+| P4 | R | 11 | 11 | 36 | 15 | 10 | F | F |
 
-| P41 | R | 41 | 41 | 125 | 57 | 27 | F | F |
+| P6 | N | 7 | 15 | 32 | 1 | 12 | F | F |
 
-| P36 | N | 36 | 36 | 117 | 48 | 33 | F | F |
+| P2 | N | 2 | 8 | 26 | 0 | 15 | F | F |
 
-| P35 | R | 38 | 35 | 117 | 59 | 20 | F | F |
+| P3 | R | 10 | 9 | 25 | 0 | 15 | F | F |
 
-| P38 | N | 38 | 38 | 117 | 61 | 18 | F | F |
+| P1 | N | 5 | 5 | 15 | 0 | 10 | F | F |
 
-| P32 | N | 28 | 32 | 116 | 53 | 29 | F | F |
-
-| P40 | N | 35 | 40 | 108 | 56 | 10 | F | F |
-
-| P33 | R | 33 | 33 | 105 | 49 | 23 | F | F |
-
-| P30 | N | 30 | 30 | 97 | 42 | 25 | F | F |
-
-| P26 | N | 22 | 26 | 90 | 44 | 18 | F | F |
-
-| P27 | R | 27 | 27 | 89 | 41 | 21 | F | F |
-
-| P29 | R | 25 | 29 | 86 | 30 | 25 | F | F |
-
-| P24 | N | 24 | 24 | 84 | 32 | 28 | F | F |
-
-| P43 | R | 47 | 43 | 79 | 24 | 8 | F | F |
-
-| P39 | R | 45 | 39 | 77 | 10 | 22 | F | F |
-
-| P22 | N | 18 | 22 | 75 | 36 | 15 | F | F |
-
-| P20 | N | 15 | 20 | 72 | 21 | 29 | F | F |
-
-| P19 | R | 23 | 19 | 71 | 40 | 8 | F | F |
-
-| P23 | R | 20 | 23 | 70 | 28 | 18 | F | F |
-
-| P14 | N | 14 | 14 | 68 | 31 | 23 | F | F |
-
-| P49 | R | 45 | 49 | 63 | 0 | 12 | F | F |
-
-| P17 | R | 15 | 17 | 62 | 24 | 20 | F | F |
-
-| P28 | N | 32 | 28 | 62 | 15 | 15 | F | F |
-
-| P37 | R | 32 | 37 | 60 | 9 | 12 | F | F |
-
-| P31 | R | 35 | 31 | 57 | 14 | 8 | F | F |
-
-| P34 | N | 30 | 34 | 57 | 11 | 10 | F | F |
-
-| P46 | N | 46 | 46 | 56 | 0 | 10 | F | F |
-
-| P15 | R | 12 | 15 | 49 | 4 | 29 | F | F |
-
-| P11 | R | 10 | 12 | 48 | 11 | 24 | F | F |
-
-| P21 | R | 21 | 21 | 46 | 8 | 17 | F | F |
-
-| P18 | N | 18 | 18 | 46 | 3 | 25 | F | F |
-
-| P12 | N | 13 | 13 | 43 | 8 | 22 | F | F |
-
-| P25 | R | 30 | 25 | 40 | 0 | 10 | F | F |
-
-| P3 | N | 6 | 4 | 38 | 7 | 25 | F | F |
-
-| P9 | R | 8 | 10 | 37 | 6 | 20 | F | F |
-
-| P6 | N | 7 | 7 | 36 | 6 | 23 | F | F |
-
-| P16 | N | 20 | 16 | 30 | 0 | 10 | F | F |
-
-| P8 | N | 7 | 9 | 29 | 1 | 18 | F | F |
-
-| P10 | N | 11 | 11 | 29 | 3 | 15 | F | F |
-
-| P5 | R | 4 | 6 | 28 | 2 | 19 | F | F |
-
-| P0 | N | 2 | 2 | 28 | 1 | 25 | F | F |
-
-| P7 | R | 12 | 8 | 27 | 0 | 15 | F | F |
-
-| P1 | R | 3 | 3 | 26 | 2 | 21 | F | F |
-
-| P13 | R | 14 | 14 | 26 | 2 | 10 | F | F |
-
-| P4 | N | 5 | 5 | 13 | 0 | 8 | F | F |
-
-| P2 | R | 3 | 3 | 8 | 0 | 5 | F | F |
+| P0 | N | 4 | 2 | 9 | 0 | 5 | F | F |
 
 
-Total number of timesteps = 154
-Total number of all, N, and R patients = 50, 25, 25
-Average total waiting time for all, N, and R patients = 24.38, 27.40, 21.36
-Average total treatment time for all, N, and R patients = 19.14, 20.52, 17.76
+Total number of timesteps = 48
+Total number of all, N, and R patients = 10, 5, 5
+Average total waiting time for all, N, and R patients = 4.60, 2.20, 7.00
+Average total treatment time for all, N, and R patients = 13.80, 11.80, 15.80
 Percentage of patients of an accepted cancellation (%) = 0 %
 Percentage of patients of an accepted rescheduling (%) = 0 %
 Percentage of early patients (%) = 20 %
-Percentage of late patients (%) = 38 %
-Average late penalty = 1.6 timestep(s)
+Percentage of late patients (%) = 50 %
+Average late penalty = 2.0 timestep(s)
