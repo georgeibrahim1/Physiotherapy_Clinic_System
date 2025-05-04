@@ -2,14 +2,9 @@
 #include "Scheduler.h"
 #include "Patient.h"
 
-bool U_Treatment::CanAssign()
+bool U_Treatment::CanAssign(Scheduler* s)
 {
-	if (!AssignedResource)
-	{
-		return true;
-	}
-	else
-		return false;
+	return s->CanAssign_U();
 }
 
 bool U_Treatment::MoveToWait(Scheduler* schedular, Patient* currPatient)

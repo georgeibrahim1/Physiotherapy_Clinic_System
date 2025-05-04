@@ -13,7 +13,7 @@ protected:
 	char Type; // pls check
 public:
 	Treatment();
-	virtual bool CanAssign() = 0;
+	virtual bool CanAssign(Scheduler* s) = 0;
 	virtual bool MoveToWait(Scheduler* schedular, Patient* currPatient) = 0;
 	int GetDuration();
 	void Set_Duration(int t);

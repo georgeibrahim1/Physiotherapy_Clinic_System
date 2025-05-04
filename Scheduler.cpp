@@ -389,13 +389,13 @@ bool Scheduler::Assign_E()
     Treatment* treatment = nullptr;
     bool patientmoved = false;
 
-    while (E_Waiting_Patients.peek(currPatient) && E_Devices.peek(resource))
+    while (E_Waiting_Patients.peek(currPatient))
     {
-        if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
+        if (currPatient->Peek_ReqTreatment(treatment))
         {
-            if (currPatient->Peek_ReqTreatment(treatment))
+            if (treatment->CanAssign(this))
             {
-                if (treatment->CanAssign())
+                if (E_Waiting_Patients.dequeue(currPatient) && E_Devices.dequeue(resource))
                 {
                     resource->Set_Availability(0);
                     treatment->Set_Assigned_Resource(resource);
@@ -406,12 +406,14 @@ bool Scheduler::Assign_E()
                     In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
                 }
             }
+            else
+                break;
         }
+
     }
 
     return patientmoved;
 }
-
 bool Scheduler::Assign_U()
 {
     Patient* currPatient;
@@ -419,13 +421,13 @@ bool Scheduler::Assign_U()
     Treatment* treatment = nullptr;
     bool patientmoved = false;
 
-    while (U_Waiting_Patients.peek(currPatient) && U_Devices.peek(resource))
+    while (U_Waiting_Patients.peek(currPatient))
     {
-        if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
+        if (currPatient->Peek_ReqTreatment(treatment))
         {
-            if (currPatient->Peek_ReqTreatment(treatment))
+            if (treatment->CanAssign(this))
             {
-                if (treatment->CanAssign())
+                if (U_Waiting_Patients.dequeue(currPatient) && U_Devices.dequeue(resource))
                 {
                     resource->Set_Availability(0);
                     treatment->Set_Assigned_Resource(resource);
@@ -436,8 +438,9 @@ bool Scheduler::Assign_U()
                     In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
                 }
             }
+            else
+                break;
         }
-
     }
 
     return patientmoved;
@@ -450,15 +453,15 @@ bool Scheduler::Assign_X()
     Treatment* treatment = nullptr;
     bool patientmoved = false;
 
-    while (X_Waiting_Patients.peek(currPatient) && X_Rooms.peek(resource))
+    while (X_Waiting_Patients.peek(currPatient))
     {
-        if (X_Waiting_Patients.dequeue(currPatient))
+        if (currPatient->Peek_ReqTreatment(treatment))
         {
-            if (resource->get_Capacity() - resource->get_Num_Of_Patients() > 1)
+            if (treatment->CanAssign(this))
             {
-                if (currPatient->Peek_ReqTreatment(treatment))
+                if (X_Waiting_Patients.dequeue(currPatient) && X_Rooms.peek(resource))
                 {
-                    if (treatment->CanAssign())
+                    if (resource->get_Capacity() - resource->get_Num_Of_Patients() > 1)
                     {
                         if (resource->Increment_Patient())
                         {
@@ -470,13 +473,7 @@ bool Scheduler::Assign_X()
                             In_Treatment_List.enqueue(currPatient, -(timestep + treatment->GetDuration()));
                         }
                     }
-                }
-            }
-            else // Difference == 1 -> Means this resource must be dequeued from the Avail_X_Rooms List as the room would be full
-            {
-                if (currPatient->Peek_ReqTreatment(treatment))
-                {
-                    if (treatment->CanAssign())
+                    else
                     {
                         if (resource->Increment_Patient())
                         {
@@ -492,7 +489,12 @@ bool Scheduler::Assign_X()
                             }
                         }
                     }
+
                 }
+            }
+            else
+            {
+                break;
             }
         }
     }
@@ -683,6 +685,21 @@ bool Scheduler::Reschedule_Treatment()
     return false;
 }
 
+bool Scheduler::CanAssign_E()
+{
+    return !E_Devices.isEmpty();
+}
+
+bool Scheduler::CanAssign_U()
+{
+    return !U_Devices.isEmpty();
+}
+
+bool Scheduler::CanAssign_X()
+{
+    return !X_Rooms.isEmpty();
+}
+
 int Scheduler::generateRandomNumber(int min, int max, unsigned int seed)
 {
     static std::mt19937 engine(seed); // Mersenne Twister engine with fixed seed
@@ -848,5 +865,4 @@ Scheduler::~Scheduler() {
         X_Rooms.dequeue(res);
         delete res;
     }
-   
 }
