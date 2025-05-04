@@ -678,6 +678,7 @@ bool Scheduler::Cancel_Treatment()
                 string s = "\nCancel is Done\n";
                 UI_Class::PrintMsg(s);
             }
+            temp->Set_FT(timestep);                  
             Finished_Patients.push(temp);
             return true;
         }

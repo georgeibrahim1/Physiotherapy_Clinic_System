@@ -1,0 +1,30 @@
+1) Test0 is the same as Test1 but with Pcancel & Presc:
+
+It covers most of the scenarios:
+
+-Patients with PT=VT ,PT<VT ,PT>VT.
+-Scenario of R patient entering non-empty waiting list depending on treatment latency.
+-Scenario where In-Treatment list is sorted according to timestep+Duration.
+-Scenario where X_Room is full.
+-Scenario of early & late patient.
+-Scenario of late patient entering a waitlist that has multiple patients ,but still the late patient is the first to be dequeued(sorted by PT+penalty).
+-Scenario where the waiting list is empty & hence enters In-Treatment list directly.
+
+2) Test2
+-It covers more number of patients which makes things more complex.
+-Increased the number of R patients.
+-Has a Pcancel & Preschedule 
+-Increased load on early list
+  
+3) Test3
+-The bonus file.
+-Contains Presc, Pcancel, Pfreefail, and Pbusyfail (Failure Cases).
+-Contains the upgraded X_rooms with tools.
+
+4) Test4:
+-Has a Pcancel & Preschedule 
+-Increased load on E & U available list
+
+5) Test5:
+-Similar to test4 but without probability (Presc & Pcancel)
+
